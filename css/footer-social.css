@@ -1,0 +1,63 @@
+/* Premium Footer Social Links: Expandable Hover Slide Effect */
+
+.social-slide-btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #0D0D0D;
+    color: #C5A059;
+    border: 1px solid #C5A059;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.4s ease-in-out;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.social-slide-btn i {
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.4s ease-in-out;
+}
+
+.social-text {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 0;
+    transition: max-width 0.4s ease-in-out, opacity 0.4s ease-in-out, margin-left 0.4s ease-in-out;
+}
+
+/* Option A: Uniform Luxury Hover */
+.social-slide-btn:hover {
+    background-color: #C5A059;
+    color: #0D0D0D;
+    padding-right: 15px; /* Adds breathing room when expanded */
+}
+
+/* On Desktop Hover, expand to show text */
+@media (min-width: 769px) {
+    .social-slide-btn:hover .social-text {
+        max-width: 120px; /* Arbitrary enough to fit text */
+        opacity: 1;
+        margin-left: 8px; /* Gap between icon and text */
+    }
+}
+
+/* On Mobile, disable expansion to keep things compact and prevent layout shift */
+@media (max-width: 768px) {
+    .social-slide-btn {
+        padding: 0 12px; /* Fixed round button padding */
+    }
+    .social-text {
+        display: none; /* Hide text completely on mobile */
+    }
+}

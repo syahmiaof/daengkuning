@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Pesilat - Portal Pendekar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }, colors: { gold: { DEFAULT: '#D4AF37', dark: '#B8860B' }, charcoal: '#111111' } } } }
+    </script>
+    <style>
+        /* Ultra Luxury Membership Card Essentials */
+        .glass-panel { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        
+        /* Premium Obsidian Membership Card */
+        .membership-card { 
+            background: linear-gradient(145deg, #181818 0%, #050505 100%);
+            position: relative; 
+            border: 1px solid rgba(212, 175, 55, 0.15); 
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(212, 175, 55, 0.05);
+            transform-style: preserve-3d; 
+            overflow: hidden; 
+        }
+
+        .gold-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.4) 50%, transparent 100%);
+        }
+        
+        /* 3D Depth Utilities */
+        .pop-out { transform: translateZ(20px); }
+        .pop-out-extreme { transform: translateZ(40px); filter: drop-shadow(0 15px 25px rgba(0,0,0,0.9)); }
+        
+        /* Premium typography overrides */
+        .premium-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; }
+        .premium-value { font-size: 1rem; color: #ffffff; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    </style>
+    <link rel="stylesheet" href="css/branding.css">
+    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+</head>
+<body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex relative">
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gold/20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.6)]">
+        <div class="h-20 flex items-center px-4 md:px-6 border-b border-gold/10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent"></div>
+            <a href="index.html" class="flex items-center gap-1 cursor-pointer z-10 w-full transition-transform hover:scale-105">
+                <img src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <span class="royal-brand-logo text-2xl md:text-[1.6rem] md:leading-[1.6rem] mt-1.5" style="margin-left: -0.6rem; letter-spacing: -0.02em;">Daeng<span class="brand-gold">Kuning</span></span>
+            </a>
+            <button class="ml-auto text-gray-400 hover:text-white lg:hidden z-10" onclick="toggleSidebar()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
+            <ul class="space-y-2">
+                <li><a href="dashboard-student.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-home w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Ringkasan Pangkalan</span></a></li>
+                <li><a href="student-payment.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-receipt w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Lapor Bayaran Yuran</span></a></li>
+                <li><a href="student-profile.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all"><i class="fas fa-id-badge w-6"></i><span class="font-medium">Profil Kebanggaan</span></a></li>
+            </ul>
+            <button onclick="logout()" class="mt-auto w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400"><i class="fas fa-sign-out-alt w-6"></i><span class="font-medium">Log Keluar</span></button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-h-screen lg:ml-72 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+        
+        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center px-6 lg:px-10 z-30">
+            <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Kad ID <span class="text-gold">Sakti</span></h2>
+        </header>
+
+        <div class="flex-1 p-6 lg:p-10 flex flex-col items-center justify-center relative" style="perspective: 1200px;">
+            <div id="profile-error" class="text-red-500 font-bold w-full text-center mb-4"></div>
+            
+            <div id="membershipCard" class="membership-card w-full max-w-sm sm:max-w-md rounded-[1.5rem] flex flex-col transition-transform duration-200 transform-gpu cursor-pointer">
+                
+                <!-- Luxury Watermark -->
+                <img src="assets/img/dkf.png" class="absolute -right-8 top-8 w-64 h-64 object-contain opacity-[0.08] transform rotate-[-15deg] pointer-events-none z-0 mix-blend-screen scale-150 blur-[1px]">
+                
+                <!-- Ambient Subtle Top Light -->
+                <div class="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-white/10 to-transparent pointer-events-none z-0"></div>
+                
+                <!-- HEADER AREA -->
+                <div class="px-8 pt-8 pb-4 relative z-10 flex justify-between items-start pop-out">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2 pop-out-extreme">
+                            <h2 class="premium-label text-gold drop-shadow-sm tracking-[0.25em]">Ahli Aktif</h2>
+                        </div>
+                        <h1 class="text-2xl sm:text-[1.7rem] font-serif font-black text-[#D4AF37] leading-tight tracking-tight pop-out-extreme drop-shadow-lg" style="text-shadow: 1px 1px 0px rgba(255,255,255,0.2), 0 4px 10px rgba(212,175,55,0.3);">Daeng Kuning</h1>
+                    </div>
+                    <!-- QR Code -->
+                    <div class="w-16 h-16 bg-black border border-gold/40 rounded-lg p-1.5 shadow-[0_5px_15px_rgba(0,0,0,0.8)] flex items-center justify-center transform hover:scale-[1.8] transition-transform origin-top-right pop-out-extreme duration-300 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gold/5"></div>
+                        <img id="card-qr" src="" alt="QR" class="w-full h-full object-cover filter contrast-125 brightness-110 relative z-10 mix-blend-screen">
+                    </div>
+                </div>
+
+                <!-- GOLD SEPARATOR -->
+                <div class="w-full px-8 pb-2 pop-out">
+                    <div class="gold-line w-full"></div>
+                </div>
+
+                <!-- MIDDLE INFO AREA -->
+                <div class="px-8 py-5 flex-1 relative z-10 space-y-5 pop-out">
+                    <div class="flex gap-6 items-center">
+                        <!-- Luxury Avatar Profile -->
+                        <div class="w-[90px] h-[110px] bg-[#0a0a0a] border border-gold/20 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-[0_10px_25px_rgba(0,0,0,0.8)] pop-out-extreme group" id="cardAvatarContainer">
+                            <img id="card-avatar" src="" class="absolute inset-0 w-full h-full object-cover z-0 filter brightness-90 group-hover:brightness-110 transition-all duration-500">
+                            <!-- Premium Gold Bottom Overlay -->
+                            <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black via-black/80 to-transparent z-10"></div>
+                            <span class="text-[9px] absolute bottom-2.5 text-gold tracking-[0.2em] font-serif text-center uppercase z-20 w-full font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,1)]" id="card-bengkung">MEMUAT...</span>
+                        </div>
+                        
+                        <!-- Details -->
+                        <div class="flex flex-col justify-center overflow-hidden pop-out flex-1">
+                            <p class="premium-label text-gray-500">Pemilik Kad</p>
+                            <h3 id="card-name" class="premium-value truncate mb-4 text-white font-serif tracking-wide text-lg drop-shadow-md">Mentafsir Profil...</h3>
+                            
+                            <p class="premium-label text-gray-500">No. Pendaftaran</p>
+                            <h3 id="card-ic" class="text-gold/90 font-mono text-[1.05rem] font-medium tracking-widest drop-shadow-sm">-</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM AREA -->
+                <div class="px-8 pb-7 pt-2 relative z-10 flex flex-col items-start gap-4 pop-out">
+                    <div class="flex justify-between w-full items-end border-b border-white/5 pb-4">
+                        <div>
+                            <p class="premium-label text-gray-500 mb-1.5">Gelanggang Utama</p>
+                            <p id="card-gelanggang" class="text-white font-serif text-[1.1rem] drop-shadow-md uppercase tracking-wide">-</p>
+                        </div>
+                        <div class="text-right pop-out-extreme flex flex-col items-end">
+                            <p class="premium-label text-gold/60 mb-1.5">ID Pesilat</p>
+                            <div class="bg-black/60 border border-gold/10 px-3 py-1.5 rounded-md shadow-inner">
+                                <p id="card-id" class="text-white font-mono text-[1.2rem] font-black tracking-widest leading-none drop-shadow-md">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full text-center">
+                        <span id="card-date" class="text-[8px] text-gray-600 uppercase tracking-widest font-mono">Ahli Sejak: -</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-center gap-4 mt-8 w-full max-w-sm sm:max-w-md">
+                <button onclick="downloadIDCard()" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold rounded-xl shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:scale-105 transition-transform flex items-center justify-center">
+                    <i class="fas fa-download mr-2"></i> Muat Turun Kad
+                </button>
+                <p class="text-xs text-gray-500 text-center px-4">Kad visual ini dijana bertepatan kerahsiaan pelayan peribadi. Ia adalah dokumen maya tunggal milik empunya identiti selari dengan kebanggaan Daeng Kuning.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/student.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        function downloadIDCard() {
+            const cardEl = document.getElementById('membershipCard');
+            const nameEl = document.getElementById('card-name');
+            const memName = nameEl && nameEl.innerText !== 'Mentafsir Profil...' ? nameEl.innerText.replace(/\s+/g, '_') : 'Ahli';
+            
+            // Backup initial inline transform
+            const originalTransform = cardEl.style.transform;
+            cardEl.style.transform = 'none';
+
+            // Loading state
+            const btn = document.querySelector('button[onclick="downloadIDCard()"]');
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+            btn.disabled = true;
+
+            html2canvas(cardEl, {
+                backgroundColor: '#111111', 
+                scale: 3, 
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                // Restore styling
+                cardEl.style.transform = originalTransform;
+                btn.innerHTML = originalBtnHtml;
+                btn.disabled = false;
+                
+                // Trigger download
+                const link = document.createElement('a');
+                link.download = `ID_Daeng_Kuning_${memName}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error('Error generating card image:', err);
+                alert('Ralat semasa muat turun kad. Sila cuba lagi.');
+                btn.innerHTML = originalBtnHtml;
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

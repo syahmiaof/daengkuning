@@ -1,0 +1,12 @@
+/* Isolation Protocol: CSS for 3D Background Canvas */
+#three-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Placed cleanly behind all HTML content */
+    pointer-events: none; /* Allows clicks to pass through to buttons/links */
+    background: transparent; /* Allows #0D0D0D body color to show */
+    outline: none;
+}

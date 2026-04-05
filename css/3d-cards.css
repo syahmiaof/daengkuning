@@ -1,0 +1,162 @@
+/* css/3d-cards.css */
+
+/* Fonts for Typography requirement */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;600&display=swap');
+
+.popout-section {
+    padding: 80px 0;
+    background-color: #0d0d0d;
+    position: relative;
+    z-index: 10;
+}
+
+.popout-grid {
+    display: grid;
+    gap: 40px;
+    justify-content: center;
+    align-items: end; /* Align to the bottom so popout has space on top */
+    padding-top: 60px; /* Space for characters popping out top */
+}
+
+/* Sijil Tauliah grid: 3 cards */
+.popout-grid-3 {
+    grid-template-columns: repeat(1, minmax(250px, 300px));
+}
+@media (min-width: 768px) {
+    .popout-grid-3 { grid-template-columns: repeat(3, minmax(280px, 320px)); gap: 50px; }
+}
+
+/* Makluman grid: 2 cards */
+.popout-grid-2 {
+    grid-template-columns: repeat(1, minmax(250px, 300px));
+}
+@media (min-width: 768px) {
+    .popout-grid-2 { grid-template-columns: repeat(2, minmax(280px, 350px)); gap: 60px; }
+}
+
+/* The Card Frame */
+.popout-card {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    perspective: 1000px;
+    cursor: pointer;
+    background: transparent;
+}
+
+/* The Wrapper (Background & Borders) */
+.popout-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a1a;
+    border: 1px solid rgba(212, 175, 55, 0.4); /* Jewelry-Dojo Gold border */
+    border-radius: 12px;
+    overflow: hidden; /* Hide the background image overflow */
+    transition: all 0.5s ease-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+    transform-style: preserve-3d;
+}
+
+.popout-card:hover .popout-wrapper {
+    transform: rotateX(15deg) translateY(-10px);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+    border-color: rgba(212, 175, 55, 1);
+}
+
+/* Background Image Layer */
+.popout-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+    filter: blur(3px) grayscale(60%);
+    transition: all 0.5s ease-out;
+    z-index: 1;
+}
+
+.popout-card:hover .popout-bg-img {
+    opacity: 0.7;
+    filter: blur(0px) grayscale(0%);
+    transform: scale(1.05);
+}
+
+/* Title / Text Layer */
+.popout-title {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 30px 20px;
+    background: linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.6) 60%, transparent 100%);
+    width: 100%;
+    transition: transform 0.5s ease-out;
+}
+
+/* .popout-card:hover .popout-title {
+    transform: translateZ(40px) translateY(-10px);
+} */
+
+.popout-title h3 {
+    font-family: 'Cinzel', serif;
+    color: #D4AF37;
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+    letter-spacing: 1px;
+}
+
+.popout-title p {
+    font-family: 'Montserrat', sans-serif;
+    color: #f1f1f1;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    opacity: 0.9;
+}
+
+/* Character Layer (Foreground) - Outside the wrapper! */
+.popout-character {
+    position: absolute;
+    bottom: 0; /* Anchor to bottom */
+    width: 120%; /* Much wider than card */
+    max-width: 400px;
+    height: auto;
+    z-index: 3;
+    pointer-events: none; /* Let the wrapper catch the hover */
+    transition: all 0.5s ease-out;
+    transform-origin: bottom center;
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.9));
+}
+
+.popout-card:hover .popout-character {
+    /* Magic Leap out effect */
+    transform: scale(1.1) translateY(-40px);
+    /* Gold glow depth */
+    filter: drop-shadow(0 20px 30px rgba(212, 175, 55, 0.4)) drop-shadow(0 5px 15px rgba(0,0,0,0.9));
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .popout-card {
+        height: 350px;
+    }
+    .popout-character {
+        width: 110%;
+    }
+    .popout-card:hover .popout-wrapper {
+        transform: rotateX(10deg) translateY(-5px);
+    }
+    .popout-card:hover .popout-character {
+        transform: scale(1.05) translateY(-20px);
+    }
+}

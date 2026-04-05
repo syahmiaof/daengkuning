@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri | Akademi Persilatan Daeng Kuning</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        silat: {
+                            dark: '#0f0f0f',
+                            gold: '#D4AF37',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/branding.css">
+    <link rel="stylesheet" href="css/footer-social.css">
+
+    <!-- Gallery Specific Styles -->
+    <style>
+        /* CSS Masonry Layout */
+        .masonry-grid {
+            column-count: 2;
+            column-gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 4;
+            }
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            transform: translateZ(0); /* Hardware acceleration */
+            cursor: pointer;
+        }
+        .masonry-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(100%) brightness(0.8);
+            transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease, box-shadow 0.6s ease;
+        }
+        .masonry-item:hover .masonry-img {
+            filter: grayscale(0%) brightness(1.1);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.3);
+        }
+        /* Hover Overlay Indicator */
+        .masonry-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+            pointer-events: none;
+        }
+        .masonry-item:hover .masonry-overlay {
+            opacity: 1;
+        }
+        
+        /* Lightbox Styles */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(5,5,5,0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .lightbox.active img {
+            transform: scale(1);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .lightbox-close:hover {
+            color: #D4AF37;
+        }
+
+        /* ==================================
+           CAROUSEL SLIDER CARD EXPANSION
+           ================================== */
+        .carousel-slider {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #050505;
+        }
+
+        .carousel-list {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-item {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            border: 2px solid rgba(212,175,55,0.4);
+            filter: grayscale(100%) brightness(0.8);
+        }
+
+        .carousel-item:hover {
+            filter: grayscale(0%) brightness(1.1);
+        }
+
+        .carousel-item:nth-child(n+3):hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.5);
+        }
+
+        .carousel-item:nth-child(1),
+        .carousel-item:nth-child(2) {
+            top: 0;
+            left: 0;
+            transform: translate(0, 0);
+            border-radius: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            box-shadow: none;
+        }
+        
+        .carousel-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15,15,15,1) 0%, rgba(15,15,15,0.4) 40%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .carousel-item:nth-child(1)::after,
+        .carousel-item:nth-child(2)::after {
+            opacity: 1;
+        }
+
+        .carousel-item:nth-child(3) { left: calc(50% + 50px); top: 75%; }
+        .carousel-item:nth-child(4) { left: calc(50% + 270px); top: 75%; }
+        .carousel-item:nth-child(5) { left: calc(50% + 490px); top: 75%; }
+        .carousel-item:nth-child(6) { left: calc(50% + 710px); top: 75%; opacity: 0; }
+        .carousel-item:nth-child(n+7) { left: calc(50% + 930px); top: 75%; opacity: 0; }
+
+        @media (max-width: 768px) {
+            .carousel-item {
+                width: 130px;
+                height: 200px;
+            }
+            .carousel-item:nth-child(3) { left: 5%; top: 80%; }
+            .carousel-item:nth-child(4) { left: calc(5% + 145px); top: 80%; }
+            .carousel-item:nth-child(5) { left: calc(5% + 290px); top: 80%; opacity: 0;}
+            .carousel-item:nth-child(n+6) { opacity: 0;}
+        }
+
+        .carousel-content {
+            position: absolute;
+            top: 35%;
+            left: 5%;
+            width: 80%;
+            max-width: 800px;
+            text-align: left;
+            z-index: 20;
+            color: #fff;
+            display: none;
+            animation: showContent 0.5s ease-in-out 0.3s forwards;
+            opacity: 0;
+        }
+
+        .carousel-item:nth-child(1) .carousel-content,
+        .carousel-item:nth-child(2) .carousel-content {
+            display: block;
+        }
+
+        @keyframes showContent {
+            from { transform: translateY(50px); filter: blur(20px); opacity: 0; }
+            to { transform: translateY(0px); filter: blur(0px); opacity: 1; }
+        }
+
+        .carousel-content .title {
+            font-size: 5rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: white;
+            line-height: 1.1;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+        }
+        .carousel-content .title span {
+            color: #D4AF37;
+        }
+        .carousel-content .des {
+            font-size: 1.2rem;
+            color: #e5e7eb;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+        @media (max-width: 768px) {
+            .carousel-content { top: 30%; left: 5%; }
+            .carousel-content .title { font-size: 3rem; }
+            .carousel-content .des { font-size: 1rem; }
+        }
+
+        .carousel-arrows {
+            position: absolute;
+            bottom: 50px;
+            left: 5%;
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+        }
+        .carousel-arrows button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(212,175,55,0.2);
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .carousel-arrows button:hover {
+            background-color: #D4AF37;
+            color: #111;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased text-white bg-silat-dark overflow-x-hidden selection:bg-silat-gold selection:text-silat-dark">
+
+    <!-- Navigation Bar -->
+    <nav class="fixed w-full z-50 bg-black/20 backdrop-blur-md border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
+                    <img src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-16 md:h-[4.5rem] w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                    <span class="royal-brand-logo text-3xl md:text-5xl pb-2" style="margin-left: -1.5rem;">Daeng<span class="brand-gold">Kuning</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8">
+                        <a href="about.html" class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Sejarah</a>
+                        <a href="warisan.html" class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Warisan</a>
+                        <a href="gallery.html" class="text-silat-gold hover:text-yellow-200 transition-colors duration-300 text-sm font-medium border-b-2 border-silat-gold pb-1">Galeri</a>
+                        <a href="koleksi.html" class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Koleksi</a>
+                        <a href="contact.html" class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Hubungi Kami</a>
+                        <a href="login.html" class="ml-4 px-6 py-2.5 rounded-full bg-silat-dark border border-silat-gold text-silat-gold font-semibold text-sm transition-all duration-300 hover:bg-silat-gold hover:text-silat-dark shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                            Portal Ahli
+                        </a>
+                    </div>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-silat-gold focus:outline-none">
+                        <i class='bx bx-menu-alt-right text-4xl'></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Carousel Slider Expansion Mode -->
+    <div class="carousel-slider">
+        <div class="carousel-list" id="carouselList">
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-18.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Ikatan <span>Persaudaraan</span></div>
+                    <div class="des">Persaudaraan sejati yang dipupuk melangkaui batas gelanggang. Susah senang diheret bersama membina kelangsungan hidup anak bangsa demi panji Daeng Kuning.</div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-77.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Seni <span>Tari</span></div>
+                    <div class="des">Bunga persilatan yang menggabungkan kelembutan dan ancaman. Setiap langkah lenggok berseni ini tersimpan rahsia pasang dan serang yang mustahil dibaca oleh musuh.</div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-83.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Ujian <span>Bengkung</span></div>
+                    <div class="des">Penganugerahan bengkung dan sijil persilatan buat barisan pesilat yang berjaya menamatkan silibus tempur dengan cemerlang, disempurnakan oleh Guru Utama.</div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-30.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Senjata <span>Warisan</span></div>
+                    <div class="des">Keris dan tekpi hanyalah sambungan dari ketajaman akal fikiran. Modul persenjataan eksklusif kami direka untuk mematangkan kepekaan dan kelajuan refleks pesilat.</div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-44.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Generasi <span>Muda</span></div>
+                    <div class="des">Melentur buluh biarlah dari rebungnya. Asas Daeng Kuning menanamkan sifat disiplin, ketahanan fizikal tinggi, dan adab pemimpin generasi masa hadapan seawal usia.</div>
+                </div>
+            </div>
+            <!-- Gambar Tambahan Baru (Auto diuruskan oleh CSS) -->
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-8.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Buah <span>Pukulan</span></div>
+                    <div class="des">Peringkat aplikasi tempur jalanan tanpa senjata. Menekankan ketepatan serangan pantas, tangkisan maut, serta kunci sendi bagi tujuan pertahanan diri yang mutlak.</div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-15.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Jiwa <span>Kental</span></div>
+                    <div class="des">Merentas cabaran alam atau di dalam kem intensif. Menguji daya ketahanan kardio dan pernafasan yang menjadi penentu kemenangan dalam apa jua pentas pertarungan.</div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-22.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Malam <span>Pendekar</span></div>
+                    <div class="des">Kemuncak perhimpunan rohani barisan barisan guru tamat dan para khalifah. Medan tumpuan penyerahan keris pertubuhan dan sesi perbincangan tertutup saf kepimpinan.</div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-55.jpg');">
+                <div class="carousel-content">
+                    <div class="title">Aksi <span>Matras</span></div>
+                    <div class="des">Ketangkasan sebenar diukur di gelanggang olahraga antarabangsa. Keringat yang menitis dibayar dengan kemaraan pesilat Daeng Kuning membolot pingat emas pasukan.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Arrows -->
+        <div class="carousel-arrows">
+            <button id="prevBtn"><i class='bx bx-chevron-left'></i></button>
+            <button id="nextBtn"><i class='bx bx-chevron-right'></i></button>
+        </div>
+    </div>
+
+    <!-- Kenangan Gallery Title -->
+    <section class="pt-16 pb-4 bg-silat-dark relative z-10 text-center">
+        <h2 class="text-4xl font-serif font-bold text-white mb-3">Kenangan</h2>
+        <div class="w-16 h-1 bg-silat-gold mx-auto mb-4"></div>
+        <p class="text-gray-400 text-sm tracking-widest uppercase">Koleksi Terindah Akademi Persilatan Daeng Kuning</p>
+    </section>
+
+    <!-- Dynamic Masonry Grid Section -->
+    <section class="py-10 pb-24 relative z-10 bg-silat-dark min-h-[500px]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="galleryContainer" class="masonry-grid flex-col">
+                <!-- Javascript will inject 83 images here -->
+                <div class="w-full text-center py-20" id="loadingIndicator">
+                    <i class='bx bx-loader-alt bx-spin text-5xl text-silat-gold mb-4'></i>
+                    <p class="text-gray-400 text-sm tracking-widest uppercase">Memuatkan Kenangan...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fullscreen Lightbox Modal -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+        <i class='bx bx-x lightbox-close' onclick="closeLightbox(event)"></i>
+        <img id="lightboxImg" src="" alt="Paparan Penuh">
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black/80 border-t border-white/10 pt-16 pb-8 relative z-20 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6 md:gap-4">
+                <div class="flex items-center gap-3">
+                    <img src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-20 md:h-28 w-auto object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]">
+                    <div style="margin-left: -2.5rem;">
+                        <h3 class="royal-brand-logo text-4xl md:text-5xl pb-2">Daeng<span class="brand-gold">Kuning</span></h3>
+                        <p class="royal-brand-tagline text-xs md:text-sm">Akademi Persilatan Tradisional & Moden</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a href="https://www.facebook.com/GelanggangDaengKuningBatu8/" target="_blank" rel="noopener noreferrer" class="social-slide-btn">
+                        <i class='bx bxl-facebook-circle'></i><span class="social-text">Facebook</span>
+                    </a>
+                    <a href="#" class="social-slide-btn">
+                        <i class='bx bxl-instagram'></i><span class="social-text">Instagram</span>
+                    </a>
+                    <a href="https://www.tiktok.com/@gelanggangdaengkuning?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" class="social-slide-btn">
+                        <i class='bx bxl-tiktok'></i><span class="social-text">TikTok</span>
+                    </a>
+                    <a href="#" class="social-slide-btn">
+                        <i class='bx bxl-youtube'></i><span class="social-text">YouTube</span>
+                    </a>
+                </div>
+            </div>
+            <p class="text-gray-500 text-sm md:text-left text-center">&copy; 2026 Akademi Persilatan Daeng Kuning. Hak Cipta Terpelihara.</p>
+        </div>
+    </footer>
+
+    <!-- GSAP Core for smooth reveals -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Inject Gallery Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Include ALL true layout images, intentionally excluding HEIC .webp fakes
+            const allImages = [
+                "IMG-20200608-WA0017.jpg",
+                "ahmad.png", "ahmad1.png", "ahmad2.png", "ahmad3.png",
+                "ayu1.png", "ayu2.png", "ayu3.png", "ayu4.png", "ayumia.png", 
+                "mia1.png", "mimilana.png",
+                ...Array.from({length: 83}, (_, i) => `galeri-${i + 1}.jpg`)
+            ];
+
+            const container = document.getElementById('galleryContainer');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const fragment = document.createDocumentFragment();
+
+            // Register ScrollTrigger
+            gsap.registerPlugin(ScrollTrigger);
+
+            const loadImages = () => {
+                allImages.forEach((filename, index) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'masonry-item opacity-0 transform translate-y-8'; // initial GSAP state
+                    
+                    const img = document.createElement('img');
+                    img.src = `assets/img/index.html/${filename}`;
+                    img.alt = `Kenangan Galeri ${index + 1}`;
+                    img.className = 'masonry-img';
+                    img.loading = 'lazy'; // crucial for performance with high-density grids
+
+                    // Overlay with simple zoom icon
+                    const overlay = document.createElement('div');
+                    overlay.className = 'masonry-overlay';
+                    overlay.innerHTML = `<i class='bx bx-zoom-in text-white text-3xl drop-shadow-lg scale-90 group-hover:scale-100 transition-transform'></i>`;
+
+                    // Click event for Lightbox
+                    itemDiv.onclick = () => openLightbox(img.src);
+
+                    itemDiv.appendChild(img);
+                    itemDiv.appendChild(overlay);
+                    fragment.appendChild(itemDiv);
+                });
+
+                // Remove loader and append images
+                if (loadingIndicator) loadingIndicator.remove();
+                container.appendChild(fragment);
+
+                // Animate them bursting in on load/scroll
+                const items = document.querySelectorAll('.masonry-item');
+                items.forEach((item, index) => {
+                    gsap.to(item, {
+                        scrollTrigger: {
+                            trigger: item,
+                            start: "top 90%",
+                            toggleActions: "play none none none"
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        delay: (index % 10) * 0.05, // Slight ripple effect relative to pure index modulo
+                        ease: "power2.out"
+                    });
+                });
+            };
+
+            // Small timeout to simulate loading & let layout paint
+            setTimeout(loadImages, 500);
+        });
+
+        // Lightbox Functions
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; // prevent scrolling behind
+        }
+
+        function closeLightbox(e) {
+            if (e.target === lightbox || e.target.classList.contains('lightbox-close')) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+                setTimeout(() => { lightboxImg.src = ''; }, 400); 
+            }
+        }
+
+        // Carousel Slider Logic
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const carouselList = document.getElementById('carouselList');
+
+        nextBtn.onclick = function() {
+            let items = document.querySelectorAll('.carousel-item');
+            carouselList.appendChild(items[0]);
+        };
+
+        prevBtn.onclick = function() {
+            let items = document.querySelectorAll('.carousel-item');
+            carouselList.prepend(items[items.length - 1]);
+        };
+    </script>
+</body>
+</html>

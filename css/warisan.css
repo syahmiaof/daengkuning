@@ -1,0 +1,17 @@
+/* css/warisan.css - Scrollytelling Specific Styles */
+
+#warisan-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    outline: none;
+}
+
+.checkpoint {
+    /* Baseline for fade animations */
+    transition: filter 0.5s ease-out;
+}

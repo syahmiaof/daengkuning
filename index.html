@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akademi Persilatan Daeng Kuning CMS</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Boxicons untuk Ikon Berkilau -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        silat: {
+                            dark: '#0f0f0f',
+                            gold: '#D4AF37',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/branding.css">
+    <link rel="stylesheet" href="css/footer-social.css">
+    <link rel="stylesheet" href="css/3d-cards.css">
+
+    <!-- Phase 3.5 Media Styles -->
+    <style>
+        /* Hero Video Slot */
+        .hero-video-wrapper {
+            width: 100%;
+            max-height: 500px;
+            overflow: hidden;
+            border-bottom: 2px solid #D4AF37;
+        }
+
+        .hero-video-wrapper video {
+            width: 100%;
+            height: 100%;
+            /* For full coverage within the wrapper */
+            max-height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(1, 1fr);
+            /* Mobile default */
+        }
+
+        @media (min-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+                /* Desktop 3-column */
+            }
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            filter: grayscale(100%) brightness(0.8);
+            transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease, box-shadow 0.6s ease;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.05) translateY(-5px);
+            filter: grayscale(0%) brightness(1.1);
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.3);
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Luxury Showcase Section */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-100 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-200 {
+            transition-delay: 0.3s;
+        }
+
+        .delay-300 {
+            transition-delay: 0.5s;
+        }
+
+        .luxury-card {
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.4s ease-in-out;
+            cursor: pointer;
+        }
+
+        .luxury-card:hover {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .luxury-img-wrapper {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .luxury-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) brightness(0.8);
+            transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease, box-shadow 0.6s ease;
+        }
+
+        .luxury-card:hover .luxury-img {
+            transform: scale(1.05) translateY(-5px);
+            filter: grayscale(0%) brightness(1.1);
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.3);
+        }
+
+        /* Living Heritage Effect for Poster & Sijil Images */
+        img[src*="poster/"],
+        img[src*="sijil/"] {
+            filter: grayscale(100%) brightness(0.8);
+            transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease !important;
+        }
+
+        .group:hover img[src*="poster/"],
+        .group:hover img[src*="sijil/"] {
+            filter: grayscale(0%) brightness(1.1);
+            transform: scale(1.05) translateY(-5px) !important;
+        }
+
+        /* Partner Logo Scroll & Styling */
+        .partner-scroll-wrapper {
+            display: flex;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .partner-scroll-track {
+            display: flex;
+            align-items: center;
+            animation: scrollLogos 25s linear infinite;
+        }
+
+        @keyframes scrollLogos {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        .partner-logo {
+            display: inline-block;
+            height: 100px;
+            width: 200px;
+            object-fit: contain;
+            margin: 0 40px;
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transition: all 0.4s ease;
+            object-fit: contain;
+        }
+
+        .partner-logo:hover {
+            filter: grayscale(0%) drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
+            opacity: 1;
+        }
+
+        /* 3D Pop-Out Anime Character Constraint-Free */
+        .hero-character-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            /* Provides vertical breathing room */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fighter-img-new {
+            width: 150%;
+            /* Large, unbound visual */
+            max-width: 950px;
+            height: auto;
+            position: relative;
+            z-index: 20;
+            transition: all 0.4s ease-out;
+            /* Baseline depth shadow */
+            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.9));
+            transform-origin: center center;
+            transform: scale(1.35) translateY(20px);
+            pointer-events: none;
+            will-change: transform, filter; /* Optimasi hardware acceleration */
+            /* Cegah kursor tersadung dari jauh */
+        }
+
+        /* Hover Interaction dipindahkan kepada Container (Bounding Box) */
+        .hero-character-container:hover .fighter-img-new {
+            transform: scale(1.4) translateY(10px);
+            /* Pure Layered Gold Aura (dikurangkan lapisannya untuk mengelakkan lag rendering) */
+            filter: drop-shadow(0 0 20px rgba(197, 160, 89, 0.6)) drop-shadow(0 20px 30px rgba(0, 0, 0, 0.9));
+        }
+
+        @media (max-width: 1024px) {
+            .fighter-img-new {
+                width: 120%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-character-container {
+                height: 400px;
+                margin-top: 1rem;
+            }
+
+            .fighter-img-new {
+                max-width: 400px;
+                width: 100%;
+            }
+
+            .fighter-img-new:hover {
+                transform: scale(1.05) translateY(-5px);
+                /* Safely reduced scale for mobile */
+            }
+        }
+
+        /* New Alternative: Premium Ambient Glow (Does NOT break layout) */
+        /* Task: Dynamic 'Grow & Glow' Headings */
+        h1,
+        h2 {
+            transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+            padding: 10px 0;
+            /* Adequate padding for scale effect */
+            line-height: 1.4 !important;
+            /* Prevent text overlap */
+            transform-origin: center center;
+            will-change: transform;
+        }
+
+        h1:hover,
+        h2:hover {
+            transform: scale(1.05) !important;
+            /* Force override GSAP inline styles */
+            /* Glow: Layered Gold Accents */
+            text-shadow: 0 0 10px rgba(197, 160, 89, 0.7), 0 0 20px rgba(197, 160, 89, 0.5);
+            cursor: default;
+        }
+
+        /* Mobile overrides for Grow & Glow */
+        @media (max-width: 768px) {
+
+            h1:hover,
+            h2:hover {
+                transform: scale(1.03) !important;
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="font-sans antialiased text-white bg-silat-dark overflow-x-hidden selection:bg-silat-gold selection:text-silat-dark">
+
+    <!-- Navigation Bar (Glassmorphism) -->
+    <nav class="fixed w-full z-50 bg-black/20 backdrop-blur-md border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo Layout -->
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer">
+                    <img src="assets/img/logo.png" alt="Daeng Kuning Logo"
+                        class="h-16 md:h-[4.5rem] w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                    <span class="royal-brand-logo text-3xl md:text-5xl pb-2" style="margin-left: -1.5rem;">Daeng<span
+                            class="brand-gold">Kuning</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8">
+                        <a href="about.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Sejarah</a>
+                        <a href="warisan.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Warisan</a>
+                        <a href="gallery.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Galeri</a>
+                        <a href="koleksi.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Koleksi</a>
+                        <a href="contact.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Hubungi
+                            Kami</a>
+                        <!-- Glowing Login Button -->
+                        <a href="login.html"
+                            class="ml-4 px-6 py-2.5 rounded-full bg-silat-dark border border-silat-gold text-silat-gold font-semibold text-sm transition-all duration-300 hover:bg-silat-gold hover:text-silat-dark shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.8)]">
+                            Portal Ahli
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-silat-gold focus:outline-none">
+                        <i class='bx bx-menu-alt-right text-4xl'></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden">
+        <!-- Full-Screen Cinematic Video Background -->
+        <div class="absolute inset-0 w-full h-full z-0">
+            <video autoplay muted loop playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover filter brightness-[0.8] contrast-[1.1] grayscale-[0.2]">
+                <source src="assets/video/1.mp4" type="video/mp4">
+                Sistem peranti anda tidak menyokong pemain video ini.
+            </video>
+            <!-- Cinematic Dark Overlays -->
+            <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent lg:to-black/30"></div>
+            <div class="absolute inset-0 bg-black/40"></div>
+            <!-- Bottom fade out overlay mapping smoothly to black backgrounds -->
+            <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#0D0D0D] to-transparent"></div>
+        </div>
+        <!-- Latar Belakang Cahaya Tersembunyi (Ambient Glow) -->
+        <div
+            class="ambient-glow absolute top-1/2 right-[10%] -translate-y-1/2 w-[250px] md:w-[350px] h-[250px] md:h-[350px] bg-silat-gold/15 rounded-full blur-[60px] pointer-events-none transform-gpu will-change-[transform,opacity]">
+        </div>
+
+        <div
+            class="relative z-10 px-4 max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-16 w-full">
+
+            <!-- Left Content: Typography -->
+            <div class="text-left lg:w-1/2 w-full">
+                <span
+                    class="inline-block py-1 px-5 rounded-full bg-silat-gold/10 border border-silat-gold/30 text-silat-gold text-xs md:text-sm font-semibold tracking-widest mb-6 uppercase transition-all duration-300 hover:bg-silat-gold hover:text-silat-dark hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] cursor-default">BANGSA BERTAUHID</span>
+
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+                    Mewarisi Seni,<br />
+                    <span
+                        class="text-premium-gold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Membina
+                        Jati Diri</span>
+                </h1>
+
+                <p class="text-base md:text-xl text-gray-400 mb-10 max-w-2xl leading-relaxed">
+                    Platform rasmi Akademi Persilatan Daeng Kuning. Sesuai untuk semua peringkat umur bagi melahirkan
+                    pesilat yang tangkas, sihat dan berdisiplin tinggi.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-start justify-start gap-4">
+                    <a href="contact.html"
+                        class="px-8 py-4 rounded-full bg-silat-gold text-silat-dark font-bold text-lg transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:shadow-[0_0_35px_rgba(212,175,55,0.8)] shadow-[0_0_20px_rgba(212,175,55,0.5)] text-center w-full sm:w-auto">
+                        Daftar Sekarang
+                    </a>
+                    <a href="about.html"
+                        class="px-8 py-4 rounded-full bg-transparent border border-gray-600 text-white font-medium text-lg transition-all duration-300 hover:scale-105 hover:border-silat-gold hover:bg-silat-gold/10 hover:text-silat-gold hover:shadow-[0_0_20px_rgba(212,175,55,0.25)] text-center w-full sm:w-auto">
+                        Ketahui Lebih Lanjut
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Content: Premium Unbound 3D Character -->
+            <div class="lg:w-1/2 w-full mt-12 lg:mt-0 flex justify-center lg:justify-end relative">
+                <div class="hero-character-container">
+                    <!-- Official Daeng Kuning Warrior Image -->
+                    </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- New Section 1: The Tactical Schedule -->
+    <section class="py-20 relative z-10 bg-[#0D0D0D]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <p class="text-xs tracking-[0.3em] text-silat-gold uppercase mb-3 font-semibold">Jadual Latihan</p>
+                <h2 class="text-4xl font-serif font-bold text-white tracking-wide">Jadual Taktikal Gelanggang</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Gelanggang 1 -->
+                <div
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col">
+                    <div class="mb-4">
+                        <span
+                            class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Jumaat
+                            Malam</span>
+                        <h3
+                            class="text-xl font-serif text-white group-hover:text-silat-gold transition-colors leading-snug">
+                            Batu 8 (Dewan Masjid Al-Wusta)</h3>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-white/5 flex-grow">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-time mr-3 text-silat-gold"></i> 9:30 PM - 11:30 PM
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-user mr-3 text-silat-gold"></i> Semua Peringkat Umur
+                        </div>
+                        <div class="flex items-start text-sm text-gray-400 leading-relaxed">
+                            <i class="bx bx-target-lock mr-3 mt-1 text-silat-gold"></i> Fokus: Silibus Gayong, Teori &
+                            Ujian Bengkung
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-500 italic">
+                        * Kumpulan kanak-kanak & dewasa diasingkan
+                    </div>
+                </div>
+
+                <!-- Gelanggang 2 -->
+                <div
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col">
+                    <div class="mb-4">
+                        <span
+                            class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Sabtu
+                            Malam</span>
+                        <h3
+                            class="text-xl font-serif text-white group-hover:text-silat-gold transition-colors leading-snug">
+                            Batu 8 (Rumah Ustaz Faizul)</h3>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-white/5 flex-grow">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-time mr-3 text-silat-gold"></i> 9:30 PM - 11:30 PM
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-user mr-3 text-silat-gold"></i> Semua Peringkat Umur
+                        </div>
+                        <div class="flex items-start text-sm text-gray-400 leading-relaxed">
+                            <i class="bx bx-target-lock mr-3 mt-1 text-silat-gold"></i> Fokus: Free Sparring & Realiti
+                            Bertarung
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-500 italic">
+                        * Drill MMA, situasi 1 vs ramai, penilaian kendiri
+                    </div>
+                </div>
+
+                <!-- Gelanggang 3 -->
+                <div
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col">
+                    <div class="mb-4">
+                        <span
+                            class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Sabtu
+                            Pagi</span>
+                        <h3
+                            class="text-xl font-serif text-white group-hover:text-silat-gold transition-colors leading-snug">
+                            Taman Anggerik (Kuala Kangsar)</h3>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-white/5 flex-grow">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-time mr-3 text-silat-gold"></i> 9:00 AM - 11:00 AM
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-user mr-3 text-silat-gold"></i> 7 - 18 Tahun Sahaja
+                        </div>
+                        <div class="flex items-start text-sm text-gray-400 leading-relaxed">
+                            <i class="bx bx-target-lock mr-3 mt-1 text-silat-gold"></i> Fokus: Silat Olahraga & Silat
+                            Seni
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-500 italic">
+                        * Persediaan latihan atlet (olahraga & seni diasingkan)
+                    </div>
+                </div>
+
+                <!-- Gelanggang 4 -->
+                <div
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col lg:col-start-1 lg:col-end-2">
+                    <div class="mb-4">
+                        <span
+                            class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Sabtu
+                            Malam</span>
+                        <h3
+                            class="text-xl font-serif text-white group-hover:text-silat-gold transition-colors leading-snug">
+                            Kg Kubang (Pekan Kuala Kangsar)</h3>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-white/5 flex-grow">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-time mr-3 text-silat-gold"></i> 9:30 PM - 11:30 PM
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-user mr-3 text-silat-gold"></i> Semua Peringkat Umur
+                        </div>
+                        <div class="flex items-start text-sm text-gray-400 leading-relaxed">
+                            <i class="bx bx-target-lock mr-3 mt-1 text-silat-gold"></i> Fokus: Silibus Gayong, Teori &
+                            Ujian Bengkung
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-500 italic">
+                        * Kumpulan kanak-kanak & dewasa diasingkan
+                    </div>
+                </div>
+
+                <!-- Gelanggang 5 -->
+                <div
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col lg:col-start-2 lg:col-end-3">
+                    <div class="mb-4">
+                        <span
+                            class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Ahad
+                            Pagi</span>
+                        <h3
+                            class="text-xl font-serif text-white group-hover:text-silat-gold transition-colors leading-snug">
+                            SK Changkat Ibul</h3>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-white/5 flex-grow">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-time mr-3 text-silat-gold"></i> 8:30 AM - 10:30 AM
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-user mr-3 text-silat-gold"></i> 7 - 18 Tahun Sahaja
+                        </div>
+                        <div class="flex items-start text-sm text-gray-400 leading-relaxed">
+                            <i class="bx bx-target-lock mr-3 mt-1 text-silat-gold"></i> Fokus: Silat Olahraga & Silat
+                            Seni
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-500 italic">
+                        * Persediaan latihan atlet (olahraga & seni diasingkan)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Section 1.5: Info & Makluman (Horizontal Scroll) -->
+    <section class="py-8 relative z-10 bg-[#0D0D0D]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <p class="text-xs tracking-[0.3em] text-[#D4AF37] uppercase mb-2 font-semibold">Info</p>
+                <h2 class="text-3xl font-serif font-bold text-white tracking-wide">Makluman Rasmi</h2>
+            </div>
+
+            <!-- Horizontal Scrollable Container -->
+            <div class="flex items-center justify-start overflow-x-auto snap-x snap-mandatory gap-4 pb-6 testimonial-scroll px-4">
+
+                <!-- Template Fungsi Poster Potrait Sahaja (Lebar lebih langsing w-[50vw] md:w-[240px]) -->
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/iklan.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+                
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/jamuanraya.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/Screenshot 2026-04-05 014557.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/Screenshot 2026-04-05 014623.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/Screenshot 2026-04-05 014637.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/Screenshot 2026-04-05 014650.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/Screenshot 2026-04-05 014702.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/Screenshot 2026-04-05 014712.png" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/poster-extra-1.jpg" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/poster-extra-2.jpg" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/poster-extra-3.jpg" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/poster-extra-4.jpg" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+                <div class="flex-none snap-center shrink-0 w-[55vw] md:w-[240px] relative overflow-hidden rounded-xl border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-pointer group">
+                    <img src="assets/img/poster/poster-extra-5.jpg" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" alt="Poster Rasmi">
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#D4AF37]/50 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- New Section 1.6: Sijil Tauliah (Sijil Rasmi Display) -->
+    <section class="py-20 relative z-10"
+        style="background-color: #080808; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <p class="text-xs tracking-[0.3em] text-[#D4AF37] uppercase mb-3 font-semibold">Pengiktirafan Rasmi</p>
+                <h2 class="text-4xl font-serif font-bold text-white tracking-wide">Sijil Tauliah Akademik</h2>
+            </div>
+
+            <!-- Grid Sijil (Landscape Biasa yang Kemas) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- Sijil Gelanggang -->
+                <div
+                    class="group relative bg-[#111111] p-4 rounded-xl border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:border-silat-gold hover:shadow-[0_0_40px_rgba(212,175,55,0.2)]">
+                    <div class="overflow-hidden rounded-lg w-full relative">
+                        <img src="assets/img/sijil/sijilgelanggang.jpg"
+                            class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                            loading="lazy" alt="Sijil Gelanggang">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center">
+                        <h3 class="text-xl font-serif text-white mb-1">Sijil Gelanggang</h3>
+                        <p class="text-sm text-gray-400">Pendaftaran Gelanggang Sah</p>
+                    </div>
+                </div>
+
+                <!-- Sijil Gurulatih -->
+                <div
+                    class="group relative bg-[#111111] p-4 rounded-xl border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:border-silat-gold hover:shadow-[0_0_40px_rgba(212,175,55,0.2)]">
+                    <div class="overflow-hidden rounded-lg w-full relative">
+                        <img src="assets/img/sijil/sijilgurulatih.jpg"
+                            class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                            loading="lazy" alt="Sijil Gurulatih">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center">
+                        <h3 class="text-xl font-serif text-white mb-1">Sijil Gurulatih</h3>
+                        <p class="text-sm text-gray-400">Tauliah Pengajar Bertauliah</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Section 2: The Authority Counter -->
+    <section
+        class="py-16 md:py-24 relative z-10 border-t border-b border-white/5 bg-gradient-to-b from-black to-[#0D0D0D]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center" id="authority-counter-section">
+                <!-- Counter 1 -->
+                <div class="authority-counter-item">
+                    <h3
+                        class="font-serif text-5xl md:text-6xl font-bold text-silat-gold mb-2 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                        <span class="stat-number" data-target="1250">0</span><span class="text-3xl">+</span>
+                    </h3>
+                    <p class="text-gray-400 font-sans tracking-widest text-xs uppercase font-medium">Ahli Berdaftar</p>
+                </div>
+                <!-- Counter 2 -->
+                <div class="authority-counter-item">
+                    <h3
+                        class="font-serif text-5xl md:text-6xl font-bold text-silat-gold mb-2 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                        <span class="text-4xl text-silat-gold">Sejak </span><span class="stat-number"
+                            data-target="2017">0</span>
+                    </h3>
+                    <p class="text-gray-400 font-sans tracking-widest text-xs uppercase font-medium">Tahun Penubuhan</p>
+                </div>
+                <!-- Counter 3 -->
+                <div class="authority-counter-item">
+                    <h3
+                        class="font-serif text-5xl md:text-6xl font-bold text-silat-gold mb-2 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                        <span class="stat-number" data-target="4">0</span>
+                    </h3>
+                    <p class="text-gray-400 font-sans tracking-widest text-xs uppercase font-medium">Gelanggang Aktif
+                    </p>
+                </div>
+                <!-- Counter 4 -->
+                <div class="authority-counter-item">
+                    <h3
+                        class="font-serif text-3xl md:text-4xl font-bold text-silat-gold mb-4 mt-2 drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                        Perak</h3>
+                    <p
+                        class="text-gray-400 font-sans tracking-widest text-[10px] uppercase font-medium leading-relaxed">
+                        Pangkalan Utama<br>(Taiping & Kuala Kangsar)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Section 3: The Academy Creed -->
+    <section
+        class="py-24 md:py-32 relative z-10 flex flex-col justify-center items-center px-4 bg-[url('https://images.unsplash.com/photo-1595180126569-42bcedd830b5?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center bg-fixed bg-no-repeat bg-blend-overlay bg-black/90"
+        loading="lazy">
+        <div class="max-w-4xl text-center space-y-8 relative z-20">
+            <i
+                class="bx bxs-quote-alt-left text-5xl md:text-6xl text-silat-gold opacity-50 drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]"></i>
+            <h2 class="font-serif text-3xl md:text-5xl italic text-gray-200 leading-relaxed font-medium tracking-wide"
+                style="line-height: 1.4;">
+                "Pahlawan sejati bukan pada tajamnya senjata, tetapi pada luhurnya jiwa dan kentalnya pekerti di medan
+                ujian."
+            </h2>
+            <div class="w-16 h-[2px] bg-silat-gold mx-auto mt-8 mb-4"></div>
+            <p class="text-silat-gold uppercase tracking-[0.3em] text-xs font-semibold">Falsafah Daeng Kuning</p>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-silat-dark via-transparent to-silat-dark"></div>
+    </section>
+
+    <!-- (Section Mewarisi Warisan Daeng Kuning & Galeri Preview Dibuang Atas Permintaan) -->
+
+    <!-- New Section 4: The Partner Logo Strip (Our Network) -->
+    <section class="py-10 border-t border-b border-white/5 bg-[#0D0D0D] overflow-hidden relative z-10 w-full">
+        <!-- Gradient Overlays for smooth scrolling edges -->
+        <div
+            class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0D0D0D] to-transparent z-20 pointer-events-none">
+        </div>
+        <div
+            class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0D0D0D] to-transparent z-20 pointer-events-none">
+        </div>
+
+        <div class="text-center mb-10 mt-6 relative z-30">
+            <p class="text-xs tracking-[0.3em] text-[#D4AF37] uppercase mb-2 font-semibold">Rangkaian</p>
+            <h2 class="text-2xl md:text-3xl font-serif font-bold text-white tracking-wide">Rakan Kolaborasi & Pengiktirafan</h2>
+        </div>
+
+        <div class="partner-scroll-wrapper relative w-full items-center">
+            <!-- First Track -->
+            <div class="partner-scroll-track flex items-center shrink-0">
+                <img src="assets/img/kbs.png" alt="KBS" class="partner-logo transform transition-transform duration-300 scale-[1.3] hover:scale-[1.45] md:scale-[1.5] md:hover:scale-[1.65]" loading="lazy">
+                <img src="assets/img/kpm.png" alt="KPM" class="partner-logo transform transition-transform duration-300 scale-[1.3] hover:scale-[1.45] md:scale-[1.5] md:hover:scale-[1.65]" loading="lazy">
+                <img src="assets/img/pesaka.png" alt="PESAKA" class="partner-logo transform transition-transform duration-300 scale-[1.2] hover:scale-[1.35] md:scale-[1.4] md:hover:scale-[1.55]" loading="lazy">
+                <img src="assets/img/pssgm.png" alt="Seni Gayong" class="partner-logo transform transition-transform duration-300 scale-[1.2] hover:scale-[1.35] md:scale-[1.4] md:hover:scale-[1.55]" loading="lazy">
+                <img src="assets/img/aeon.png" alt="AEON" class="partner-logo transform transition-transform duration-300 scale-110 hover:scale-125 md:scale-110 md:hover:scale-125" loading="lazy">
+                <img src="assets/img/apdk.png" alt="APDK" class="partner-logo transform transition-transform duration-300 scale-[1.4] hover:scale-[1.55] md:scale-[1.4] md:hover:scale-[1.55]" loading="lazy">
+                <img src="assets/img/dkf.png" alt="Daeng Kuning Fighter" class="partner-logo transform transition-transform duration-300 scale-[1.2] hover:scale-[1.35] md:scale-[1.2] md:hover:scale-[1.35]" loading="lazy">
+            </div>
+            <!-- Duplicated Track for Seamless Loop -->
+            <div class="partner-scroll-track flex items-center shrink-0" aria-hidden="true">
+                <img src="assets/img/kbs.png" alt="KBS" class="partner-logo transform transition-transform duration-300 scale-[1.3] hover:scale-[1.45] md:scale-[1.5] md:hover:scale-[1.65]" loading="lazy">
+                <img src="assets/img/kpm.png" alt="KPM" class="partner-logo transform transition-transform duration-300 scale-[1.3] hover:scale-[1.45] md:scale-[1.5] md:hover:scale-[1.65]" loading="lazy">
+                <img src="assets/img/pesaka.png" alt="PESAKA" class="partner-logo transform transition-transform duration-300 scale-[1.2] hover:scale-[1.35] md:scale-[1.4] md:hover:scale-[1.55]" loading="lazy">
+                <img src="assets/img/pssgm.png" alt="Seni Gayong" class="partner-logo transform transition-transform duration-300 scale-[1.2] hover:scale-[1.35] md:scale-[1.4] md:hover:scale-[1.55]" loading="lazy">
+                <img src="assets/img/aeon.png" alt="AEON" class="partner-logo transform transition-transform duration-300 scale-110 hover:scale-125 md:scale-110 md:hover:scale-125" loading="lazy">
+                <img src="assets/img/apdk.png" alt="APDK" class="partner-logo transform transition-transform duration-300 scale-[1.4] hover:scale-[1.55] md:scale-[1.4] md:hover:scale-[1.55]" loading="lazy">
+                <img src="assets/img/dkf.png" alt="Daeng Kuning Fighter" class="partner-logo transform transition-transform duration-300 scale-[1.2] hover:scale-[1.35] md:scale-[1.2] md:hover:scale-[1.35]" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- New Section 5: The 'Suara Waris' (Premium Testimonials) -->
+    <section class="py-24 relative z-10 bg-[#0D0D0D]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <p class="text-xs tracking-[0.3em] text-[#C5A059] uppercase mb-3 font-semibold">Suara Waris</p>
+                <h2 class="text-4xl font-serif font-bold text-white tracking-wide">Testimoni Masyarakat</h2>
+            </div>
+            <style>
+                /* Custom Gold Scrollbar */
+                .testimonial-scroll::-webkit-scrollbar {
+                    height: 10px;
+                }
+
+                .testimonial-scroll::-webkit-scrollbar-track {
+                    background: #0f0f0f;
+                    border-radius: 10px;
+                    border: 1px solid rgba(197, 160, 89, 0.1);
+                }
+
+                .testimonial-scroll::-webkit-scrollbar-thumb {
+                    background: #C5A059;
+                    border-radius: 10px;
+                }
+
+                .testimonial-scroll::-webkit-scrollbar-thumb:hover {
+                    background: #d4af37;
+                }
+            </style>
+            <!-- Scrollable Flex Container -->
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 testimonial-scroll text-left px-4">
+
+                <!-- Testimonial 1 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Mula-mula hantar anak sebab
+                        nak dia disiplin. Sekarang nampak anak jauh lebih yakin bila bercakap & sentiasa bangun awal
+                        pagi."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Hj. Razak</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Bapa Pesilat
+                            (Awan Putih)</p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Gelanggang Daeng Kuning
+                        terbaik untuk belajar silat. Coach sangat supportive dan jaga keselamatan budak-budak waktu
+                        sparring."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Siti Aishah</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Bengkung
+                            Kuning</p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Bukan sekadar ilmu
+                        mempertahan diri. Anak saya dapat belajar adab sopan tinggi dan salam hormat orang tua dengan
+                        ikhlas."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Megat Danial</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Waris Cawangan
+                            Kuala Kangsar</p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 4 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Terbaik! Silibus yang
+                        teratur. Ada gabungan silat olahraga moden dan seni tempur tradisional. Sangat balanced untuk
+                        stamina!"</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Amiruddin</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Bengkung Hijau
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 5 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Masuk kelas silat ni buat
+                        anak saya lebih berani dan tak mudah kena buli kat sekolah. Terima kasih cikgu-cikgu Daeng
+                        Kuning."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Puan Rozi</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Ibu Pesilat
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 6 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Saya start dari zero, takde
+                        basic langsung. Tapi jurulatih sangat sabar ajar step by step sampai mahir jatuhan."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Kamal Hassan</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Pesilat Dewasa
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 7 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Aktiviti sangat aktif.
+                        Selalu dapat pergi tournament antarabangsa dan tambah rakan seperguruan dari serata negeri."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Fikri Zaqwan</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Atlet Olahraga
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 8 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Sistem portal rasmi diorang
+                        sangat mantap. Saya sebagai haraki mudah nak pantau perkembangan dan rekod yuran anak."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Fairuz Harun</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Bapa Pesilat
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 9 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Saya bangga jadi ahli Daeng
+                        Kuning. Sifat persaudaraan kat sini sangat kuat, kita rasa macam satu keluarga besar."</p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Ustaz Faizul</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Penyelaras
+                            Cawangan</p>
+                    </div>
+                </div>
+
+                <!-- Testimonial 10 -->
+                <div
+                    class="w-[300px] md:w-[400px] max-w-[85vw] flex-none snap-center shrink-0 bg-[#0f0f0f] border border-[#C5A059]/30 rounded-xl p-8 relative flex flex-col items-center text-center backdrop-blur-md hover:border-[#C5A059]/60 transition-colors duration-300">
+                    <i class="bx bxs-quote-alt-left text-2xl text-[#C5A059] absolute top-6 left-6 opacity-80"></i>
+                    <p class="text-gray-300 font-sans text-sm leading-relaxed mb-8 italic">"Stamina saya meningkat
+                        drastik sejak bulan pertama. Kalau dulu cepat letih, sekarang mampu bantai sparring 3 round!"
+                    </p>
+                    <div class="mt-auto">
+                        <h4 class="font-serif text-[#C5A059] text-lg font-bold tracking-wider">Danial Asyraf</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-semibold">Bengkung Merah
+                            1</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- New Section 6: The Official Seals (Trust Badges) -->
+    <section class="py-12 relative z-10 bg-[#0A0A0A] border-t border-[#C5A059]/10">
+        <div class="max-w-4xl mx-auto px-4 flex justify-center items-center gap-8 md:gap-20 flex-wrap">
+            <div class="flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity cursor-default">
+                <div
+                    class="w-20 h-20 md:w-24 md:h-24 rounded-full border border-[#C5A059] flex items-center justify-center p-1.5 md:p-2 shadow-[0_0_15px_rgba(197,160,89,0.1)] hover:shadow-[0_0_20px_rgba(197,160,89,0.3)] transition-shadow">
+                    <div
+                        class="w-full h-full rounded-full border-[0.5px] border-[#C5A059]/60 flex items-center justify-center text-center">
+                        <span
+                            class="font-serif text-[#C5A059] text-[9px] md:text-[10px] uppercase tracking-widest leading-tight">Official<br>Partner</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity cursor-default">
+                <div
+                    class="w-20 h-20 md:w-24 md:h-24 rounded-full border border-[#C5A059] flex items-center justify-center p-1.5 md:p-2 shadow-[0_0_15px_rgba(197,160,89,0.1)] hover:shadow-[0_0_20px_rgba(197,160,89,0.3)] transition-shadow">
+                    <div
+                        class="w-full h-full rounded-full border-[0.5px] border-[#C5A059]/60 flex items-center justify-center text-center">
+                        <span
+                            class="font-serif text-[#C5A059] text-[9px] md:text-[10px] uppercase tracking-widest leading-tight">Certified<br>Syllabus</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity cursor-default">
+                <div
+                    class="w-20 h-20 md:w-24 md:h-24 rounded-full border border-[#C5A059] flex items-center justify-center p-1.5 md:p-2 shadow-[0_0_15px_rgba(197,160,89,0.1)] hover:shadow-[0_0_20px_rgba(197,160,89,0.3)] transition-shadow">
+                    <div
+                        class="w-full h-full rounded-full border-[0.5px] border-[#C5A059]/60 flex items-center justify-center text-center">
+                        <span
+                            class="font-serif text-[#C5A059] text-[7px] md:text-[8px] uppercase tracking-widest leading-tight">Registered<br>Academy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black/80 border-t border-white/10 pt-16 pb-8 mt-10 relative z-20 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6 md:gap-4">
+                <div class="flex items-center gap-3">
+                    <img src="assets/img/logo.png" alt="Daeng Kuning Logo"
+                        class="h-20 md:h-28 w-auto object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]">
+                    <div style="margin-left: -2.5rem;">
+                        <h3 class="royal-brand-logo text-4xl md:text-5xl pb-2">Daeng<span
+                                class="brand-gold">Kuning</span></h3>
+                        <p class="royal-brand-tagline text-xs md:text-sm">Akademi Persilatan Tradisional & Moden</p>
+                    </div>
+                </div>
+
+                <!-- Expandable Hover Slide Social Icons -->
+                <div class="flex items-center space-x-3">
+                    <a href="https://www.facebook.com/GelanggangDaengKuningBatu8/" target="_blank"
+                        rel="noopener noreferrer" class="social-slide-btn">
+                        <i class='bx bxl-facebook-circle'></i>
+                        <span class="social-text">Facebook</span>
+                    </a>
+                    <a href="#" class="social-slide-btn">
+                        <i class='bx bxl-instagram'></i>
+                        <span class="social-text">Instagram</span>
+                    </a>
+                    <a href="https://www.tiktok.com/@gelanggangdaengkuning?is_from_webapp=1&sender_device=pc"
+                        target="_blank" rel="noopener noreferrer" class="social-slide-btn">
+                        <i class='bx bxl-tiktok'></i>
+                        <span class="social-text">TikTok</span>
+                    </a>
+                    <a href="#" class="social-slide-btn">
+                        <i class='bx bxl-youtube'></i>
+                        <span class="social-text">YouTube</span>
+                    </a>
+                </div>
+            </div>
+            <p class="text-gray-500 text-sm md:text-left text-center">&copy; 2026 Akademi Persilatan Daeng Kuning. Hak
+                Cipta Terpelihara.</p>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- GSAP Core & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+
+    <!-- Premium GSAP Animations -->
+    <script src="js/animations.js"></script>
+</body>
+
+</html>

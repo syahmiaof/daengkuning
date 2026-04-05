@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seni Daeng Kuning - Premium Busana</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { silat: { dark: '#0f0f0f', gold: '#D4AF37' } }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/branding.css">
+    <link rel="stylesheet" href="css/footer-social.css">
+    <!-- Premium Module CSS -->
+    <link rel="stylesheet" href="css/koleksi.css">
+    
+    <!-- Phase 3.5 Media Styles (Grow & Glow Headers) -->
+    <style>
+        h1,
+        h2 {
+            transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+            padding: 10px 0;
+            line-height: 1.4 !important;
+            transform-origin: center center;
+            will-change: transform;
+        }
+
+        h1:hover,
+        h2:hover {
+            transform: scale(1.05) !important;
+            text-shadow: 0 0 10px rgba(197, 160, 89, 0.7), 0 0 20px rgba(197, 160, 89, 0.5);
+            cursor: default;
+        }
+
+        /* Mobile overrides for Grow & Glow */
+        @media (max-width: 768px) {
+            h1:hover,
+            h2:hover {
+                transform: scale(1.03) !important;
+            }
+        }
+
+        /* Premium Gold Foil Effect */
+        .text-premium-gold {
+            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+
+    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+</head>
+
+<body
+    class="font-sans antialiased text-white bg-silat-dark overflow-x-hidden selection:bg-silat-gold selection:text-silat-dark">
+
+    <!-- Navigation Bar -->
+    <nav class="fixed w-full z-50 bg-black/40 backdrop-blur-md border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-3 cursor-pointer">
+                    <img src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-16 md:h-[4.5rem] w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                    <span class="royal-brand-logo text-3xl md:text-5xl pb-2" style="margin-left: -1.5rem;">Daeng<span class="brand-gold">Kuning</span></span>
+                </a>
+
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8">
+                        <a href="about.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Sejarah</a>
+                        <a href="warisan.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Warisan</a>
+                        <a href="gallery.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Galeri</a>
+                        <a href="koleksi.html"
+                            class="text-silat-gold border-b-2 border-silat-gold transition-colors duration-300 text-sm font-medium">Koleksi</a>
+                        <a href="contact.html"
+                            class="text-gray-300 hover:text-silat-gold transition-colors duration-300 text-sm font-medium">Hubungi Kami</a>
+                        <a href="login.html"
+                            class="ml-4 px-6 py-2.5 rounded-full bg-silat-dark border border-silat-gold text-silat-gold font-semibold text-sm transition-all hover:bg-silat-gold hover:text-silat-dark shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                            Portal Ahli
+                        </a>
+                    </div>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button class="text-silat-gold focus:outline-none">
+                        <i class='bx bx-menu-alt-right text-4xl'></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header Page -->
+    <header class="pt-32 pb-16 min-h-[40vh] relative flex items-center justify-center overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[300px] bg-silat-gold/5 blur-[120px] pointer-events-none z-0"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
+            <div class="flex items-center justify-center w-fit mx-auto mb-4 p-3 rounded-full border border-silat-gold/30 bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                <i class='bx bx-store-alt text-3xl text-silat-gold'></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold text-premium-gold mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                Khazanah Koleksi
+            </h1>
+            <p class="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto">Satu himpunan rasmi kelengkapan, senjata, dan rekod eksklusif Daeng Kuning Fighter, dari dahulu hingga kini.</p>
+        </div>
+    </header>
+
+    <!-- Merchandise Showcase -->
+    <section class="pb-16 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Category Filters -->
+            <div class="category-filters">
+                <button class="filter-btn active" data-filter="all">Semua Koleksi</button>
+                <button class="filter-btn" data-filter="pakaian">Pakaian Rasmi</button>
+                <button class="filter-btn" data-filter="senjata">Senjata Latihan</button>
+                <button class="filter-btn" data-filter="aksesori">Aksesori & Lain-lain</button>
+            </div>
+
+            <div class="merchandise-grid" id="busanaGrid">
+                
+                <!-- Product 1 (Teaser) -->
+                <div class="product-card opacity-90" data-category="pakaian" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-50.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Jersi Edisi Tanah Melayu</h3>
+                            <p class="product-desc text-gray-500 italic">Membawa jiwa kemelayuan tulen dalam sehelai fabrik sejukan udara moden berprestasi tinggi.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 (Teaser) -->
+                <div class="product-card opacity-90" data-category="pakaian" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-52.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Jersi Edisi Hang Tuah</h3>
+                            <p class="product-desc text-gray-500 italic">Ketegasan, ketaatan dan keperwiraan. Menjunjung panji Sang Laksamana dalam lipatan benang merah emas.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 (Teaser) -->
+                <div class="product-card opacity-90" data-category="pakaian" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-53.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Jersi Edisi Gayong Fighter</h3>
+                            <p class="product-desc text-gray-500 italic">Hanya untuk petarung yang bertahan di sebalik keperitan gelanggang. Kelengkapan taktikal sebenar.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4 (Teaser) -->
+                <div class="product-card opacity-90" data-category="aksesori" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-81.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Tanjak Nakhoda Trong</h3>
+                            <p class="product-desc text-gray-500 italic">Identiti pelayar lautan dan pahlawan gigih. Lipatan ikatan tegas melambangkan keteguhan iman.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 5 (Teaser) -->
+                <div class="product-card opacity-90" data-category="aksesori" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-82.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Tanjak Mahkota Alam</h3>
+                            <p class="product-desc text-gray-500 italic">Darjat kebesaran yang diturunkan sejak era kesultanan terdahulu. Ukiran eksklusif benang emas.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 6 (Teaser) -->
+                <div class="product-card opacity-90" data-category="pakaian" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-1.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Baju Melayu Kesultanan</h3>
+                            <p class="product-desc text-gray-500 italic">Pakaian rasmi warisan perguruan silat Daeng Kuning. Fabrik kapas premium untuk digayakan pada majlis rasmi.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 7 (Teaser) -->
+                <div class="product-card opacity-90" data-category="senjata" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-30.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Kerambit Latihan (Polimer)</h3>
+                            <p class="product-desc text-gray-500 italic">Senjata taktikal selamat. Direka khas berskala 1:1 mengikut berat sebenar kerambit besi.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 8 (Teaser) -->
+                <div class="product-card opacity-90" data-category="senjata" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-31.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Parang Pendek Tempur</h3>
+                            <p class="product-desc text-gray-500 italic">Bilah simulasi kayu berlian yang seimbang. Alatan kemestian untuk pergerakan silat seni dan tempur ringkas.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 9 (Teaser) -->
+                <div class="product-card opacity-90" data-category="aksesori" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-15.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Bengkung Laksamana Emas</h3>
+                            <p class="product-desc text-gray-500 italic">Simbol tingkatan dan ketaatan. Dokoh lambang perguruan bersulam tebal pada sutera hitam pekat.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 10 (Teaser) -->
+                <div class="product-card opacity-90" data-category="senjata" data-status="teaser">
+                    <div class="image-wrapper grayscale blur-[8px] brightness-50 contrast-150 cursor-not-allowed select-none pointer-events-none">
+                        <img src="assets/img/index.html/galeri-44.jpg" alt="Rahsia" class="img-primary">
+                        <span class="product-badge" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); color: #fff;">Akan Datang</span>
+                    </div>
+                    <div class="content">
+                        <div>
+                            <h3 class="product-title" style="background: linear-gradient(135deg, #a0aec0 0%, #4a5568 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: blur(0.5px);">Tekpi Berkembar (Trisula)</h3>
+                            <p class="product-desc text-gray-500 italic">Senjata tradisional kebanggaan pahlawan dalam menangkis serangan tetakan pisau dan pedang musuh.</p>
+                        </div>
+                        <div>
+                            <p class="product-price text-gray-600">TBA</p>
+                            <button disabled class="whatsapp-btn border-gray-600 text-gray-500 cursor-not-allowed hover:bg-transparent hover:transform-none hover:shadow-none bg-black/20">
+                                <i class='bx bx-time-five'></i> Nantikan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black/80 border-t border-white/10 pt-16 pb-8 mt-10 relative z-20 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6 md:gap-4">
+                <div class="flex items-center gap-3">
+                    <img src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-20 md:h-28 w-auto object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]">
+                    <div style="margin-left: -2.5rem;">
+                        <h3 class="royal-brand-logo text-4xl md:text-5xl pb-2">Daeng<span class="brand-gold">Kuning</span></h3>
+                        <p class="royal-brand-tagline text-xs md:text-sm">Akademi Persilatan Tradisional & Moden</p>
+                    </div>
+                </div>
+                
+                <!-- Expandable Hover Slide Social Icons -->
+                <div class="flex items-center space-x-3">
+                    <a href="https://www.facebook.com/GelanggangDaengKuningBatu8/" target="_blank" rel="noopener noreferrer" class="social-slide-btn">
+                        <i class='bx bxl-facebook-circle'></i>
+                        <span class="social-text">Facebook</span>
+                    </a>
+                    <a href="#" class="social-slide-btn">
+                        <i class='bx bxl-instagram'></i>
+                        <span class="social-text">Instagram</span>
+                    </a>
+                    <a href="https://www.tiktok.com/@gelanggangdaengkuning?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" class="social-slide-btn">
+                        <i class='bx bxl-tiktok'></i>
+                        <span class="social-text">TikTok</span>
+                    </a>
+                    <a href="#" class="social-slide-btn">
+                        <i class='bx bxl-youtube'></i>
+                        <span class="social-text">YouTube</span>
+                    </a>
+                </div>
+            </div>
+            <p class="text-gray-500 text-sm md:text-left text-center">&copy; 2026 Akademi Persilatan Daeng Kuning. Hak Cipta Terpelihara.</p>
+        </div>
+    </footer>
+
+    <!-- Floating Cart Button (Temporarily Hidden for Teaser Mode) -->
+    <button id="cartFloatingBtn" onclick="toggleCartSidebar()" class="hidden fixed bottom-8 right-8 bg-silat-gold text-black p-4 md:p-5 rounded-full shadow-[0_0_25px_rgba(212,175,55,0.7)] hover:scale-110 transition-transform z-50 items-center justify-center border-2 border-black group">
+        <i class='bx bx-cart text-3xl md:text-4xl group-hover:tada'></i>
+        <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-black transform transition-transform scale-0">0</span>
+    </button>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebarOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] hidden transition-opacity" onclick="toggleCartSidebar()"></div>
+    <div id="cartSidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-silat-dark border-l border-white/10 z-[70] transform translate-x-full transition-transform duration-300 flex flex-col shadow-[-10px_0_30px_rgba(0,0,0,0.8)]">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center bg-black/50">
+            <h2 class="text-xl font-bold text-premium-gold flex items-center gap-2"><i class='bx bx-shopping-bag'></i> Troli Belian</h2>
+            <button onclick="toggleCartSidebar()" class="text-gray-400 hover:text-red-400 transition-colors"><i class='bx bx-x text-3xl'></i></button>
+        </div>
+        
+        <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <!-- Items injected by JS -->
+            <div class="text-center text-gray-500 py-10 flex flex-col items-center gap-3">
+                <i class='bx bx-cart-alt text-5xl'></i>
+                <p>Troli anda kosong.</p>
+            </div>
+        </div>
+        
+        <div class="p-6 border-t border-white/10 bg-black/80">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-gray-300 text-sm tracking-wide">Jumlah Keseluruhan:</span>
+                <span id="cartTotalDisplay" class="text-2xl font-bold text-silat-gold">RM 0.00</span>
+            </div>
+            <button onclick="checkoutCart()" class="w-full bg-gradient-to-r from-silat-gold to-yellow-600 text-black font-bold py-3.5 rounded-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                <i class='bx bxl-whatsapp text-2xl'></i> Checkout via WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick View Modal (HTML) -->
+    <div class="quick-view-modal" id="quickViewModal" onclick="closeQuickView(event)">
+        <div class="modal-content">
+            <i class='bx bx-x modal-close' onclick="closeQuickView(event)"></i>
+            <div class="modal-image-col">
+                <img id="qvImage" src="" alt="Paparan Produk">
+            </div>
+            <div class="modal-info-col">
+                <h3 id="qvTitle" class="modal-title">Nama Produk</h3>
+                <p id="qvPrice" class="modal-price">RM 0.00</p>
+                <p id="qvDesc" class="modal-desc">Penerangan terperinci produk akan dipaparkan di sini.</p>
+                
+                <div class="size-selector" id="qvSizeSelector">
+                    <h4>Pilihan Saiz (S-XXL)</h4>
+                    <div class="size-options">
+                        <button class="size-btn">S</button>
+                        <button class="size-btn active">M</button>
+                        <button class="size-btn">L</button>
+                        <button class="size-btn">XL</button>
+                        <button class="size-btn">XXL</button>
+                    </div>
+                </div>
+
+                <a id="qvCheckoutBtn" href="#" class="checkout-btn transition-colors hover:shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                    <i class='bx bx-cart-add'></i> Tambah Ke Troli
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    
+    <!-- Premium Interactive Elements Script -->
+    <script>
+        // --- CATEGORY FILTERS --- //
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const productCards = document.querySelectorAll('.product-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active state
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Filter logic
+                const category = btn.getAttribute('data-filter');
+                productCards.forEach(card => {
+                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                        card.style.display = 'flex';
+                        setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 50);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(20px)';
+                        setTimeout(() => { card.style.display = 'none'; }, 300);
+                    }
+                });
+            });
+        });
+
+        // --- SHOPPING CART LOGIC --- //
+        let cartItems = [];
+        const cartBadge = document.getElementById('cartCountBadge');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartOverlay = document.getElementById('cartSidebarOverlay');
+        const cartContainer = document.getElementById('cartItemsContainer');
+        const cartTotalDisplay = document.getElementById('cartTotalDisplay');
+
+        function toggleCartSidebar() {
+            cartSidebar.classList.toggle('translate-x-full');
+            if(cartOverlay.classList.contains('hidden')){
+                cartOverlay.classList.remove('hidden');
+                setTimeout(() => cartOverlay.classList.add('opacity-100'), 10);
+            } else {
+                cartOverlay.classList.remove('opacity-100');
+                setTimeout(() => cartOverlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function updateCartUI() {
+            // Update Badge
+            const totalItems = cartItems.length;
+            cartBadge.textContent = totalItems;
+            if(totalItems > 0) {
+                cartBadge.classList.replace('scale-0', 'scale-100');
+            } else {
+                cartBadge.classList.replace('scale-100', 'scale-0');
+            }
+
+            // Update Sidebar List
+            cartContainer.innerHTML = '';
+            let totalRM = 0;
+
+            if (totalItems === 0) {
+                cartContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-10 flex flex-col items-center gap-3">
+                        <i class='bx bx-cart-alt text-5xl'></i>
+                        <p>Troli anda kosong.</p>
+                    </div>`;
+            } else {
+                cartItems.forEach((item, index) => {
+                    const priceVal = parseFloat(item.price.replace(/[^\d.-]/g, ''));
+                    totalRM += priceVal;
+
+                    cartContainer.innerHTML += `
+                        <div class="flex items-center gap-4 bg-black/40 p-3 rounded-lg border border-white/5 relative">
+                            <img src="${item.img}" class="w-16 h-16 object-cover rounded border border-white/10">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-bold text-gray-200 truncate">${item.title}</h4>
+                                <p class="text-xs text-silat-gold mt-1">${item.size ? 'Saiz: ' + item.size : 'Satu Saiz'}</p>
+                                <p class="text-sm font-bold text-white mt-1">RM ${priceVal.toFixed(2)}</p>
+                            </div>
+                            <button onclick="removeFromCart(${index})" class="text-gray-500 hover:text-red-500 transition-colors absolute top-2 right-2">
+                                <i class='bx bx-trash text-lg'></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            // Update Total
+            cartTotalDisplay.textContent = `RM ${totalRM.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cartItems.splice(index, 1);
+            updateCartUI();
+        }
+
+        // --- QUICK VIEW MODAL & ADD TO CART --- //
+        const modal = document.getElementById('quickViewModal');
+        let selectedSize = 'M';
+        let currentItem = null;
+
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedSize = this.textContent;
+            });
+        });
+
+        function openQuickView(wrapperEl) {
+            const card = wrapperEl.closest('.product-card');
+
+            const imgSrc = card.querySelector('.img-primary').src;
+            const title = card.querySelector('.product-title').textContent;
+            const price = card.querySelector('.product-price').textContent;
+            const desc = card.querySelector('.product-desc').getAttribute('data-full-desc') || card.querySelector('.product-desc').textContent;
+            const category = card.getAttribute('data-category');
+            const status = card.getAttribute('data-status');
+
+            document.getElementById('qvImage').src = imgSrc;
+            document.getElementById('qvTitle').textContent = title;
+            document.getElementById('qvPrice').textContent = price;
+            document.getElementById('qvDesc').textContent = desc;
+
+            const sizeSelector = document.getElementById('qvSizeSelector');
+            const checkoutBtn = document.getElementById('qvCheckoutBtn');
+
+            // Handling For Sale vs Archive
+            if(status === 'archive') {
+                sizeSelector.style.display = 'none';
+                checkoutBtn.className = "checkout-btn bg-gray-800 text-gray-500 cursor-not-allowed border-none";
+                checkoutBtn.innerHTML = "<i class='bx bx-museum'></i> Pameran Sahaja";
+                checkoutBtn.onclick = (e) => e.preventDefault();
+            } else {
+                sizeSelector.style.display = category === 'pakaian' ? 'block' : 'none';
+                checkoutBtn.className = "checkout-btn transition-colors hover:shadow-[0_0_15px_rgba(212,175,55,0.4)]";
+                checkoutBtn.innerHTML = "<i class='bx bx-cart-add'></i> Tambah Ke Troli";
+                
+                // Keep track of current item context
+                currentItem = { img: imgSrc, title: title, price: price, category: category };
+                
+                checkoutBtn.onclick = (e) => {
+                    e.preventDefault();
+                    addToCart();
+                };
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function addToCart() {
+            if(!currentItem) return;
+            
+            let itemToAdd = { ...currentItem };
+            if(itemToAdd.category === 'pakaian') {
+                itemToAdd.size = selectedSize;
+            }
+
+            cartItems.push(itemToAdd);
+            updateCartUI();
+            closeQuickView({target: modal}); // Force hide modal after adding
+
+            // Subtle animation for floating cart to feedback user
+            document.getElementById('cartFloatingBtn').classList.add('scale-125');
+            setTimeout(() => document.getElementById('cartFloatingBtn').classList.remove('scale-125'), 300);
+        }
+
+        function closeQuickView(e) {
+            if (e.target === modal || (e.target.classList && e.target.classList.contains('modal-close'))) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function checkoutCart() {
+            if(cartItems.length === 0) {
+                alert("Troli kosong! Sila tambah item ke dalam troli dahulu.");
+                return;
+            }
+
+            let message = "Salam Daeng Kuning, saya ingin menempah barangan Khazanah berikut:\n\n";
+            let total = 0;
+            
+            cartItems.forEach((item, i) => {
+                const val = parseFloat(item.price.replace(/[^\d.-]/g, ''));
+                total += val;
+                message += `${i+1}. *${item.title}*\n`;
+                if(item.size) message += `   - Saiz: ${item.size}\n`;
+                message += `   - RM ${val.toFixed(2)}\n\n`;
+            });
+
+            message += `\n*Jumlah Keseluruhan: RM ${total.toFixed(2)}*\n\nMohon pengesahan status stok untuk saya buat pembayaran. Terima kasih.`;
+            
+            const encoded = encodeURIComponent(message);
+            window.open(`https://wa.me/60107965236?text=${encoded}`, '_blank');
+        }
+    </script>
+</body>
+</html>

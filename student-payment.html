@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lapor Bayaran - Portal Pendekar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }, colors: { gold: { DEFAULT: '#D4AF37', dark: '#B8860B' }, charcoal: '#111111' } } } }
+    </script>
+    <link rel="stylesheet" href="css/branding.css">
+    <style>
+        .glass-panel { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); border: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; cursor: pointer; }
+        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
+    </style>
+
+    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+</head>
+<body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex relative">
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gold/20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.6)]">
+        <div class="h-20 flex items-center px-4 md:px-6 border-b border-gold/10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent"></div>
+            <a href="index.html" class="flex items-center gap-1 cursor-pointer z-10 w-full transition-transform hover:scale-105">
+                <img src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <span class="royal-brand-logo text-2xl md:text-[1.6rem] md:leading-[1.6rem] mt-1.5" style="margin-left: -0.6rem; letter-spacing: -0.02em;">Daeng<span class="brand-gold">Kuning</span></span>
+            </a>
+            <button class="ml-auto text-gray-400 hover:text-white lg:hidden z-10" onclick="toggleSidebar()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
+            <ul class="space-y-2">
+                <li><a href="dashboard-student.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-home w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Ringkasan Pangkalan</span></a></li>
+                <li><a href="student-payment.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all"><i class="fas fa-receipt w-6"></i><span class="font-medium">Lapor Bayaran Yuran</span></a></li>
+                <li><a href="student-profile.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-id-badge w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Profil Kebanggaan</span></a></li>
+            </ul>
+            <button onclick="logout()" class="mt-auto w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400"><i class="fas fa-sign-out-alt w-6"></i><span class="font-medium">Log Keluar</span></button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-h-screen lg:ml-72 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center px-6 lg:px-10 z-30">
+            <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Penyata <span class="text-gold">Yuran</span></h2>
+        </header>
+
+        <div class="flex-1 p-6 lg:p-10 flex items-center justify-center">
+            
+            <!-- Payment Form Card -->
+            <div class="glass-panel w-full max-w-2xl rounded-2xl p-8 border-gold/40 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                
+                <h3 class="text-2xl font-serif font-bold text-white mb-2"><i class="fas fa-file-invoice text-gold mr-3"></i>Lapor Bukti Bayaran</h3>
+                <p class="text-sm text-gray-400 mb-8">Lampirkan fail resit pembayaran yuran di sini. Pengesahan akan dibuat dalam tempoh 1-3 hari bekerja.</p>
+                
+                <form id="payment-form">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Bulan Bayaran</label>
+                            <select id="payMonth" required class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors">
+                                <option value="" disabled selected>Pilih Bulan</option>
+                                <option value="1">Januari</option>                                <option value="2">Februari</option>  <option value="3">Mac</option>       <option value="4">April</option>
+                                <option value="5">Mei</option>                                    <option value="6">Jun</option>       <option value="7">Julai</option>     <option value="8">Ogos</option>
+                                <option value="9">September</option>                              <option value="10">Oktober</option>  <option value="11">November</option> <option value="12">Disember</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Tahun</label>
+                            <select id="payYear" required class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors">
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Jumlah Bayaran (RM)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">RM</span>
+                            <input type="number" id="payAmount" min="1" step="0.5" required placeholder="50.00" class="w-full bg-black/50 border border-white/10 rounded-lg pl-12 pr-4 py-3 text-lg text-gold font-bold focus:outline-none focus:border-gold transition-colors">
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Unggah Resit Transaksi</label>
+                        <div class="file-upload-wrapper w-full block">
+                            <div class="border-2 border-dashed border-gold/30 rounded-xl p-8 text-center bg-black/30 hover:bg-gold/5 transition-colors duration-300">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gold mb-3 opacity-80"></i>
+                                <h4 id="fileNameDisplay" class="text-white font-medium mb-1">Klik atau heret gambar resit ke sini</h4>
+                                <p class="text-xs text-gray-500">Menyokong JPEG, PNG, PDF (Maksimum 5MB)</p>
+                            </div>
+                            <!-- Fake Input File for visually simulated uploading -->
+                            <input type="file" id="payReceipt" accept="image/*,.pdf" onchange="document.getElementById('fileNameDisplay').innerText = this.files[0]? this.files[0].name : 'Sila pilih resit semula'">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full py-4 rounded-xl font-bold text-charcoal bg-gradient-to-r from-gold to-gold-dark hover:scale-[1.01] transition-transform shadow-[0_0_20px_rgba(212,175,55,0.3)] text-lg">
+                        <i class="fas fa-paper-plane mr-2"></i> Hantar Resit
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="px-6 lg:px-10 pb-16 w-full max-w-4xl mx-auto">
+            <h3 class="text-xl font-serif font-bold text-white mb-6 border-b border-white/10 pb-3">Sejarah Pembayaran</h3>
+            <div class="glass-panel overflow-hidden rounded-2xl border border-white/5">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-black/40 text-gray-400 text-xs uppercase tracking-wider">
+                                <th class="px-6 py-4 font-medium">Bulan / Tahun</th>
+                                <th class="px-6 py-4 font-medium">Amaun</th>
+                                <th class="px-6 py-4 font-medium text-center">Status</th>
+                                <th class="px-6 py-4 font-medium text-right">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentHistoryTable" class="divide-y divide-white/5 text-sm">
+                            <tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 italic">Memuatkan rekod...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- jsPDF & AutoTable CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/student.js"></script>
+</body>
+</html>

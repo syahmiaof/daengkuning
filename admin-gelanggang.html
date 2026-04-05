@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengurusan Gelanggang - Portal Pendekar</title>
+
+    <script>
+        const sessionStr = localStorage.getItem('userSession');
+        if (!sessionStr) {
+            alert('Akses Ditolak! Sila log masuk terlebih dahulu.');
+            window.location.replace('login.html');
+        } else {
+            try {
+                const user = JSON.parse(sessionStr);
+                if (user.role !== 'admin') {
+                    alert('Akses Ditolak! Khusus untuk pentadbir sahaja.');
+                    window.location.replace('login.html');
+                }
+            } catch (e) {
+                alert('Sesi tidak sah. Sila log masuk semula.');
+                window.location.replace('login.html');
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/branding.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        gold: { DEFAULT: '#D4AF37', dark: '#B8860B' },
+                        charcoal: '#111111',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111111; }
+        ::-webkit-scrollbar-thumb { background: #333333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+
+        .glass-panel {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+</head>
+
+<body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden transition-opacity lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gold/20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.6)] bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+        <div class="h-20 flex items-center px-4 md:px-6 border-b border-gold/10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent"></div>
+            <a href="index.html" class="flex items-center gap-1 cursor-pointer z-10 w-full transition-transform hover:scale-105">
+                <img src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <span class="royal-brand-logo text-2xl md:text-[1.6rem] md:leading-[1.6rem] mt-1.5" style="margin-left: -0.6rem; letter-spacing: -0.02em;">Daeng<span class="brand-gold">Kuning</span></span>
+            </a>
+            <button class="ml-auto text-gray-400 hover:text-white lg:hidden z-10" onclick="toggleSidebar()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
+            <ul class="space-y-2">
+                <li>
+                    <a href="dashboard-admin.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-th-large w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Ringkasan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-ahli.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-users w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Senarai Ahli</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-yuran.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-file-invoice-dollar w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Pengurusan Yuran</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-gelanggang.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all">
+                        <i class="fas fa-map-marked-alt w-6"></i>
+                        <span class="font-medium tracking-wide">Pengurusan Gelanggang</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-notis.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-bullhorn w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Hebahan (Notis)</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-pengurusan.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-user-shield w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Urus Pentadbir</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="mt-auto">
+                <button onclick="logout()" class="w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400 transition-all border border-transparent hover:border-red-900/50 group">
+                    <i class="fas fa-sign-out-alt w-6 group-hover:text-red-400 transition-colors"></i>
+                    <span class="font-medium tracking-wide">Log Keluar</span>
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-h-screen lg:ml-72 transition-all duration-300 relative">
+        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-gray-300 hover:text-gold focus:outline-none transition-colors" onclick="toggleSidebar()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <div>
+                    <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Pusat Latihan <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">Gelanggang</span></h2>
+                    <p class="text-xs sm:text-sm text-gray-400 font-light">Kawal selia cawangan rasmi Pertubuhan</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 border-l border-white/10 pl-4 sm:pl-6 ml-2">
+                <div class="w-10 h-10 rounded-full bg-gold/20 border border-gold/50 flex items-center justify-center text-gold shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-6 lg:p-10 pb-24">
+            <!-- Controls Bar -->
+            <div class="glass-panel p-6 rounded-2xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-gold/30">
+                <p class="text-sm text-gray-400">Senarai lokasi cawangan gelanggang yang berdaftar (akan dipaparkan di borang pendaftaran ahli).</p>
+                <button onclick="ui.showModal('add-gelanggang-modal')" class="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold rounded-lg shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:scale-105 transition-all text-sm flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i> Tambah Gelanggang
+                </button>
+            </div>
+
+            <!-- Table Area -->
+            <div class="glass-panel rounded-2xl border-gold/30 shadow-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-white/5 border-b border-gold/20 text-gray-400 text-sm tracking-wide">
+                                <th class="py-4 px-6 font-medium">Auto-ID</th>
+                                <th class="py-4 px-6 font-medium">Nama Gelanggang</th>
+                                <th class="py-4 px-6 font-medium">Lokasi</th>
+                                <th class="py-4 px-6 font-medium text-right">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-white/5" id="gelanggang-table">
+                            <tr id="table-loader">
+                                <td colspan="4" class="py-16 text-center">
+                                    <i class="fas fa-spinner fa-spin text-4xl text-gold mb-4"></i>
+                                    <p class="text-gray-400">Menarik data gelanggang...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button onclick="ui.showModal('add-gelanggang-modal')" class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Gelanggang">
+        <i class="fas fa-plus text-charcoal text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
+    </button>
+
+    <!-- Add Gelanggang Modal -->
+    <div id="add-gelanggang-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="ui.hideModal('add-gelanggang-modal')"></div>
+        <div class="relative glass-panel bg-charcoal p-8 rounded-2xl border flex flex-col w-full max-w-md border-gold/40 shadow-[0_0_40px_rgba(212,175,55,0.2)] animate-fade-in-up mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-serif font-bold text-white flex items-center"><div class="w-8 h-8 rounded bg-gold/20 flex items-center justify-center mr-3"><i class="fas fa-map-marked-alt text-gold text-sm"></i></div> Daftar Cawangan</h2>
+                <button onclick="ui.hideModal('add-gelanggang-modal')" class="text-gray-400 hover:text-red-400 transition-colors"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <form id="addGelanggangForm" class="space-y-4">
+                <div id="gelanggang-form-error" class="hidden text-rose-400 text-xs italic mb-2"></div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1 ml-1">Nama Gelanggang</label>
+                    <input type="text" id="newNmg" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: Gelanggang Indera">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1 ml-1">Lokasi Penuh</label>
+                    <input type="text" id="newLok" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: SMK Jerteh, Besut">
+                </div>
+                <div class="pt-4">
+                    <button type="submit" id="btnGSubmit" class="w-full py-3 px-4 rounded-lg font-bold text-charcoal bg-gradient-to-r from-gold to-gold-dark hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i> Daftar Sistem
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Global Confirm Modal -->
+    <div id="global-confirm-modal" class="fixed inset-0 z-[70] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="ui.hideModal('global-confirm-modal')"></div>
+        <div class="relative glass-panel bg-charcoal p-8 rounded-2xl border flex flex-col w-full max-w-sm border-gold/40 shadow-[0_0_40px_rgba(212,175,55,0.1)] text-center animate-fade-in-up mx-4">
+            <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 text-3xl mx-auto mb-4">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Tutup Gelanggang?</h3>
+            <p id="confirm-message" class="text-sm text-gray-400 mb-8">Pasti mahu memadam cawangan ini? Ia akan hilang dari senarai dropdown pendaftaran ahli.</p>
+            <div class="flex gap-3">
+                <button onclick="ui.hideModal('global-confirm-modal')" class="flex-1 py-2.5 rounded-lg font-medium text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">Batal</button>
+                <button id="confirm-yes-btn" class="flex-1 py-2.5 rounded-lg font-bold text-white bg-red-600 hover:bg-red-500 shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-colors">Pasti</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => { overlay.classList.add('opacity-100'); }, 10);
+            } else {
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => { overlay.classList.add('hidden'); }, 300);
+            }
+        }
+
+        async function loadGelanggang() {
+            try {
+                const tbody = document.getElementById('gelanggang-table');
+                const { data, error } = await supabaseClient
+                    .from('gelanggang')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="py-12 text-center text-gray-500">Tiada gelanggang didaftarkan.</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                data.forEach(x => {
+                    html += `
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-6 text-xs text-gray-500 font-mono">${x.id}</td>
+                            <td class="py-4 px-6 font-bold text-gold cursor-pointer" onclick="alert('Lokasi: ${x.lokasi}\\nDitubuhkan pada: ${new Date(x.created_at).toLocaleDateString()}')">${x.nama_gelanggang}</td>
+                            <td class="py-4 px-6 text-gray-400 text-sm truncate max-w-xs">${x.lokasi}</td>
+                            <td class="py-4 px-6 text-right">
+                                <button onclick="deleteGelanggang('${x.id}', '${x.nama_gelanggang}')" class="w-8 h-8 rounded bg-red-900/20 hover:bg-red-500/20 text-red-500 hover:text-red-400 border border-red-500/30 transition-colors flex items-center justify-center ml-auto" title="Tutup Gelanggang">
+                                    <i class="fas fa-trash-alt text-sm"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                ui.showToast("Gagal memuatkan data gelanggang.", "error");
+            }
+        }
+
+        window.deleteGelanggang = function(id, nama) {
+            const confMessage = document.getElementById('confirm-message');
+            confMessage.innerHTML = `Anda pasti mahu memadam <strong class="text-white">${nama}</strong>? Ahli yang sedia ada berdaftar disitu tidak akan hilang, cuma ahli baharu tiada pilihan gelanggang ini kelak.`;
+            
+            const confYesBtn = document.getElementById('confirm-yes-btn');
+            confYesBtn.onclick = async () => {
+                ui.hideModal('global-confirm-modal');
+                try {
+                    const { error } = await supabaseClient
+                        .from('gelanggang')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    
+                    ui.showToast(`Gelanggang ${nama} dipadam.`, 'success');
+                    loadGelanggang();
+                } catch(e) {
+                    ui.showToast("Ralat memadam data.", "error");
+                    console.error(e);
+                }
+            };
+            
+            ui.showModal('global-confirm-modal');
+        };
+
+        document.getElementById('addGelanggangForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnGSubmit');
+            const errDiv = document.getElementById('gelanggang-form-error');
+            const namaG = document.getElementById('newNmg').value.trim();
+            const lokG = document.getElementById('newLok').value.trim();
+
+            errDiv.classList.add('hidden');
+            const ogText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+            try {
+                const { error: insErr } = await supabaseClient
+                    .from('gelanggang')
+                    .insert({
+                        nama_gelanggang: namaG,
+                        lokasi: lokG
+                    });
+
+                if (insErr) throw insErr;
+
+                ui.hideModal('add-gelanggang-modal');
+                document.getElementById('addGelanggangForm').reset();
+                ui.showToast(`${namaG} didaftarkan!`, 'success');
+                loadGelanggang();
+
+            } catch (err) {
+                errDiv.innerText = err.message || "Ralat pendaftaran.";
+                errDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = ogText;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGelanggang();
+        });
+    </script>
+</body>
+</html>

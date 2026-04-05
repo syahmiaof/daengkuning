@@ -1,0 +1,50 @@
+/* =========================================================================
+   ROYAL WARRIOR BRANDING (GAYA SIGNATURE SIFU)
+   Fonts: Alex Brush (400) & Montserrat (300)
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@300&display=swap');
+
+/* Header & Footer Logo Redesign (Signature) */
+.royal-brand-logo {
+    font-family: 'Alex Brush', cursive;
+    font-weight: 400;
+    /* Important: Removed uppercase, cursive must be Title Case */
+    letter-spacing: 0.05em; 
+    color: #FFFFFF; /* Base color for 'Daeng' */
+    display: inline-block;
+    line-height: 1.2; /* Cursive needs more vertical room */
+    /* Prevents margin/padding push issues */
+    max-height: 50px; /* Slightly larger envelope for cursive tails */
+    white-space: nowrap;
+    filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.8));
+    transition: transform 0.3s ease;
+    padding-bottom: 5px; /* Prevent tail clipping */
+}
+
+.royal-brand-logo:hover {
+    transform: scale(1.05) rotate(-2deg); /* slight handwritten organic feel on hover */
+}
+
+.royal-brand-logo .brand-gold {
+    color: #C5A059; /* Solid Signature Jewelry/Silat Gold */
+    margin-left: 6px; /* Cursive space between words */
+}
+
+/* Footer Tagline Redesign */
+.royal-brand-tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: #F5F5F5;
+    margin-top: 0.5rem;
+}
+
+/* Premium Gold Foil Effect for Headings */
+.text-premium-gold {
+    background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block; /* Ensure gradient renders fully on some browsers */
+}

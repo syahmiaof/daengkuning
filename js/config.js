@@ -1,0 +1,3 @@
+// API Keys & Configuration
+const SUPABASE_URL = "https://qemlicoimzbxpgakpipy.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlbWxpY29pbXpieHBnYWtwaXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxOTIyNDEsImV4cCI6MjA5MDc2ODI0MX0.r9gaGkdAHq1tdyGGHttwLQ9HqjplyOqpmlMh3v6JV40";
