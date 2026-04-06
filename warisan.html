@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seni Daeng Kuning - Warisan</title>
+    <title>Warisan | Akademi Persilatan Daeng Kuning</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="md:hidden flex items-center">
-                    <button class="text-silat-gold focus:outline-none">
+                    <button id="mobile-menu-open" onclick="document.getElementById('mobile-menu').classList.toggle('translate-x-full'); document.body.style.overflow='hidden';" class="text-silat-gold focus:outline-none">
                         <i class='bx bx-menu-alt-right text-4xl'></i>
                     </button>
                 </div>
@@ -75,7 +75,27 @@
         </div>
     </nav>
 
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-silat-dark/95 backdrop-blur-xl z-[60] transform translate-x-full transition-transform duration-300 md:hidden flex flex-col pt-24 px-6">
+        <button id="mobile-close-btn" onclick="document.getElementById('mobile-menu').classList.toggle('translate-x-full'); document.body.style.overflow='auto';" class="absolute top-6 right-6 text-silat-gold hover:text-white transition-colors">
+            <i class='bx bx-x text-5xl'></i>
+        </button>
+        <div class="flex flex-col space-y-6 text-center mt-10">
+            <a href="about.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Sejarah</a>
+            <a href="warisan.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Warisan</a>
+            <a href="gallery.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Galeri</a>
+            <a href="koleksi.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Koleksi</a>
+            <a href="contact.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium border-b border-white/10 pb-6">Hubungi Kami</a>
+            <a href="login.html" class="inline-block mt-4 px-8 py-4 rounded-full bg-silat-gold text-silat-dark font-bold text-xl shadow-[0_0_20px_rgba(212,175,55,0.4)]">Portal Ahli</a>
+        </div>
+    </div>
+
     <div id="particles-js" class="fixed inset-0 z-0 opacity-[0.8] pointer-events-none mix-blend-screen"></div>
+
+    <div id="loader-overlay" class="fixed inset-0 z-40 flex flex-col justify-center items-center bg-black transition-opacity duration-1000">
+        <div class="w-16 h-16 border-4 border-silat-gold/30 border-t-silat-gold rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(212,175,55,0.5)]"></div>
+        <p class="text-silat-gold font-serif text-lg tracking-widest animate-pulse">Menempa Keris...</p>
+    </div>
 
     <!-- 3D Background Canvas -->
     <canvas id="warisan-canvas" class="relative z-0"></canvas>
@@ -187,7 +207,7 @@
         // Initialize Particles
         particlesJS('particles-js', {
             "particles": {
-                "number": { "value": 120, "density": { "enable": true, "value_area": 800 } },
+                "number": { "value": 30, "density": { "enable": true, "value_area": 800 } },
                 "color": { "value": "#FFE55C" },
                 "shape": { "type": "circle" },
                 "opacity": { "value": 0.8, "random": true, "anim": { "enable": true, "speed": 1.5, "opacity_min": 0.3, "sync": false } },

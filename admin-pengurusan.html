@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengurusan Pentadbir - Portal Pendekar</title>
+    <title>Pengurusan Pentadbir - Portal Pendekar | Akademi Persilatan Daeng Kuning</title>
 
     <script>
         const sessionStr = localStorage.getItem('userSession');
@@ -13,9 +13,13 @@
         } else {
             try {
                 const user = JSON.parse(sessionStr);
-                if (user.role !== 'admin') {
+                if (user.role !== 'admin' && user.role !== 'superadmin') {
                     alert('Akses Ditolak! Khusus untuk pentadbir sahaja.');
                     window.location.replace('login.html');
+                }
+                if (user.role.toLowerCase() !== 'superadmin') {
+                    alert('BERAMBUS! Akses Ditolak. Halaman ini dipantau! Hanya untuk SUPERADMIN.');
+                    window.location.replace('dashboard-admin.html');
                 }
             } catch (e) {
                 alert('Sesi tidak sah. Sila log masuk semula.');
@@ -61,7 +65,7 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
     </style>
-    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 
 <body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
@@ -113,7 +117,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="admin-pengurusan.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all">
+                    <a href="admin-pengurusan.html" class="rbac-superadmin hidden flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all">
                         <i class="fas fa-user-shield w-6"></i>
                         <span class="font-medium tracking-wide">Urus Pentadbir</span>
                     </a>
@@ -150,7 +154,7 @@
             <!-- Controls Bar -->
             <div class="glass-panel p-6 rounded-2xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-gold/30">
                 <p class="text-sm text-gray-400">Senarai pentadbir/jurulatih yang mempunyai akses log masuk ke konsol pentadbir.</p>
-                <button onclick="ui.showModal('add-admin-modal')" class="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold rounded-lg shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:scale-105 transition-all text-sm flex items-center justify-center">
+                <button onclick="ui.showModal('add-admin-modal')" class="rbac-superadmin hidden w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold rounded-lg shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:scale-105 transition-all text-sm flex items-center justify-center">
                     <i class="fas fa-plus mr-2"></i> Tambah Pentadbir Baru
                 </button>
             </div>
@@ -162,8 +166,8 @@
                         <thead>
                             <tr class="bg-white/5 border-b border-gold/20 text-gray-400 text-sm tracking-wide">
                                 <th class="py-4 px-6 font-medium">Auto-ID (UUID)</th>
-                                <th class="py-4 px-6 font-medium">Username</th>
-                                <th class="py-4 px-6 font-medium">Peranan (Role)</th>
+                                <th class="py-4 px-6 font-medium">ID Login / Nama Admin</th>
+                                <th class="py-4 px-6 font-medium">Kata Laluan</th>
                                 <th class="py-4 px-6 font-medium text-right">Tindakan</th>
                             </tr>
                         </thead>
@@ -182,7 +186,7 @@
     </main>
 
     <!-- Floating Action Button -->
-    <button onclick="ui.showModal('add-admin-modal')" class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Pentadbir">
+    <button onclick="ui.showModal('add-admin-modal')" class="rbac-superadmin hidden fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Pentadbir">
         <i class="fas fa-plus text-charcoal text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
     </button>
 
@@ -197,8 +201,12 @@
             <form id="addAdminForm" class="space-y-4">
                 <div id="admin-form-error" class="hidden text-rose-400 text-xs italic mb-2"></div>
                 <div>
-                    <label class="block text-sm text-gray-400 mb-1 ml-1">Username (Akaun Log Masuk)</label>
-                    <input type="text" id="newAdminUser" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: CikguRazi">
+                    <label class="block text-sm text-gray-400 mb-1 ml-1">ID Log Masuk (Username)</label>
+                    <input type="text" id="newAdminUser" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: dk001">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1 ml-1">Nama Admin / Catatan</label>
+                    <input type="text" id="newAdminNama" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: Cikgu Syahirah">
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1 ml-1">Kata Laluan (Password)</label>
@@ -207,6 +215,39 @@
                 <div class="pt-4">
                     <button type="submit" id="btnAdminSubmit" class="w-full py-3 px-4 rounded-lg font-bold text-charcoal bg-gradient-to-r from-gold to-gold-dark hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center">
                         <i class="fas fa-save mr-2"></i> Daftar Sistem
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Admin Modal -->
+    <div id="edit-admin-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="ui.hideModal('edit-admin-modal')"></div>
+        <div class="relative glass-panel bg-charcoal p-8 rounded-2xl border flex flex-col w-full max-w-md border-blue-500/40 shadow-[0_0_40px_rgba(59,130,246,0.2)] animate-fade-in-up mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-serif font-bold text-white flex items-center"><div class="w-8 h-8 rounded bg-blue-500/20 flex items-center justify-center mr-3"><i class="fas fa-edit text-blue-400 text-sm"></i></div> Kemaskini Admin</h2>
+                <button onclick="ui.hideModal('edit-admin-modal')" class="text-gray-400 hover:text-red-400 transition-colors"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <form id="editAdminForm" class="space-y-4">
+                <input type="hidden" id="editAid">
+                <div id="edit-admin-form-error" class="hidden text-rose-400 text-xs italic mb-2"></div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1 ml-1">ID Log Masuk</label>
+                    <input type="text" id="editAUser" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1 ml-1">Nama Admin / Catatan</label>
+                    <input type="text" id="editANama" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1 ml-1">Kata Laluan Baru (Biarkan kosong jika tidak mahu tukar)</label>
+                    <input type="text" id="editAPass" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-600" placeholder="********">
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="ui.hideModal('edit-admin-modal')" class="flex-1 py-3 px-4 rounded-lg font-medium text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">Batal</button>
+                    <button type="submit" id="btnAdminEditSubmit" class="flex-1 py-3 px-4 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.4)] flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i> Simpan
                     </button>
                 </div>
             </form>
@@ -250,6 +291,21 @@
             }
         }
 
+        window.toggleAdminPwd = function(btn, pwd) {
+            const span = btn.previousElementSibling;
+            if (span.innerText === '••••••') {
+                span.innerText = pwd;
+                span.classList.remove('tracking-widest', 'text-gray-300');
+                span.classList.add('text-white');
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                span.innerText = '••••••';
+                span.classList.add('tracking-widest', 'text-gray-300');
+                span.classList.remove('text-white');
+                btn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        };
+
         // Fetch User Admins
         async function loadAdmins() {
             try {
@@ -257,7 +313,7 @@
                 const { data, error } = await supabaseClient
                     .from('users')
                     .select('*')
-                    .eq('role', 'admin')
+                    .in('role', ['admin', 'superadmin'])
                     .order('username', { ascending: true });
 
                 if (error) throw error;
@@ -273,18 +329,34 @@
                     const currentUser = JSON.parse(localStorage.getItem('userSession'))?.username;
                     const canDelete = currentUser !== x.username;
                     
+                    let namaDisplay = x.remarks ? x.remarks : '<i>Tanpa Rekod Nama</i>';
+                    const roleBadge = (x.role && x.role.toLowerCase() === 'superadmin') ? '<span class="ml-2 text-[10px] bg-red-900/50 text-red-400 px-2 py-0.5 rounded border border-red-500/30">SUPERADMIN</span>' : '<span class="ml-2 text-[10px] bg-gray-700/50 text-gray-400 px-2 py-0.5 rounded border border-gray-600/30">ADMIN</span>';
+
                     html += `
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="py-4 px-6 text-xs text-gray-500 font-mono">${x.id}</td>
-                            <td class="py-4 px-6 font-medium text-white">${x.username}</td>
-                            <td class="py-4 px-6"><span class="px-3 py-1 rounded bg-gold/20 text-gold text-[10px] font-bold uppercase tracking-widest border border-gold/30">ADMIN</span></td>
-                            <td class="py-4 px-6 text-right">
+                            <td class="py-4 px-6 font-medium text-white flex flex-col items-start gap-1">
+                                <span class="bg-white/10 px-2 py-0.5 rounded text-xs text-gray-300 border border-white/5 font-mono flex items-center">${x.username} ${roleBadge}</span>
+                                <span class="text-gold text-sm mt-0.5">${namaDisplay}</span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="text-xs flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded border border-white/5 w-max">
+                                    <span class="text-gray-300 font-mono tracking-widest mt-0.5">••••••</span>
+                                    <button onclick="window.toggleAdminPwd(this, '${x.password}')" class="ml-2 text-gray-500 hover:text-gold transition-colors p-1" title="Papar Kata Laluan">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 text-right flex justify-end gap-2">
+                                <button onclick="editAdmin('${x.id}', '${x.username}', '${(x.remarks || '').replace(/'/g, "\\'")}')" class="rbac-superadmin hidden w-8 h-8 rounded bg-blue-900/20 hover:bg-blue-500/20 text-blue-500 hover:text-blue-400 border border-blue-500/30 transition-colors flex items-center justify-center" title="Edit Admin">
+                                    <i class="fas fa-edit text-sm"></i>
+                                </button>
                                 ${canDelete ? 
-                                    `<button onclick="deleteAdmin('${x.id}', '${x.username}')" class="w-8 h-8 rounded bg-red-900/20 hover:bg-red-500/20 text-red-500 hover:text-red-400 border border-red-500/30 transition-colors flex items-center justify-center ml-auto" title="Padam Admin">
+                                    `<button onclick="deleteAdmin('${x.id}', '${x.username}')" class="rbac-superadmin hidden w-8 h-8 rounded bg-red-900/20 hover:bg-red-500/20 text-red-500 hover:text-red-400 border border-red-500/30 transition-colors flex items-center justify-center" title="Padam Admin">
                                         <i class="fas fa-trash-alt text-sm"></i>
                                     </button>` 
                                     : 
-                                    `<span class="text-[10px] text-gray-500 italic block mt-2">Diri Sendiri</span>`
+                                    `<span class="rbac-superadmin hidden text-[10px] text-gray-500 italic flex items-center ml-2 border border-gray-700/50 rounded px-2 bg-gray-800/30 w-8 h-8 justify-center" title="Diri Sendiri (Hanya Edit)"><i class="fas fa-user-lock"></i></span>`
                                 }
                             </td>
                         </tr>
@@ -331,6 +403,7 @@
             const btn = document.getElementById('btnAdminSubmit');
             const errDiv = document.getElementById('admin-form-error');
             const newUname = document.getElementById('newAdminUser').value.trim();
+            const newNama = document.getElementById('newAdminNama').value.trim();
             const newPass = document.getElementById('newAdminPass').value.trim();
 
             if (newPass.length < 6) {
@@ -356,12 +429,19 @@
                     throw new Error("Username telah pun wujud. Sila pilih yang lain.");
                 }
 
+                // If not found, exception is thrown by single(), so handle normally
+            } catch(e) {
+                // Ignore, means it doesn't exist.
+            }
+            
+            try {
                 const { error: insErr } = await supabaseClient
                     .from('users')
                     .insert({
                         username: newUname,
                         password: newPass,
-                        role: 'admin'
+                        role: 'admin',
+                        remarks: newNama
                     });
 
                 if (insErr) throw insErr;
@@ -373,6 +453,67 @@
 
             } catch (err) {
                 errDiv.innerText = err.message || "Ralat mendaftar admin.";
+                errDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = ogText;
+            }
+        });
+
+        // Edit Admin Logic
+        window.editAdmin = function(id, username, remarks) {
+            document.getElementById('editAid').value = id;
+            document.getElementById('editAUser').value = username;
+            document.getElementById('editANama').value = remarks !== 'null' ? remarks : '';
+            document.getElementById('editAPass').value = '';
+            ui.showModal('edit-admin-modal');
+        };
+
+        document.getElementById('editAdminForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnAdminEditSubmit');
+            const errDiv = document.getElementById('edit-admin-form-error');
+            const idA = document.getElementById('editAid').value;
+            const uname = document.getElementById('editAUser').value.trim();
+            const unama = document.getElementById('editANama').value.trim();
+            const upass = document.getElementById('editAPass').value.trim();
+
+            errDiv.classList.add('hidden');
+            const ogText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+            try {
+                let updates = {
+                    username: uname,
+                    remarks: unama
+                };
+
+                if (upass.length > 0) {
+                    if (upass.length < 6) {
+                        throw new Error("Kata laluan mestilah sekurang-kurangnya 6 huruf.");
+                    }
+                    updates.password = upass;
+                }
+
+                const { error: updErr } = await supabaseClient
+                    .from('users')
+                    .update(updates)
+                    .eq('id', idA);
+
+                if (updErr) {
+                    if (updErr.message.includes('unique constraint')) {
+                       throw new Error("Terdapat admin lain yang menggunakan Username/ID ini.");
+                    }
+                    throw updErr;
+                }
+
+                ui.hideModal('edit-admin-modal');
+                ui.showToast(`Admin ${uname} dikemaskini.`, 'success');
+                loadAdmins();
+
+            } catch (err) {
+                errDiv.innerText = err.message || "Ralat kemaskini.";
                 errDiv.classList.remove('hidden');
             } finally {
                 btn.disabled = false;

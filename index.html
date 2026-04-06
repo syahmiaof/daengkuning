@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademi Persilatan Daeng Kuning CMS</title>
+    <title>Akademi Persilatan Daeng Kuning CMS | Akademi Persilatan Daeng Kuning</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -245,18 +245,19 @@
 
         @media (max-width: 768px) {
             .hero-character-container {
-                height: 400px;
-                margin-top: 1rem;
+                height: 380px;
+                margin-top: 0rem;
+                align-items: flex-start;
             }
 
             .fighter-img-new {
-                max-width: 400px;
-                width: 100%;
+                max-width: 480px;
+                width: 150%;
+                transform: scale(1.15) translateY(-20px);
             }
 
             .fighter-img-new:hover {
-                transform: scale(1.05) translateY(-5px);
-                /* Safely reduced scale for mobile */
+                transform: scale(1.2) translateY(-25px);
             }
         }
 
@@ -332,13 +333,28 @@
 
                 <!-- Mobile Menu Button -->
                 <div class="md:hidden flex items-center">
-                    <button class="text-silat-gold focus:outline-none">
+                    <button id="mobile-menu-open" onclick="document.getElementById('mobile-menu').classList.toggle('translate-x-full'); document.body.style.overflow='hidden';" class="text-silat-gold focus:outline-none">
                         <i class='bx bx-menu-alt-right text-4xl'></i>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-silat-dark/95 backdrop-blur-xl z-[60] transform translate-x-full transition-transform duration-300 md:hidden flex flex-col pt-24 px-6">
+        <button id="mobile-close-btn" onclick="document.getElementById('mobile-menu').classList.toggle('translate-x-full'); document.body.style.overflow='auto';" class="absolute top-6 right-6 text-silat-gold hover:text-white transition-colors">
+            <i class='bx bx-x text-5xl'></i>
+        </button>
+        <div class="flex flex-col space-y-6 text-center mt-10">
+            <a href="about.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Sejarah</a>
+            <a href="warisan.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Warisan</a>
+            <a href="gallery.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Galeri</a>
+            <a href="koleksi.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium">Koleksi</a>
+            <a href="contact.html" class="text-xl text-gray-300 hover:text-silat-gold font-medium border-b border-white/10 pb-6">Hubungi Kami</a>
+            <a href="login.html" class="inline-block mt-4 px-8 py-4 rounded-full bg-silat-gold text-silat-dark font-bold text-xl shadow-[0_0_20px_rgba(212,175,55,0.4)]">Portal Ahli</a>
+        </div>
+    </div>
 
     <section class="relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden">
         <!-- Full-Screen Cinematic Video Background -->
@@ -366,25 +382,25 @@
                 <span
                     class="inline-block py-1 px-5 rounded-full bg-silat-gold/10 border border-silat-gold/30 text-silat-gold text-xs md:text-sm font-semibold tracking-widest mb-6 uppercase transition-all duration-300 hover:bg-silat-gold hover:text-silat-dark hover:shadow-[0_0_15px_rgba(212,175,55,0.4)] cursor-default">BANGSA BERTAUHID</span>
 
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 md:mb-6 leading-tight">
                     Mewarisi Seni,<br />
                     <span
                         class="text-premium-gold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Membina
                         Jati Diri</span>
                 </h1>
 
-                <p class="text-base md:text-xl text-gray-400 mb-10 max-w-2xl leading-relaxed">
+                <p class="text-sm sm:text-base md:text-xl text-gray-400 mb-8 md:mb-10 max-w-2xl leading-relaxed">
                     Platform rasmi Akademi Persilatan Daeng Kuning. Sesuai untuk semua peringkat umur bagi melahirkan
                     pesilat yang tangkas, sihat dan berdisiplin tinggi.
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-start justify-start gap-4">
                     <a href="contact.html"
-                        class="px-8 py-4 rounded-full bg-silat-gold text-silat-dark font-bold text-lg transition-all duration-300 hover:scale-105 hover:bg-yellow-400 hover:shadow-[0_0_35px_rgba(212,175,55,0.8)] shadow-[0_0_20px_rgba(212,175,55,0.5)] text-center w-full sm:w-auto">
+                        class="px-8 py-4 rounded-full bg-silat-gold text-silat-dark font-bold text-lg transition-all duration-300 hover:scale-[1.03] hover:bg-yellow-400 hover:shadow-[0_0_35px_rgba(212,175,55,0.8)] shadow-[0_0_20px_rgba(212,175,55,0.5)] text-center w-full md:w-auto">
                         Daftar Sekarang
                     </a>
                     <a href="about.html"
-                        class="px-8 py-4 rounded-full bg-transparent border border-gray-600 text-white font-medium text-lg transition-all duration-300 hover:scale-105 hover:border-silat-gold hover:bg-silat-gold/10 hover:text-silat-gold hover:shadow-[0_0_20px_rgba(212,175,55,0.25)] text-center w-full sm:w-auto">
+                        class="px-8 py-4 rounded-full bg-transparent border border-gray-600 text-white font-medium text-lg transition-all duration-300 hover:scale-[1.03] hover:border-silat-gold hover:bg-silat-gold/10 hover:text-silat-gold hover:shadow-[0_0_20px_rgba(212,175,55,0.25)] text-center w-full md:w-auto">
                         Ketahui Lebih Lanjut
                     </a>
                 </div>
@@ -394,7 +410,8 @@
             <div class="lg:w-1/2 w-full mt-12 lg:mt-0 flex justify-center lg:justify-end relative">
                 <div class="hero-character-container">
                     <!-- Official Daeng Kuning Warrior Image -->
-                    </div>
+                    <img src="assets/img/ahmad.png" alt="Pesilat Daeng Kuning" class="fighter-img-new" fetchpriority="high">
+                </div>
             </div>
 
         </div>

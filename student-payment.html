@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lapor Bayaran - Portal Pendekar</title>
+    <title>Lapor Bayaran - Portal Pendekar | Akademi Persilatan Daeng Kuning</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -17,9 +17,11 @@
         .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
     </style>
 
-    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 <body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex relative">
+
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden transition-opacity lg:hidden" onclick="toggleSidebar()"></div>
     
     <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gold/20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.6)]">
         <div class="h-20 flex items-center px-4 md:px-6 border-b border-gold/10 relative overflow-hidden">
@@ -34,17 +36,23 @@
         </div>
         <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
             <ul class="space-y-2">
-                <li><a href="dashboard-student.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-home w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Ringkasan Pangkalan</span></a></li>
-                <li><a href="student-payment.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all"><i class="fas fa-receipt w-6"></i><span class="font-medium">Lapor Bayaran Yuran</span></a></li>
-                <li><a href="student-profile.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-id-badge w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Profil Kebanggaan</span></a></li>
+                <li><a href="dashboard-student.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-home w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Laman Utama</span></a></li>
+                <li><a href="student-payment.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all"><i class="fas fa-receipt w-6"></i><span class="font-medium">Sejarah Yuran</span></a></li>
+                <li><a href="student-silibus.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-book-open w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Silibus & Bengkung</span></a></li>
+                <li><a href="student-profile.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-id-badge w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Profil & Kad ID</span></a></li>
             </ul>
             <button onclick="logout()" class="mt-auto w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400"><i class="fas fa-sign-out-alt w-6"></i><span class="font-medium">Log Keluar</span></button>
         </nav>
     </aside>
 
     <main class="flex-1 flex flex-col min-h-screen lg:ml-72 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
-        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center px-6 lg:px-10 z-30">
-            <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Penyata <span class="text-gold">Yuran</span></h2>
+        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-gray-300 hover:text-gold focus:outline-none transition-colors" onclick="toggleSidebar()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Penyata <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">Yuran</span></h2>
+            </div>
         </header>
 
         <div class="flex-1 p-6 lg:p-10 flex items-center justify-center">
@@ -137,5 +145,13 @@
     <script src="js/database.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/student.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
 </body>
 </html>

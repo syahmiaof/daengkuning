@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pentadbir - Portal Pendekar</title>
+    <title>Dashboard Utama | Akademi Persilatan Daeng Kuning</title>
 
     <!-- Security Guard (Auth Guard) -->
     <script>
@@ -14,7 +14,7 @@
         } else {
             try {
                 const user = JSON.parse(sessionStr);
-                if (user.role !== 'admin') {
+                if (user.role !== 'admin' && user.role !== 'superadmin') {
                     alert('Akses Ditolak! Khusus untuk pentadbir sahaja.');
                     window.location.replace('login.html');
                 }
@@ -81,7 +81,7 @@
         }
     </style>
 
-    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 
 <body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
@@ -138,7 +138,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="admin-pengurusan.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                    <a href="admin-pengurusan.html" class="rbac-superadmin hidden flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
                         <i class="fas fa-user-shield w-6 group-hover:text-gold transition-colors"></i>
                         <span class="font-medium tracking-wide">Urus Pentadbir</span>
                     </a>
@@ -166,8 +166,8 @@
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
                 <div>
-                    <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Selamat Datang, <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">Pentadbir</span></h2>
-                    <p class="text-xs sm:text-sm text-gray-400 font-light" id="current-date">Ahad, 1 Januari 2026</p>
+                    <h2 class="font-serif text-lg sm:text-2xl font-bold text-white tracking-wide leading-tight sm:leading-normal">Selamat Datang, <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200 block sm:inline">Pentadbir</span></h2>
+                    <p class="text-[10px] sm:text-sm text-gray-400 font-light mt-0.5 sm:mt-0" id="current-date">Ahad, 1 Januari 2026</p>
                 </div>
             </div>
             
@@ -195,11 +195,11 @@
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-gold/5 blur-2xl group-hover:bg-gold/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
-                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1">Jumlah Ahli</p>
-                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest">0</h3>
+                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-gold">Jumlah Ahli</p>
+                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
                         </div>
-                        <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold shadow-inner">
-                            <i class="fas fa-users text-xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold shadow-inner group-hover:bg-gold/20 group-hover:border-gold/50 transition-all duration-300">
+                            <i class="fas fa-users text-xl group-hover:animate-bounce"></i>
                         </div>
                     </div>
                 </div>
@@ -209,11 +209,11 @@
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-red-500/5 blur-2xl group-hover:bg-red-500/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
-                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1">Yuran Tertunggak</p>
-                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest text-red-100">RM 0.00</h3>
+                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-red-400">Yuran Tertunggak</p>
+                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest text-red-100 group-hover:scale-105 origin-left transition-transform duration-300">RM 0.00</h3>
                         </div>
-                        <div class="w-12 h-12 rounded-full bg-red-900/20 border border-red-500/30 flex items-center justify-center text-red-400 shadow-inner">
-                            <i class="fas fa-exclamation-triangle text-xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-red-900/20 border border-red-500/30 flex items-center justify-center text-red-400 shadow-inner group-hover:bg-red-500/30 group-hover:border-red-500 transition-all duration-300">
+                            <i class="fas fa-exclamation-triangle text-xl group-hover:animate-pulse group-hover:rotate-12 transition-all duration-300"></i>
                         </div>
                     </div>
                 </div>
@@ -223,11 +223,53 @@
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-blue-500/5 blur-2xl group-hover:bg-blue-500/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
-                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1">Pendaftaran Baru (Bulan Ini)</p>
-                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest text-blue-100">0</h3>
+                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-blue-400">Pendaftaran Baru (Bulan Ini)</p>
+                            <h3 id="stat-new" class="text-4xl font-bold text-white font-serif tracking-widest text-blue-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
                         </div>
-                        <div class="w-12 h-12 rounded-full bg-blue-900/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner">
-                            <i class="fas fa-user-plus text-xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-blue-900/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner group-hover:bg-blue-500/30 group-hover:border-blue-500 transition-all duration-300">
+                            <i class="fas fa-user-plus text-xl group-hover:animate-bounce transition-all duration-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stat Card 4 (Hebahan) -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                    <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-purple-500/5 blur-2xl group-hover:bg-purple-500/10 transition-colors"></div>
+                    <div class="flex items-start justify-between relative z-10">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-purple-400">Hebahan Aktif</p>
+                            <h3 id="stat-hebahan" class="text-4xl font-bold text-white font-serif tracking-widest text-purple-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-purple-900/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-inner group-hover:bg-purple-500/30 group-hover:border-purple-500 transition-all duration-300">
+                            <i class="fas fa-bullhorn text-xl group-hover:-rotate-12 group-hover:scale-125 transition-all duration-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stat Card 5 (Cawangan) -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                    <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-emerald-500/5 blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
+                    <div class="flex items-start justify-between relative z-10">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-emerald-400">Cawangan Gelanggang</p>
+                            <h3 id="stat-gelanggang" class="text-4xl font-bold text-white font-serif tracking-widest text-emerald-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-emerald-900/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner group-hover:bg-emerald-500/30 group-hover:border-emerald-500 transition-all duration-300">
+                            <i class="fas fa-map-marked-alt text-xl group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:scale-110 transition-all duration-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stat Card 6 (Admin) -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                    <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-orange-500/5 blur-2xl group-hover:bg-orange-500/10 transition-colors"></div>
+                    <div class="flex items-start justify-between relative z-10">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-orange-400">Total Pentadbir</p>
+                            <h3 id="stat-admin" class="text-4xl font-bold text-white font-serif tracking-widest text-orange-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-orange-900/20 border border-orange-500/30 flex items-center justify-center text-orange-400 shadow-inner group-hover:bg-orange-500/30 group-hover:border-orange-500 transition-all duration-500">
+                            <i class="fas fa-user-shield text-xl group-hover:animate-spin"></i>
                         </div>
                     </div>
                 </div>
@@ -264,32 +306,17 @@
                 </div>
             </div>
 
-            <!-- UI: Bengkung Pipeline -->
-            <div class="glass-panel rounded-2xl border-white/5 shadow-xl overflow-hidden mb-10">
-                <div class="px-6 py-4 border-b border-white/5 bg-gradient-to-r from-black/40 to-yellow-900/10">
-                    <h3 class="font-serif text-lg font-bold text-gold flex items-center">
-                        <i class="fas fa-award mr-3"></i> Talian Paip Ujian Bengkung (> 6 Bulan Berkhidmat)
-                    </h3>
-                </div>
-                <div class="overflow-x-auto p-4">
-                    <table class="w-full text-left border-collapse">
-                        <tbody class="text-sm divide-y divide-white/5" id="pipelineTable">
-                            <tr><td class="text-center text-gray-500 py-8 text-xs font-light"><i class="fas fa-spinner fa-spin mr-2"></i>Menganalisa Calon Berpotensi...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
             <!-- Charts Area -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-                <div class="glass-panel rounded-2xl p-6 border-gold/30 relative shadow-[0_0_20px_rgba(212,175,55,0.05)]">
-                    <h3 class="font-serif text-lg font-bold text-white mb-6 tracking-wide drop-shadow-md"><i class="fas fa-chart-line text-gold mr-3"></i> Pertumbuhan Ahli Baru</h3>
-                    <div class="relative h-64 w-full">
+                <div class="glass-panel rounded-2xl p-6 border-gold/30 relative shadow-[0_0_20px_rgba(212,175,55,0.05)] group hover:shadow-[0_0_40px_rgba(212,175,55,0.2)] hover:-translate-y-2 transition-all duration-500">
+                    <h3 class="font-serif text-lg font-bold text-white mb-6 tracking-wide drop-shadow-md flex items-center"><i class="fas fa-chart-line text-gold mr-3 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300"></i> Pertumbuhan Ahli Baru</h3>
+                    <div class="relative h-64 w-full group-hover:scale-[1.02] transition-transform duration-500">
                         <canvas id="memberGrowthChart"></canvas>
                     </div>
                 </div>
-                <div class="glass-panel rounded-2xl p-6 border-gold/30 relative shadow-[0_0_20px_rgba(212,175,55,0.05)]">
-                    <h3 class="font-serif text-lg font-bold text-white mb-6 tracking-wide drop-shadow-md"><i class="fas fa-chart-pie text-gold mr-3"></i> Status Kutipan Yuran (RM)</h3>
+                <div class="glass-panel rounded-2xl p-6 border-gold/30 relative shadow-[0_0_20px_rgba(212,175,55,0.05)] group hover:shadow-[0_0_40px_rgba(212,175,55,0.2)] hover:-translate-y-2 transition-all duration-500">
+                    <h3 class="font-serif text-lg font-bold text-white mb-6 tracking-wide drop-shadow-md flex items-center"><i class="fas fa-chart-pie text-gold mr-3 group-hover:rotate-[360deg] transition-all duration-700"></i> Status Kutipan Yuran (RM)</h3>
                     <div class="relative h-64 w-full flex justify-center">
                         <canvas id="financeChart"></canvas>
                     </div>
@@ -336,7 +363,7 @@
     </main>
 
     <!-- Floating Action Button -->
-    <button onclick="ui.showModal('add-member-modal')" class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Ahli Baru">
+    <button onclick="ui.showModal('add-member-modal')" class="rbac-superadmin hidden fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Ahli Baru">
         <i class="fas fa-plus text-charcoal text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
     </button>
 

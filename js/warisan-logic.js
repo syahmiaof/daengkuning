@@ -15,14 +15,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Kamera diletakkan di posisi permulaan yang lebih jauh supaya nampak seluruh batu
     camera.position.set(0, 0, 25);
     
+    const isMobile = window.innerWidth <= 768;
+
     const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
         alpha: true,
-        antialias: true
+        antialias: !isMobile // Matikan pelicin (antialias) pada peranti mudah alih
     });
     
     renderer.setSize(window.innerWidth, window.innerHeight); // Buka panggung skrin penuh!
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isMobile ? 1.0 : Math.min(window.devicePixelRatio, 1.25)); // Kuasa rendering terhad kepada 1.0 di telefon
+
+    if (isMobile) {
+        // Matikan sistem hujan bintang zarah belakang supaya Canvas kurang beban
+        const particlesLayer = document.getElementById('particles-js');
+        if (particlesLayer) particlesLayer.style.display = 'none';
+    }
 
     // 2. Lighting Setup (Ditingkatkan kecerahan maksimum)
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.5); // Kecerahan sekeliling dinaikkan
@@ -51,8 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sistem Autocari Fail Model Sebenar
     const loader = new THREE.GLTFLoader();
     
+    // Smart Asset Loading: Desktop(71MB) vs Mobile(4MB) 
+    const modelTarget = isMobile ? 'assets/3d/keris2.glb' : 'assets/3d/keris3.glb';
     loader.load(
-        'assets/3d/keris3.glb', // Cari fail model terbaru
+        modelTarget, 
+
         function(gltf) {
             const realKeris = gltf.scene;
             
@@ -76,14 +87,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             keris.add(realKeris);
             console.log("Sistem: Keris Surakarta Berjaya Digunakan dengan Saiz Ideal!");
+            hideLoader();
         },
         undefined, // Loading progress
         function(error) {
             // Kalau gagal cari fail
             console.warn("Sistem: Fail assets/3d/keris_surakarta.glb belum wujud. Guna Keris Sementara.");
             buildPlaceholderKeris(keris);
+            hideLoader();
         }
     );
+
+    // Fungsi Padam Loader
+    function hideLoader() {
+        const loader = document.getElementById('loader-overlay');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 1000);
+        }
+    }
 
     // Fungsi membina "Keris Geometri Berlatih"
     function buildPlaceholderKeris(groupObj) {

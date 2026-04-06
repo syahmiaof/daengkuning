@@ -78,3 +78,65 @@ window.ui = {
         }, 3000);
     }
 };
+
+// Global Admin Header & Superadmin RBAC Init
+document.addEventListener('DOMContentLoaded', () => {
+    const sessionStr = localStorage.getItem('userSession');
+    if (sessionStr) {
+        try {
+            const user = JSON.parse(sessionStr);
+            if (user.role === 'admin' || user.role === 'superadmin') {
+                const headerRight = document.querySelector('header .border-l.border-white\\/10');
+                if (headerRight && !document.getElementById('header-admin-name')) {
+                    const nameSpan = document.createElement('div');
+                    nameSpan.className = 'hidden md:block text-right mr-3 animate-fade-in';
+                    nameSpan.innerHTML = `<p class="text-xs text-gray-400 font-medium tracking-widest uppercase">Admin</p><p class="text-sm text-gold font-bold" id="header-admin-name">Memuatkan...</p>`;
+                    headerRight.insertBefore(nameSpan, headerRight.firstChild);
+
+                    if (typeof supabaseClient !== 'undefined') {
+                        supabaseClient.from('users').select('remarks').eq('username', user.username).single().then(resp => {
+                            const nm = resp.data?.remarks || user.username;
+                            const el = document.getElementById('header-admin-name');
+                            if(el) el.innerText = nm;
+                            
+                            user.remarks = nm;
+                            localStorage.setItem('userSession', JSON.stringify(user));
+                        }).catch(e => {
+                            const el = document.getElementById('header-admin-name');
+                            if(el) el.innerText = user.remarks || user.username;
+                        });
+                    } else {
+                        const el = document.getElementById('header-admin-name');
+                        if(el) el.innerText = user.remarks || user.username;
+                    }
+                }
+
+                // Superadmin RBAC Enforcement global observer
+                const isSuperAdmin = user.role && user.role.toLowerCase() === 'superadmin';
+                if (isSuperAdmin) {
+                    const elSA = document.querySelector('#header-admin-name');
+                    if (elSA) elSA.previousElementSibling.innerText = 'SUPERADMIN'; // Tukar title jadi superadmin
+                    
+                    // Reveal hidden access buttons globally
+                    const unhideSuperadmin = () => {
+                        document.querySelectorAll('.rbac-superadmin').forEach(el => {
+                            el.classList.remove('hidden');
+                        });
+                    };
+                    
+                    unhideSuperadmin(); // run once
+                    
+                    // Watch for any dynamically rendered elements (tables etc)
+                    const observer = new MutationObserver((mutations) => {
+                        let shouldUnhide = false;
+                        for(let mut of mutations) {
+                            if(mut.addedNodes.length > 0) shouldUnhide = true;
+                        }
+                        if(shouldUnhide) unhideSuperadmin();
+                    });
+                    observer.observe(document.body, { childList: true, subtree: true });
+                }
+            }
+        } catch(e) {}
+    }
+});

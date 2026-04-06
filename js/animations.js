@@ -101,57 +101,58 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // --- New Section: Authority Counter Entrance & Running Numbers ---
-        const counterSection = document.getElementById('authority-counter-section');
-        const counterItems = document.querySelectorAll('.authority-counter-item');
-        
-        if (counterSection && counterItems.length > 0) {
-            // First, Card Entrance Animation
-            gsap.set(counterItems, { opacity: 0, y: 40 });
-            gsap.to(counterItems, {
+    });
+
+    // --- New Section: Authority Counter Entrance & Running Numbers (RUNS ON ALL SCREEN SIZES) ---
+    const counterSection = document.getElementById('authority-counter-section');
+    const counterItems = document.querySelectorAll('.authority-counter-item');
+    
+    if (counterSection && counterItems.length > 0) {
+        // First, Card Entrance Animation
+        gsap.set(counterItems, { opacity: 0, y: 40 });
+        gsap.to(counterItems, {
+            scrollTrigger: {
+                trigger: counterSection,
+                start: "top 85%", // Trigger right before it enters completely
+                toggleActions: "play none none reverse"
+            },
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "back.out(1.2)"
+        });
+
+        // Second, Running Numbers Animation (Triggers ONLY ONCE)
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(stat => {
+            let targetVal = parseInt(stat.getAttribute('data-target'));
+            gsap.to({ val: 0 }, {
                 scrollTrigger: {
                     trigger: counterSection,
-                    start: "top 85%", // Trigger right before it enters completely
-                    toggleActions: "play none none reverse"
+                    start: "top 85%",
+                    once: true // Safety constraint: animate only once
                 },
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                stagger: 0.15,
-                ease: "back.out(1.2)"
+                val: targetVal,
+                duration: 1.5,
+                ease: "power1.inOut",
+                onUpdate: function() {
+                    stat.innerText = Math.round(this.targets()[0].val);
+                }
             });
+        });
+    }
 
-            // Second, Running Numbers Animation (Triggers ONLY ONCE)
-            const statNumbers = document.querySelectorAll('.stat-number');
-            statNumbers.forEach(stat => {
-                let targetVal = parseInt(stat.getAttribute('data-target'));
-                gsap.to({ val: 0 }, {
-                    scrollTrigger: {
-                        trigger: counterSection,
-                        start: "top 85%",
-                        once: true // Safety constraint: animate only once
-                    },
-                    val: targetVal,
-                    duration: 1.5,
-                    ease: "power1.inOut",
-                    onUpdate: function() {
-                        stat.innerText = Math.round(this.targets()[0].val);
-                    }
-                });
-            });
-        }
-
-        // --- New Section: Infinite Logo Scroll ---
-        const scrollTracks = document.querySelectorAll('.partner-scroll-track');
-        if (scrollTracks.length > 0) {
-            gsap.to(scrollTracks, {
-                xPercent: -100,
-                repeat: -1,
-                duration: 25,
-                ease: "linear"
-            });
-        }
-    });
+    // --- New Section: Infinite Logo Scroll (RUNS ON ALL SCREEN SIZES) ---
+    const scrollTracks = document.querySelectorAll('.partner-scroll-track');
+    if (scrollTracks.length > 0) {
+        gsap.to(scrollTracks, {
+            xPercent: -100,
+            repeat: -1,
+            duration: 25,
+            ease: "linear"
+        });
+    }
 
     // Mobile Specific Fallbacks (max-width: 767px)
     mm.add("(max-width: 767px)", () => {
@@ -166,4 +167,5 @@ document.addEventListener("DOMContentLoaded", () => {
            if (spans.length > 0) gsap.set(spans, { clearProps: "all" });
         }
     });
+
 });

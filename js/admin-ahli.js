@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!sessionStr) return;
     try {
         const user = JSON.parse(sessionStr);
-        if (user.role === 'admin') {
+        if (user.role === 'admin' || user.role === 'superadmin') {
             initAdminAhli();
         }
     } catch(e) {}
@@ -34,7 +34,7 @@ async function fetchAhliData() {
         const { data, error } = await supabaseClient
             .from('ahli')
             .select('id_ahli, nama, ic, no_tel, bengkung, gelanggang, tarikh_daftar')
-            .order('tarikh_daftar', { ascending: false });
+            .order('id_ahli', { ascending: true });
 
         if (error) throw error;
         
@@ -112,10 +112,10 @@ function renderTable(dataArray) {
             <td class="py-4 px-6 text-gray-400">${gelanggang}</td>
             <td class="py-4 px-6 text-gray-400">${window.utils.formatDateMy(dateRaw)}</td>
             <td class="py-4 px-6 text-right flex justify-end space-x-2">
-                <button onclick="openEditModal('${id}')" class="text-blue-400 hover:text-blue-300 transition-colors p-2 bg-blue-500/10 hover:bg-blue-500/20 rounded border border-blue-500/20" title="Kemaskini">
+                <button onclick="openEditModal('${id}')" class="rbac-superadmin hidden text-blue-400 hover:text-blue-300 transition-colors p-2 bg-blue-500/10 hover:bg-blue-500/20 rounded border border-blue-500/20" title="Kemaskini">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button onclick="confirmDelete('${id}')" class="text-red-400 hover:text-red-300 transition-colors p-2 bg-red-500/10 hover:bg-red-500/20 rounded border border-red-500/20" title="Padam">
+                <button onclick="confirmDelete('${id}')" class="rbac-superadmin hidden text-red-400 hover:text-red-300 transition-colors p-2 bg-red-500/10 hover:bg-red-500/20 rounded border border-red-500/20" title="Padam">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </td>
@@ -199,7 +199,8 @@ function confirmDelete(idAhli) {
                 .delete()
                 .eq('username', idAhli);
             
-            if (errUser) throw errUser;
+            // Ignore error because new students use Supabase native Auth and won't have a record here
+            // if (errUser) throw errUser;
 
             // STEP 2: Delete parent record in 'ahli' table
             const { error: errAhli } = await supabaseClient
@@ -250,21 +251,12 @@ function setupFormListener() {
                 const { error: ahliError } = await supabaseClient.from('ahli').insert(payloadAhli);
                 if (ahliError) throw ahliError;
 
-                // 2. Auto Create Account
-                const { error: userError } = await supabaseClient.from('users').insert({
-                    id: crypto.randomUUID(),
-                    username: payloadAhli.id_ahli,
-                    password: 'password123',
-                    role: 'student'
-                });
-                if (userError) throw userError;
-
                 // Phase 3: Audit Trail
                 if (window.utils && window.utils.createLog) {
                     window.utils.createLog('Pendaftaran Ahli', `${payloadAhli.nama} (${payloadAhli.id_ahli})`);
                 }
 
-                alert(`Ahli ditambah.\nLog Masuk: ${payloadAhli.id_ahli}\nKata Laluan: password123`);
+                alert(`Ahli berjaya didaftarkan ke pangkalan data.\nSila maklumkan Ahli untuk membuat \"Pendaftaran Akaun Baru\" di laman Log Masuk menggunakan ID dan Nombor K/P mereka.`);
 
             } else if (mode === 'edit') {
                 // 1. Update Ahli ONLY 
@@ -297,3 +289,69 @@ function setupFormListener() {
         }
     });
 }
+
+// CSV Import Logic
+window.handleImportCSV = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    window.ui.showConfirm('Pengesahan Import', `Teruskan import data dari fail <b>${file.name}</b>? Sila pastikan lajur mematuhi: <i>ID Ahli, Nama Penuh, No IC, No. Telefon, Bengkung, Gelanggang, Tarikh Daftar</i>.`, () => {
+        
+        window.ui.hideModal('global-confirm-modal');
+        
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: async function(results) {
+                if (results.errors && results.errors.length > 0) {
+                    window.ui.showToast('Terdapat ralat semasa membaca fail CSV.', 'error');
+                    console.error("PapaParse errors:", results.errors);
+                    return;
+                }
+
+                const data = results.data;
+                if (!data || data.length === 0) {
+                    window.ui.showToast('Fail CSV kosong.', 'error');
+                    return;
+                }
+
+                const toInsert = data.map(row => {
+                    const keys = Object.keys(row);
+                    const icRaw = row['No IC'] || row['IC'] || row[keys[2]] || '';
+                    const telRaw = row['No. Telefon'] || row['Tel'] || row[keys[3]] || '';
+                    return {
+                        id_ahli: row['ID Ahli'] || row[keys[0]],
+                        nama: row['Nama Penuh'] || row['Nama'] || row[keys[1]],
+                        ic: icRaw.replace(/[^a-zA-Z0-9-]/g, ''), 
+                        no_tel: telRaw.replace(/[^0-9+-]/g, ''),
+                        bengkung: row['Bengkung'] || row[keys[4]],
+                        gelanggang: row['Gelanggang'] || row[keys[5]],
+                        tarikh_daftar: row['Tarikh Daftar'] || row[keys[6]] || new Date().toISOString()
+                    };
+                }).filter(r => r.id_ahli && r.nama); 
+
+                if (toInsert.length === 0) {
+                    window.ui.showToast('Tiada rekod sah dijumpai dalam CSV.', 'error');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabaseClient
+                        .from('ahli')
+                        .upsert(toInsert, { onConflict: 'id_ahli' });
+                    
+                    if (error) throw error;
+                    
+                    window.ui.showToast(`Berjaya import/kemaskini ${toInsert.length} rekod ahli!`, 'success');
+                    fetchAhliData(); 
+                } catch(e) {
+                    window.ui.showToast('Gagal import ke pangkalan data.', 'error');
+                    console.error(e);
+                }
+                
+                const btn = document.getElementById('importExcelBtn');
+                if(btn) btn.value = '';
+            }
+        });
+    });
+};

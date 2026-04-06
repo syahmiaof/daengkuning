@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hebahan Pengumuman - Portal Pendekar</title>
+    <title>Hebahan Pengumuman - Portal Pendekar | Akademi Persilatan Daeng Kuning</title>
 
     <script>
         const sessionStr = localStorage.getItem('userSession');
@@ -13,7 +13,7 @@
         } else {
             try {
                 const user = JSON.parse(sessionStr);
-                if (user.role !== 'admin') {
+                if (user.role !== 'admin' && user.role !== 'superadmin') {
                     alert('Akses Ditolak! Khusus untuk pentadbir sahaja.');
                     window.location.replace('login.html');
                 }
@@ -60,7 +60,7 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
     </style>
-    <link rel="icon" type="image/png" href="assets/img/dkf.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 
 <body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
@@ -112,7 +112,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="admin-pengurusan.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                    <a href="admin-pengurusan.html" class="rbac-superadmin hidden flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
                         <i class="fas fa-user-shield w-6 group-hover:text-gold transition-colors"></i>
                         <span class="font-medium tracking-wide">Urus Pentadbir</span>
                     </a>
@@ -149,8 +149,8 @@
             <!-- Controls Bar -->
             <div class="glass-panel p-6 rounded-2xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-gold/30">
                 <p class="text-sm text-gray-400">Notis ini akan disiarkan sebagai teks bergerak di dalam Papan Pemuka Pelajar (Student Dashboard).</p>
-                <button onclick="ui.showModal('add-notis-modal')" class="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold rounded-lg shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:scale-105 transition-all text-sm flex items-center justify-center">
-                    <i class="fas fa-plus mr-2"></i> Siaran Baru
+                <button onclick="ui.showModal('add-notis-modal')" class="rbac-superadmin hidden w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold rounded-lg shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:scale-105 transition-all text-sm flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i> Tambah Notis Baru
                 </button>
             </div>
 
@@ -168,8 +168,8 @@
     </main>
 
     <!-- Floating Action Button -->
-    <button onclick="ui.showModal('add-notis-modal')" class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Notis">
-        <i class="fas fa-plus text-charcoal text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
+    <button onclick="ui.showModal('add-notis-modal')" class="rbac-superadmin hidden fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Notis">
+        <i class="fas fa-bullhorn text-charcoal text-xl group-hover:-rotate-12 transition-transform duration-300"></i>
     </button>
 
     <!-- Add Notis Modal -->
@@ -248,6 +248,20 @@
                     .select('*')
                     .order('created_at', { ascending: false });
 
+                const { data: likesData } = await supabaseClient
+                    .from('notis_interaksi')
+                    .select('id_notis, ahli!inner(nama)')
+                    .eq('is_liked', true);
+
+                let mapLikes = {};
+                if(likesData) {
+                    likesData.forEach(l => {
+                        if(!mapLikes[l.id_notis]) mapLikes[l.id_notis] = [];
+                        if (l.ahli) mapLikes[l.id_notis].push(l.ahli.nama);
+                    });
+                }
+                window.globalLikesMap = mapLikes;
+
                 loader.classList.add('hidden');
                 if (error) throw error;
 
@@ -258,9 +272,17 @@
 
                 let html = '';
                 data.forEach(x => {
+                    let responders = mapLikes[x.id] || [];
+                    let badgeHtml = '';
+                    if(responders.length > 0) {
+                        badgeHtml = `<button onclick="viewLikes('${x.id}')" class="text-[11px] font-bold px-3 py-1 bg-gold/10 text-gold rounded hover:bg-gold/20 transition-colors mt-3 uppercase tracking-wide border border-gold/20 shadow"><i class="fas fa-users mr-1"></i> ${responders.length} Respon</button>`;
+                    } else {
+                        badgeHtml = `<span class="text-[11px] font-bold px-3 py-1 bg-white/5 text-gray-500 rounded mt-3 uppercase tracking-wide inline-block border border-white/5"><i class="fas fa-minus mr-1"></i> 0 Respon</span>`;
+                    }
+
                     html += `
                         <div class="flex items-start bg-white/5 p-5 rounded-xl border border-white/10 hover:border-gold/30 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-gold/10 text-gold flex items-center justify-center text-lg mr-4 flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gold/10 text-gold flex items-center justify-center text-lg mr-4 flex-shrink-0 mt-1">
                                 <i class="fas fa-bell"></i>
                             </div>
                             <div class="flex-1">
@@ -269,9 +291,10 @@
                                     <span class="text-[10px] text-gray-500"><i class="far fa-clock mr-1"></i> ${new Date(x.created_at).toLocaleDateString()}</span>
                                 </div>
                                 <p class="text-sm text-gray-400 mb-2">${x.kandungan}</p>
+                                ${badgeHtml}
                             </div>
                             <div class="ml-4">
-                                <button onclick="deleteNotis('${x.id}', '${x.tajuk}')" class="w-8 h-8 rounded bg-red-900/20 hover:bg-red-500/20 text-red-500 hover:text-red-400 border border-red-500/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100" title="Tarik Balik Siaran">
+                                <button onclick="deleteNotis('${x.id}', '${x.tajuk}')" class="rbac-superadmin hidden w-8 h-8 rounded bg-red-900/20 hover:bg-red-500/20 text-red-500 hover:text-red-400 border border-red-500/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100" title="Tarik Balik Siaran">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
@@ -283,6 +306,45 @@
             } catch (err) {
                 console.error(err);
                 ui.showToast("Gagal memuatkan data pengumuman.", "error");
+            }
+        }
+
+        window.viewLikes = function(notisId) {
+            if(!window.globalLikesMap || !window.globalLikesMap[notisId]) return;
+            const names = window.globalLikesMap[notisId];
+            if(names.length === 0) return;
+            
+            let listHtml = names.map(n => `<div class="py-2.5 border-b border-white/5 text-gray-300 text-sm font-medium tracking-wide"><i class="fas fa-check-circle text-gold mr-3"></i> ${n}</div>`).join('');
+            
+            const div = document.createElement('div');
+            div.id = 'likesModal';
+            div.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4 opacity-0 transition-opacity duration-300';
+            div.innerHTML = `
+                <div class="bg-charcoal border border-gold/30 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] transform scale-95 transition-transform duration-300">
+                    <div class="px-5 py-4 border-b border-white/10 flex justify-between items-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-black/40">
+                        <h3 class="font-bold text-white tracking-wide uppercase"><i class="fas fa-thumbs-up text-gold mr-2 animate-bounce"></i> Rekod Maklum Basa</h3>
+                        <button onclick="closeLikesModal()" class="text-gray-400 hover:text-red-500 transition-colors"><i class="fas fa-times text-lg"></i></button>
+                    </div>
+                    <div class="p-5 flex-1 overflow-y-auto">
+                        ${listHtml}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(div);
+            
+            // simple animate in
+            requestAnimationFrame(() => {
+                div.classList.remove('opacity-0');
+                div.querySelector('div').classList.remove('scale-95');
+            });
+        }
+
+        window.closeLikesModal = function() {
+            const div = document.getElementById('likesModal');
+            if(div) {
+                div.classList.add('opacity-0');
+                div.querySelector('div').classList.add('scale-95');
+                setTimeout(() => div.remove(), 300);
             }
         }
 

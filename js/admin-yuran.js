@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!sessionStr) return;
     try {
         const user = JSON.parse(sessionStr);
-        if (user.role === 'admin') {
+        if (user.role === 'admin' || user.role === 'superadmin') {
             initAdminYuran();
         }
     } catch(e) {}
@@ -130,8 +130,8 @@ function renderTable(dataset) {
             // Only show approve/reject for pending
             actionBtns = `
                 <div class="flex justify-end gap-2">
-                    <button onclick="approveYuran('${pkId}')" class="w-8 h-8 rounded bg-green-500/10 text-green-500 border border-green-500/30 hover:bg-green-500 hover:text-white transition-all shadow-[0_0_10px_rgba(34,197,94,0.1)]" title="Luluskan"><i class="fas fa-check"></i></button>
-                    <button onclick="promptRejectYuran('${pkId}')" class="w-8 h-8 rounded bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.1)]" title="Tolak Laluan"><i class="fas fa-times"></i></button>
+                    <button onclick="approveYuran('${pkId}')" class="rbac-superadmin hidden w-8 h-8 rounded bg-green-500/10 text-green-500 border border-green-500/30 hover:bg-green-500 hover:text-white transition-all shadow-[0_0_10px_rgba(34,197,94,0.1)]" title="Luluskan"><i class="fas fa-check"></i></button>
+                    <button onclick="promptRejectYuran('${pkId}')" class="rbac-superadmin hidden w-8 h-8 rounded bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.1)]" title="Tolak Laluan"><i class="fas fa-times"></i></button>
                 </div>
             `;
         } else if (statusNorm === 'paid') {

@@ -23,10 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Admin uses Legacy Custom DB Login (jadual users)
                     const { data, error } = await supabaseClient
                         .from('users')
-                        .select('id, username, role')
+                        .select('id, username, role, remarks')
                         .eq('username', usernameInput)
                         .eq('password', passwordInput)
-                        .eq('role', 'admin')
                         .single();
 
                     if (error || !data) throw new Error("Akses Pentadbir Ditolak");
@@ -34,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('userSession', JSON.stringify({
                         id: data.id,
                         username: data.username,
-                        role: data.role
+                        role: data.role,
+                        remarks: data.remarks
                     }));
                     window.location.href = 'dashboard-admin.html';
                 } else {
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const session = localStorage.getItem('userSession');
         if (session) {
             const user = JSON.parse(session);
-            if (user.role === 'admin') {
+            if (user.role === 'admin' || user.role === 'superadmin') {
                 window.location.replace('dashboard-admin.html');
             } else if (user.role === 'student') {
                 window.location.replace('dashboard-student.html');

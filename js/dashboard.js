@@ -14,7 +14,7 @@ function checkAuth() {
     
     try {
         const user = JSON.parse(sessionStr);
-        return user.role === 'admin';
+        return user.role === 'admin' || user.role === 'superadmin';
     } catch (e) {
         return false;
     }
@@ -71,20 +71,17 @@ window.formatAdminIC = function(el) {
 // 2. Real-time Statistics Logic
 async function fetchStats() {
     try {
-        // Fetch Total Ahli (Count rows in ahli table)
+        // Fetch Total Ahli
         const { count: totalAhli, error: errAhli } = await supabaseClient
             .from('ahli')
             .select('*', { count: 'exact', head: true });
         
         if (!errAhli) {
-            document.querySelector('#total-ahli-stat, h3.text-4xl.font-bold').innerText = totalAhli || 0;
-            // Since we don't have explicit IDs on all h3s, let's safely target the first one or use array
-            // Wait, let's select elements by index inside the grid.
             const statHeaders = document.querySelectorAll('.grid h3.text-4xl');
             if (statHeaders.length >= 1) statHeaders[0].innerText = totalAhli || 0;
         }
 
-        // Fetch Yuran Tertunggak (Sum jumlah in yuran where status == 'Pending')
+        // Fetch Yuran Tertunggak
         const { data: yuranData, error: errYuran } = await supabaseClient
             .from('yuran')
             .select('jumlah')
@@ -99,7 +96,7 @@ async function fetchStats() {
             if (statHeaders.length >= 2) statHeaders[1].innerText = 'RM 0.00';
         }
 
-        // Kira 'Pendaftaran Baru' (untuk bulan semasa)
+        // Kira 'Pendaftaran Baru'
         const date = new Date();
         const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).toISOString();
         const { count: newAhliCount, error: errNew } = await supabaseClient
@@ -108,8 +105,40 @@ async function fetchStats() {
             .gte('tarikh_daftar', firstDayOfMonth);
             
         if (!errNew && newAhliCount !== null) {
-            const statHeaders = document.querySelectorAll('.grid h3.text-4xl');
-            if (statHeaders.length >= 3) statHeaders[2].innerText = newAhliCount;
+            const el = document.getElementById('stat-new');
+            if(el) el.innerText = newAhliCount;
+            else {
+                const statHeaders = document.querySelectorAll('.grid h3.text-4xl');
+                if (statHeaders.length >= 3) statHeaders[2].innerText = newAhliCount;
+            }
+        }
+
+        // Fetch Hebahan
+        const { count: totalHebahan, error: errHebahan } = await supabaseClient
+            .from('pengumuman')
+            .select('*', { count: 'exact', head: true });
+        if (!errHebahan) {
+            const el = document.getElementById('stat-hebahan');
+            if (el) el.innerText = totalHebahan || 0;
+        }
+
+        // Fetch Gelanggang
+        const { count: totalGelanggang, error: errGelanggang } = await supabaseClient
+            .from('gelanggang')
+            .select('*', { count: 'exact', head: true });
+        if (!errGelanggang) {
+            const el = document.getElementById('stat-gelanggang');
+            if (el) el.innerText = totalGelanggang || 0;
+        }
+
+        // Fetch Admin
+        const { count: totalAdmin, error: errAdmin } = await supabaseClient
+            .from('users')
+            .select('*', { count: 'exact', head: true })
+            .eq('role', 'admin');
+        if (!errAdmin) {
+            const el = document.getElementById('stat-admin');
+            if (el) el.innerText = totalAdmin || 0;
         }
 
     } catch (err) {
@@ -155,8 +184,8 @@ async function fetchRecentMembers() {
                     <td class="py-4 px-6 text-gray-400">${dateStr}</td>
                     <td class="py-4 px-6">${statusYuranHtml}</td>
                     <td class="py-4 px-6 text-right flex justify-end space-x-2">
-                        <button class="text-blue-400 hover:text-blue-300 transition-colors p-2 bg-blue-500/10 hover:bg-blue-500/20 rounded border border-blue-500/20" title="Kemaskini"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-400 hover:text-red-300 transition-colors p-2 bg-red-500/10 hover:bg-red-500/20 rounded border border-red-500/20" title="Padam"><i class="fas fa-trash-alt"></i></button>
+                        <button class="rbac-superadmin hidden text-blue-400 hover:text-blue-300 transition-colors p-2 bg-blue-500/10 hover:bg-blue-500/20 rounded border border-blue-500/20" title="Kemaskini"><i class="fas fa-edit"></i></button>
+                        <button class="rbac-superadmin hidden text-red-400 hover:text-red-300 transition-colors p-2 bg-red-500/10 hover:bg-red-500/20 rounded border border-red-500/20" title="Padam"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -246,7 +275,58 @@ function setupAddMemberLogic() {
 }
 
 // 1. Data Visualization (The Graphs in Gold & Black Theme)
-function initCharts() {
+async function initCharts() {
+    // Fetch Dynamic Data First
+    let lineLabels = ['Nov', 'Dis', 'Jan', 'Feb', 'Mac', 'Apr'];
+    let lineData = [0, 0, 0, 0, 0, 0];
+    let doughnutData = [0, 0];
+
+    try {
+        // --- Process Line Chart (Member Growth Last 6 Months) ---
+        const { data: ahliData } = await supabaseClient.from('ahli').select('tarikh_daftar');
+        const months = [];
+        const counts = [];
+        const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+        
+        const curr = new Date();
+        for(let i=5; i>=0; i--) {
+            let d = new Date(curr.getFullYear(), curr.getMonth() - i, 1);
+            months.push({ m: d.getMonth(), y: d.getFullYear(), label: monthNames[d.getMonth()] });
+            counts.push(0);
+        }
+        
+        if (ahliData) {
+            ahliData.forEach(a => {
+                if(!a.tarikh_daftar) return;
+                const ad = new Date(a.tarikh_daftar);
+                months.forEach((mo, idx) => {
+                     if (ad.getMonth() === mo.m && ad.getFullYear() === mo.y) counts[idx]++;
+                });
+            });
+            lineLabels = months.map(m => m.label);
+            lineData = counts;
+        }
+
+        // --- Process Doughnut Chart (Finance) ---
+        const { data: yuranD } = await supabaseClient.from('yuran').select('jumlah, status');
+        let paid = 0;
+        let unpaid = 0;
+        if(yuranD) {
+            yuranD.forEach(y => {
+                const j = parseFloat(y.jumlah) || 0;
+                const stat = (y.status || '').toLowerCase();
+                if(['paid', 'lunas', 'telah dibayar'].includes(stat)) {
+                    paid += j;
+                } else {
+                    unpaid += j;
+                }
+            });
+            doughnutData = [paid, unpaid];
+        }
+    } catch(err) {
+        console.error("Charts data fetch error:", err);
+    }
+
     // Global Defaults Theme
     Chart.defaults.color = '#9ca3af'; // gray-400
     Chart.defaults.font.family = "'Inter', sans-serif";
@@ -257,10 +337,10 @@ function initCharts() {
         new Chart(ctxLine, {
             type: 'line',
             data: {
-                labels: ['Nov', 'Dis', 'Jan', 'Feb', 'Mac', 'Apr'],
+                labels: lineLabels,
                 datasets: [{
                     label: 'Pendaftaran Baru',
-                    data: [15, 22, 18, 35, 42, 28],
+                    data: lineData,
                     borderColor: '#D4AF37', // Gold
                     backgroundColor: 'rgba(212, 175, 55, 0.1)',
                     borderWidth: 2,
@@ -297,7 +377,10 @@ function initCharts() {
                     },
                     y: {
                         grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
                     }
                 }
             }
@@ -312,7 +395,7 @@ function initCharts() {
             data: {
                 labels: ['Yuran Dibayar', 'Yuran Tertunggak'],
                 datasets: [{
-                    data: [8500, 1250],
+                    data: doughnutData,
                     backgroundColor: [
                         '#D4AF37', // Gold for Paid
                         '#ef4444'  // Red-500 for Pending

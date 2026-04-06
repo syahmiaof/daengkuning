@@ -81,54 +81,60 @@ async function initStudentDashboard(myId) {
 
             // Phase 2 Gated Content & Attendance
             validateGatedContent(ahliData.bengkung);
-            fetchAttendanceAndLeaderboard(myId);
-        }
-
-        // 2. Fetch Status Yuran Semasa
-        const { data: yuranData, error: errY } = await supabaseClient
-            .from('yuran')
-            .select('status')
-            .eq('id_ahli', myId)
-            .eq('bulan', curMonth)
-            .eq('tahun', curYear);
-
-        let statusText = 'Belum Dibayar / Tertunggak';
-        let boxBorder = 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.3)]';
-        let iconBg = 'bg-red-500/20 border-red-500/50';
-        let iconText = 'fa-exclamation-triangle text-red-500 animate-pulse';
-
-        if (yuranData && yuranData.length > 0) {
-            const rawStatus = (yuranData[0].status || 'pending').toLowerCase();
-            if (rawStatus === 'paid' || rawStatus === 'lunas') {
-                statusText = 'Lunas & Berlindung';
-                boxBorder = 'border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)]';
-                iconBg = 'bg-green-500/20 border-green-500/50';
-                iconText = 'fa-shield-alt text-green-400';
-            } else if (rawStatus === 'rejected') {
-                statusText = 'Gagal (Rujuk Rekod)';
-                boxBorder = 'border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.3)]';
-                iconBg = 'bg-orange-500/20 border-orange-500/50';
-                iconText = 'fa-times-circle text-orange-400';
-            } else {
-                statusText = 'Menunggu Pengesahan';
-                boxBorder = 'border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)]';
-                iconBg = 'bg-blue-500/20 border-blue-500/50';
-                iconText = 'fa-hourglass-half text-blue-400 animate-[spin_3s_linear_infinite]';
+            // Removed: fetchAttendanceAndLeaderboard(myId);
+        } else {
+            const errMsg = document.getElementById('error-message') || document.createElement('div');
+            errMsg.className = "bg-red-500/20 border border-red-500 text-red-100 p-4 rounded mb-4 w-full";
+            errMsg.innerText = "Ralat Supabase: " + (errA?.message || "Data tidak dijumpai") + " | ID Semasa: " + myId;
+            const container = document.querySelector('.flex-1.p-6, .flex-1.p-4');
+            if(container && !document.getElementById('error-message')) {
+                errMsg.id = "error-message";
+                container.prepend(errMsg);
             }
         }
+
+        // 2. Fetch Status Yuran Tahunan (12-Bulan)
+        const curYearNum = now.getFullYear();
+        const curMonthNum = now.getMonth() + 1; // 1-12
+        document.getElementById('yuranYearText').innerText = curYearNum;
         
-        const yuranEl = document.getElementById('statYuranSemasa');
-        if (yuranEl) {
-            const box = document.getElementById('yuranWidgetBox');
-            if(box) box.className = `md:col-span-4 rounded-2xl p-6 lg:p-8 border flex flex-col justify-center items-center text-center group transition-all duration-500 relative overflow-hidden hover:scale-[1.02] bg-black/60 ${boxBorder}`;
+        const { data: yuranData, error: errY } = await supabaseClient
+            .from('yuran')
+            .select('bulan, status')
+            .eq('id_ahli', myId)
+            .eq('tahun', curYearNum.toString());
+
+        const yuranMap = {};
+        if (yuranData && !errY) {
+            yuranData.forEach(y => {
+                yuranMap[parseInt(y.bulan)] = (y.status || 'pending').toLowerCase();
+            });
+        }
+        
+        const bulanNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+        let calendarHtml = '';
+        
+        for (let i = 1; i <= 12; i++) {
+            let label = bulanNames[i-1];
+            let statusClass = '';
             
-            const iconBox = document.getElementById('yuranIconBox');
-            if(iconBox) iconBox.className = `w-16 h-16 rounded-full border flex justify-center items-center mb-4 transition-all duration-500 z-10 shadow-inner ${iconBg}`;
+            let s = yuranMap[i];
+            if (s === 'paid' || s === 'lunas' || s === 'selesai') {
+                statusClass = 'bg-green-500/20 border border-green-500/50 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.2)] font-bold';
+            } else if (s === 'pending') {
+                statusClass = 'bg-blue-500/20 border border-blue-500/50 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-bold';
+            } else if (i > curMonthNum) {
+                statusClass = 'bg-black text-gray-600 border border-white/10 shadow-inner font-medium';
+            } else {
+                statusClass = 'bg-red-500/10 border border-red-500/30 text-red-500 font-bold';
+            }
             
-            const iconI = document.getElementById('yuranStatusIcon');
-            if(iconI) iconI.className = `fas ${iconText} text-2xl transition-colors duration-500`;
-            
-            yuranEl.innerHTML = `<span class="mt-2 text-sm font-bold uppercase tracking-widest text-shadow shadow-black text-gray-200">${statusText}</span>`;
+            calendarHtml += `<div class="rounded-lg py-3 px-1 flex flex-col justify-center items-center text-[10px] sm:text-[11px] uppercase tracking-widest transition-colors ${statusClass}">${label}</div>`;
+        }
+        
+        const calEl = document.getElementById('calendarYuran');
+        if (calEl) {
+            calEl.innerHTML = calendarHtml;
         }
 
     } catch(e) {
@@ -212,7 +218,7 @@ function setupAvatarUpload(myId) {
             
         } catch (err) {
             console.error("Avatar Upload Error:", err);
-            alert("Ralat mengemaskini avatar: " + err.message);
+            alert("Ralat mengemaskini avatar (Sila semak Storage Bucket 'avatars'): " + (err.message || err.error_description || "Undefined Error"));
             imgEl.src = oldSrc;
         } finally {
             imgEl.style.opacity = 1;
@@ -220,31 +226,134 @@ function setupAvatarUpload(myId) {
     });
 }
 
+window.unreadNoticeIds = [];
+
 async function fetchNotifications() {
     try {
-        const { data, error } = await supabaseClient
+        const { data: notices, error } = await supabaseClient
             .from('pengumuman')
             .select('*')
             .order('created_at', { ascending: false });
         
         if (error) throw error;
 
-        if (data && data.length > 0) {
-            const popup = document.getElementById('marqueeTextPopup');
-            if (popup) {
-                popup.innerText = `[${data[0].tajuk}] ${data[0].kandungan}`;
+        // Hotfix: Get ID from localStorage instead of Supabase Auth (since student uses classical login)
+        const sessionStr = localStorage.getItem('userSession');
+        if(!sessionStr) return;
+        const myAhliId = JSON.parse(sessionStr).username;
+        if(!myAhliId) return;
+        
+        window.currentAhliId = myAhliId;
+
+        const { data: interactions, error: ie } = await supabaseClient
+            .from('notis_interaksi')
+            .select('*')
+            .eq('id_ahli', myAhliId);
+        
+        if (ie) console.warn(ie);
+        const mapInt = {};
+        if(interactions) {
+            interactions.forEach(i => mapInt[i.id_notis] = i);
+        }
+
+        const listContainer = document.getElementById('notificationList');
+        let unreadCount = 0;
+        window.unreadNoticeIds = [];
+
+        if (notices && notices.length > 0) {
+            let html = '';
+            notices.forEach(n => {
+                const intData = mapInt[n.id] || { is_read: false, is_liked: false };
+                if(!intData.is_read) {
+                    unreadCount++;
+                    window.unreadNoticeIds.push(n.id);
+                }
+
+                const likeColor = intData.is_liked ? "text-gold" : "text-gray-500 hover:text-white";
+                
+                html += `
+                <div class="p-4 border-b border-white/5 transition-colors border-l-2 bg-white/5 ${!intData.is_read ? 'border-l-gold shadow-inner' : 'border-l-transparent'} relative">
+                    <p class="text-sm text-white mb-1 leading-relaxed font-bold">${n.tajuk}</p>
+                    <p class="text-[11px] text-gray-400 mb-2">${n.kandungan}</p>
+                    <div class="flex justify-between items-center mt-3">
+                        <p class="text-[9px] text-gold uppercase tracking-widest"><i class="far fa-clock mr-1"></i> ${new Date(n.created_at).toLocaleDateString()}</p>
+                        <button onclick="likeNotice('${n.id}', this)" class="text-[11px] font-bold px-3 py-1.5 bg-black/80 rounded transition-colors ${likeColor} border border-white/5 hover:border-gold/30">
+                            <i class="fas fa-thumbs-up mr-1"></i> ${intData.is_liked ? 'Telah Respon' : 'Setuju'}
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+            if(listContainer) listContainer.innerHTML = html;
+        } else {
+            if(listContainer) listContainer.innerHTML = `<div class="p-4 text-center text-gray-500 text-xs">Tiada hebahan semasa.</div>`;
+        }
+
+        const dot = document.getElementById('unseenDot');
+        const badge = document.getElementById('unseenBadge');
+        if(unreadCount > 0) {
+            if(dot) dot.classList.remove('hidden');
+            if(badge) {
+                badge.classList.remove('hidden');
+                badge.innerText = unreadCount + " Baru";
             }
         } else {
-            const popup = document.getElementById('marqueeTextPopup');
-            if (popup) {
-                popup.innerText = "Tiada hebahan semasa.";
-                popup.classList.replace('text-white', 'text-gray-500');
-            }
+            if(dot) dot.classList.add('hidden');
+            if(badge) badge.classList.add('hidden');
         }
+
     } catch (e) {
         console.error("Hebahan Gagal Dicari", e);
-        const popup = document.getElementById('marqueeTextPopup');
-        if (popup) popup.innerText = `Ralat: ${e.message || JSON.stringify(e)}`;
+        const listContainer = document.getElementById('notificationList');
+        if (listContainer) listContainer.innerHTML = `<div class="p-4 text-center text-red-500 text-xs">Ralat muat turun hebahan.</div>`;
+    }
+}
+
+window.likeNotice = async function(notisId, btn) {
+    try {
+        const id_ahli = window.currentAhliId;
+        if(!id_ahli) return;
+        
+        const { error } = await supabaseClient
+            .from('notis_interaksi')
+            .upsert({ id_notis: notisId, id_ahli: id_ahli, is_liked: true, is_read: true }, { onConflict: 'id_notis, id_ahli' });
+            
+        if(error) throw error;
+        
+        btn.classList.remove("text-gray-500", "hover:text-white");
+        btn.classList.add("text-gold");
+        btn.innerHTML = `<i class="fas fa-thumbs-up mr-1"></i> Telah Respon`;
+    } catch(e) {
+        console.error("Gagal menekan Respon", e);
+    }
+}
+
+window.markAllNoticesAsRead = async function() {
+    if(!window.unreadNoticeIds || window.unreadNoticeIds.length === 0) return;
+    const id_ahli = window.currentAhliId;
+    if(!id_ahli) return;
+
+    try {
+        const payload = window.unreadNoticeIds.map(nid => ({
+            id_notis: nid,
+            id_ahli: id_ahli,
+            is_read: true
+        }));
+
+        const { error } = await supabaseClient
+            .from('notis_interaksi')
+            .upsert(payload, { onConflict: 'id_notis, id_ahli' });
+        
+        if(error) throw error;
+        
+        window.unreadNoticeIds = [];
+        const dot = document.getElementById('unseenDot');
+        const badge = document.getElementById('unseenBadge');
+        if(dot) dot.classList.add('hidden');
+        if(badge) badge.classList.add('hidden');
+
+    } catch(e) {
+        console.error("Gagal reset notis", e);
     }
 }
 
@@ -592,13 +701,17 @@ async function initStudentProfile(myId) {
         const cardQr = document.getElementById('card-qr');
         if (cardQr) {
             const qrPayload = `DK-${ahli.id_ahli}`;
-            cardQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrPayload)}&color=D4AF37&bgcolor=111111`;
+            cardQr.crossOrigin = "anonymous";
+            // Using Quickchart as it has 100% reliable CORS support for html2canvas
+            cardQr.src = `https://quickchart.io/qr?text=${encodeURIComponent(qrPayload)}&size=150&dark=d4af37&light=111111`;
         }
 
         const cardAvatar = document.getElementById('card-avatar');
         if (cardAvatar) {
+            cardAvatar.crossOrigin = "anonymous";
             if (ahli.avatar_url) {
-                cardAvatar.src = ahli.avatar_url;
+                // To avoid cache/CORS issues on Supabase, append a timestamp or use direct fetch
+                cardAvatar.src = ahli.avatar_url + "?t=" + new Date().getTime();
             } else {
                 cardAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ahli.nama || 'Pesilat')}&background=111111&color=D4AF37&size=256`;
             }
@@ -612,7 +725,7 @@ async function initStudentProfile(myId) {
 
     } catch (e) {
         console.error("Gagal muat profil", e);
-        document.getElementById('profile-error').innerText = "Gagal memuat profil anda dari pangkalan data.";
+        document.getElementById('profile-error').innerText = "Ralat: " + (e.message || JSON.stringify(e)) + " | ID Dicari: " + myId;
     }
 }
 
