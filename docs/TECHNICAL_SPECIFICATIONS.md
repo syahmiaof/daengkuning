@@ -1,49 +1,69 @@
-# Technical Specifications: File & Logic Annotation
+# SPESIFIKASI TEKNIKAL & ARKITEKTUR SISTEM (TECHNICAL SPECIFICATIONS)
 
-This document elaborates on the system's file structural logic, highlighting the absolute modular design deployed for maintaining high scalability and organized technical debt.
+Spesifikasi teknikal perisian ini membincangkan anatomi direktori (fail/folder) serta kerangka logika yang dihubungkan kepada antara-muka pengguna. Keseluruhan modul projek telah disediakan berorientasikan standard tinggi untuk persembahan Projek TVET Nasional.
 
-***
+## 1. Struktur Anatomi Map Fail (Directory Tree Annotated)
 
-## 🗂️ 1. Directory Tree Architecture
+Berikut adalah cetakan visual anatomi keseluruhan fail pada aplikasi `cms-daeng-kuning`:
 
 ```text
-c:\Users\USER\OneDrive\Desktop\project\cms-daeng-kuning\
-├── assets\               # Multimedia delivery assets
-│   ├── img\              # Compressed .png, .jpg (Logos, Ahmad, UI Graphics)
-│   └── 3d\               # GLTF/GLB web-native 3D Models (e.g., keris_surakarta)
-├── css\                  # Cascading Style Sheets Layers
-│   ├── branding.css      # Core variable library (Jewelry-Dojo aesthetic constants)
-│   ├── footer-social.css # Structural markup for repeating footer nodes
-│   └── (Tailwind via CDN / PostCSS rendering)
-├── docs\                 # Internal Technical Deliverables (.md files)
-├── js\                   # Central JavaScript Logic Orchestrator
-│   ├── auth.js           # Authentication guards, JWT handling, session continuity
-│   ├── database.js       # Core Supabase REST API init and database context
-│   ├── ui.js             # General DOM manipulators (Toasts, Modals, Spinners)
-│   ├── admin-ahli.js     # Admin Logic: User creation & DataTables rendering
-│   ├── admin-yuran.js    # Admin Logic: Financial ledger CRUD orchestration
-│   ├── student.js        # Student Logic: Generating Dynamic Payment Graphs
-│   ├── warisan-logic.js  # Dedicated Three.js / WebGL orchestrator for 3D mapping
-│   ├── animations.js     # GSAP timeline directives and ScrollTrigger logic
-│   └── config.js         # Global structural constants
-└── (*.html Files)        # DOM structures mapping to precise views
+/cms-daeng-kuning
+│
+├── .gitignore                   # Sekatan perisian ke Github (nod rahsia).
+├── package.json / vercel.json   # Konfigurasi Pembangunan & Deployment Vercel.
+│
+├── index.html                   # Laman Muka Utama Awam. 
+├── login.html                   # Modul Gerbang Log-Masuk (Global).
+├── dashboard-admin.html         # Paparan Papan Pemuka bagi Admininstrator.
+├── admin-ahli.html              # Modul Operasi Senarai Rekod Ahli (Admin).
+├── admin-yuran.html             # Modul Audit Transaksi Kewangan (Admin).
+├── admin-notis.html             # Modul Penghantaran Hebahan / Pengumuman (Admin).
+├── dashboard-student.html       # Landing Page Rasmi Berprofil Pelajar / Murid.
+├── student-profile.html         # Modul Peraga Kad ID Visual 3Dimensi (Pelajar).
+├── student-payment.html         # Modul Semakan Audit Lengkap Sejarah Resit (Pelajar).
+├── student-silibus.html         # Visual Sukatan Pangkalan Modul Kurikulum (Pelajar).
+│
+├── /assets/                     # Direktori Media Induk.
+│   └── /img/                    # Imej (favicon, logo, kad-id, background-textures).
+│       ├── logo.png
+│       └── favicon.png
+│
+├── /css/                        # Lembaran Penggayaan Komponen Khas.
+│   └── branding.css             # Menentukan tetapan kelas-kelas custom (e.g., .glass-panel).
+│
+├── /docs/                       # Modul Fail Dokumentasi Akademik (MD).
+│
+├── /api/                        # Enjin Laluan Awan (Serverless Endpoints - Vercel)
+│   └── chat.js                  # Modul Integrasi Suap Balik Sifu AI (Gemini 1.5 - Streaming Response Layer).
+│
+└── /js/                         # Enjin Logik Interaktif Keseluruhan Projek (Engine Room).
+    ├── config.js                # Penyatuan Kunci Rahsia & Endpoint API Backend (Supabase Client Setup).
+    ├── auth.js                  # Modul Protokol Sesi, Penyulitan Maklumat Peribadi JWT & Pemeriksaan Skema Profil.
+    ├── ui.js                    # Skrip Pengawal Manipulasi DOM Animasi Visual, Interaksi Tetingkap (Modals), dan Carta.
+    ├── student.js               # Pengawal Tunggal Arkitek Pelajar (Janaan Matriks 12-Bulanan Yuran, Modul Tetingkap Respon).
+    ├── admin-ahli.js            # Enjin CRUD (Create, Read, Update, Delete) Rekod Pesilat.
+    └── animations.js            # Pengawal Tatalan Paralaks & Animasi Kemunculan Moden (GSAP & ScrollTrigger bindings).
 ```
 
-***
+## 2. Penghuraian Logik Rantaian Modul (Modular Logic Blueprint)
 
-## 🧩 2. Annotated JavaScript Modules
+CMS berhubung kait secara terus kepada Backend menerusi modul yang dideklarasikan secara kohesif tanpa skrip serabut (*spaghetti codes*):
 
-To ensure absolute code cleanliness, JavaScript operations are completely decoupled by domain:
+### A. Teras Pangkalan Penstabil Utama (`js/config.js`)
+Fail kunci rahsia terawal (awal muat). Logik ini menterjemahkan pendaftaran talian `window.supabaseClient` secara awam untuk digunakan oleh skrip lain secara pantas. Talian ini yang menggabungkan HTTP Bearer Authorization dari perpustakaan pelayan awan Supabase.
 
-*   **`js/auth.js`**
-    *   **Purpose:** Houses all cryptographic validation tools natively mapped to Supabase Auth. Secures the navigation routing with robust checking loops. If `requireAdmin()` fires and identifies a student, it automatically redirects the `window.location` immediately backward preventing view execution.
-*   **`js/database.js`**
-    *   **Purpose:** Exposes the `supabaseUrl` and `supabaseKey`. Sets up the structural API bindings globally ensuring files like `admin-yuran.js` don't need to rebuild identical network definitions.
-*   **`js/warisan-logic.js`**
-    *   **Purpose:** Initiates the `THREE.Scene()`, mounts `GLTFLoader()`, injects ambient, directional, and physical lighting arrays, and processes 60-FPS rendering cycles. Employs error-fallbacks (like generating a geometric placeholder Keris if the primary `.glb` fails to load via latency).
-*   **`js/ui.js`**
-    *   **Purpose:** Reduces duplicate code by storing universally called components. Functions like `showNotification(msg, type)` or custom dropdown toggles are centralized here.
+### B. Mesin Pintar Pentadbir (`js/admin-ahli.js` & `js/admin-yuran.js`)
+Direkabentuk sebagai satu unit sistem terasing (*Separation of Concerns*). Membawa logik manipulasi data melalui arahan pengkalan pangkalan SQL API *Asynchronous*:
+```javascript
+// Contoh Pelaksanaan API Update Logik Moden di Supabase SDK v2:
+const result = await supabaseClient.from('ahli').update({
+     nama: namaInput,
+     ic: icInput
+}).eq('id_ahli', userIdTarget);
+```
+Fungsi `fetch()` diulang dengan logik Penomboran (*Pagination Pagination Loader*) jika jumlah data besar untuk elak beban *Time-To-Interactive (TTI)* pada aplikasi awal. Mampu menghasilkan graf perbandingan terus.
 
-## 🔐 3. Security Considerations
-*   Files ending in `-admin.html` contain client-side route guards validating session JWT tokens instantly against `session.role`.
-*   Direct manipulation of `<script>` DOM elements via external inspection is useless; Supabase blocks rogue submissions strictly using Row Level Security parameters. All structural JS targets data exclusively utilizing UUID mappings.
+### C. Mesin Berkuasa Pelajar / Student Logic (`js/student.js`)
+Khusus menjadi 'Jantung Utama' operasi pada sudut visual portal pelajar. Antara kerja terberat dijalankan secara belakang tabir:
+- **Konstruktif Matriks Visual Yuran (12 Bulan):**  Fail menarik logik tarikh `new Date()` setempat, dan bertanyakan senarai di belakang pangkalan "Beri Semak Tahun X untuk Profile Y". Kemudian fungsi gelung Javascript memproses setiap rentas bulan menjadi 12 kiub warna yang tepat lalu disuntik *(Injection)* terus ke elemen innerHTML di persekitaran GUI.
+- **Kesimpulan Komunikasi Server-Klien:** Talian ini mengurangkan masa lengah interaksi web statik biasa dengan pemproseesaan memori pelanggan *(Client-Side GPU Rendering via Edge function equivalent)*.

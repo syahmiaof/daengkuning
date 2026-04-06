@@ -1,39 +1,32 @@
-# Project Overview: CMS Akademi Persilatan Daeng Kuning
+# PROJEK CMS AKADEMI PERSILATAN DAENG KUNING
+## DOKUMEN 1: RINGKASAN PROJEK (PROJECT OVERVIEW)
 
-## 🎯 1. Project Objective
-The **CMS Akademi Persilatan Daeng Kuning** is a comprehensive, modern Content Management System (CMS) and public-facing portal designed to manage the operational and branding needs of a traditional Malay Martial Arts Academy. The project bridges the gap between historical heritage and cutting-edge web technology, delivering a highly immersive experience for visitors and an efficient management dashboard for administrators and students.
+### 1.1 Pengenalan Sistem
+Sistem Pengurusan Kandungan (CMS) Akademi Persilatan Daeng Kuning merupakan sebuah platform web bersepadu yang dibangunkan khusus untuk mengurus data pentadbiran ahli, merekod kutipan yuran bulanan, serta menyediakan portal awam yang interaktif untuk ahli pesilat. Sistem ini direka bentuk bagi menggantikan kaedah pengurusan manual ke arah digitalisasi yang efisien. Di samping memfokuskan kepada kefungsian asas pangkalan data, antaramuka sistem ini telah melalui fasa rekayasa UI/UX yang komprehensif bagi memastikan ia menepati piawaian akademik dan spesifikasi industri web moden.
 
-Our primary objective is to cultivate the martial arts ecosystem through digitalization. It provides a secure layer for role-based access control (RBAC), simplifies fee management, digitizes membership validation, and preserves heritage via state-of-the-art interactive 3D modeling.
+### 1.2 Falsafah Reka Bentuk 'Jewelry-Dojo' (Dark & Gold)
+Reka bentuk antaramuka dipacu oleh falsafah "Jewelry-Dojo", iaitu gabungan estetika seni pertahanan diri tradisional yang agresif (elemen warna *Charcoal/Black*) dan nilai prestij yang eksklusif (elemen warna *Gold/Kuningan*). 
 
-***
+Konsep warna ini merangkumi:
+- **Latar Belakang (Background):** Paduan tona gelap `bg-[#0a0a0a]` dan `#111111` bagi mencipta ruang kelam dan eksklusif.
+- **Tipografi:** Penggunaan fon rasmi *Playfair Display* (Serif) pada setiap tajuk utama dan *Inter* (Sans-serif) untuk teks isi bagi mewujudkan hierarki bacaan berstatus premium.
+- **Aksen Visual:** Pengaplikasian gaya *Glassmorphism* (panel kaca separa jernih) dan *CSS Gradients* pada butang serta teks untuk menaikkan suasana mewah dan dinamik.
 
-## ⚙️ 2. Technology Stack
-The project adopts a modern **Serverless Web Application** architecture to ensure high performance, maintainability, and enterprise-grade security.
+### 1.3 Asas Teknologi (Technology Stack)
+Infrastruktur CMS Akademi Persilatan Daeng Kuning dibangunkan menerusi seni bina moden tanpa pelayan *(Serverless Architecture)*, menggunakan pengasingan logik *Frontend* terbina dan *Backend-as-a-Service*:
 
-*   **HTML5 / Semantic Markup:** Ensures accessibility, SEO optimization, and structural integrity.
-*   **Tailwind CSS:** A utility-first CSS framework used for rapid UI development, achieving a highly polished and completely responsive layout without bloated CSS files.
-*   **Vanilla JavaScript (ES6+):** Utilized for DOM manipulation and asynchronous logic (fetching data, rendering charts, handling forms) without the overhead of heavy frameworks like React or Vue, guaranteeing absolute loading speed.
-*   **Supabase (PostgreSQL Backend as a Service):** Powers the backend database, handles Row Level Security (RLS) policies, and provides robust out-of-the-box user authentication.
-*   **Three.js & WebGL:** A 3D library used to render the highly immersive *Keris Surakarta* models directly in the browser, offering interactive web experiences.
-*   **GSAP (GreenSock Animation Platform):** The industry standard for high-performance animations. Combines with `ScrollTrigger` to create cinematic, scrollytelling visual flows.
-*   **Vercel:** Cloud platform utilized for lightning-fast Edge-network Production Deployment.
+#### A. Pembangunan Bahagian Hadapan (Frontend)
+- **Teraju Utama:** HTML5, Vanilla JavaScript.
+- **Rangka Kerja CSS:** **Tailwind CSS** (CDN Implementation) membolehkan ciptaan kelas utiliti dengan pantas dan pengurusan paparan responsif secara *Mobile-First Design*.
+- **Enjin Animasi:** **GSAP (GreenSock Animation Platform)** bertindak untuk penganimasian tatalan dinamik (*scroll animations*) dan kotak kemunculan timbul (*pop-outs*).
+- **Enjin 3-Dimensi:** **Three.js** dioptimumkan untuk me-render peragaan objek 3D *(contoh: visual senjata Keris/elemen grafik)* secara real-time menerusi pelayar web tanpa bantuan pemalam luaran (plugin).
 
-***
+#### B. Pengurusan Pangkalan Data & Keselamatan (Backend)
+- **Pelayan Web & ID:** **Supabase (PostgreSQL)** dipilih sebagai teras pangkalan data. Seni bina berasaskan infrastruktur awan (Cloud) ini menyediakan kelajuan capaian melalui GraphQL/REST API.
+- **Autentikasi (Auth):** Menggunakan Supabase Authentication yang dipadukan bersama sistem sesi simpanan (*Local Storage Session*) untuk memastikan tahap keselamatan berganda. Polisi tahap baris *(Row Level Security - RLS)* dikuatkuasakan di atas setiap jadual pangkalan data.
 
-## 🎨 3. High-Level Architecture & Design System
+#### C. Proses Penerbitan & Mengehos (Deployment)
+- **Pelayan Awan (Hosting):** Aplikasi ini diterbitkan melalui **Vercel**, sebuah pelayan awan persekitaran web terkini yang menawarkan CDN bertaraf global secara tersedia untuk pemuatan statik pantas (ultra-fast static loading).
 
-### Architecture
-The CMS operates on a **Client-Side Rendering (CSR)** model. The frontend (hosted on Vercel) acts independently, utilizing REST APIs and WebSocket connections to securely communicate with the Supabase PostgreSQL cluster. 
-
-*   **Public Layer:** Accessible to all visitors (`index.html`, `warisan.html`, `koleksi.html`). Focuses on branding and high interactivity.
-*   **Authentication Layer:** (`login.html`, `reset-password.html`) Secures endpoints via Supabase JWT Tokens and establishes user roles (`superadmin`, `admin`, `student`).
-*   **Private/Dashboard Layer:** Serves structured interfaces depending on roles. Admins handle CRUD operations on members and payments (`dashboard-admin.html`); students manage their profiles and validate their fees (`dashboard-student.html`).
-
-### The 'Jewelry-Dojo' (Dark & Gold) Design System
-The visual language of the CMS was explicitly coded using a **'Jewelry-Dojo'** philosophy. This design system elevates the martial arts brand from a traditional grassroots entity to an exclusive, premium heritage organization.
-
-*   **Color Palette:**
-    *   *Primary Black (Onyx Backgrounds - `#0A0A0A`):* Represents the classic martial arts uniform (*baju layang*), enforcing a sense of mystery, discipline, and authority.
-    *   *Silat Gold (`#D4AF37` / `#FFDF00`):* Symbolizes royalty, heritage, and the 'Keris'. It provides high contrast on the dark background to command attention to Call-to-Action buttons and key typography.
-*   **Glassmorphism & Lighting:** Instead of flat colors, the portal extensively uses `backdrop-blur-md` (frosted glass) and `drop-shadow` CSS properties. This mimics the feeling of viewing artifacts inside a poorly-lit, premium museum display case.
-*   **Typography:** Combining sophisticated Serif fonts (for headers and heritage elements) with clean Sans-Serif fonts (for UI inputs and dashboards) to map the juxtaposition between rich history and modern utility.
+### 1.4 Strategi URL Profesional (Custom Domain Strategy)
+Bagi memberi impresi digital yang sah, platform ini pada mulanya dihoskan melalui `silatdaengkuning.vercel.app`. Walaubagaimanapun, selaras dengan keperluan penjenamaan komersil, persediaan CNAME dan rekod DNS telah dirancang di mana domain Vercel ini dipetakan secara sambungan terus ke domain rasmi top-level (**TLD**) berbayar seperti `.com.my` atau `.my` (contoh: *daengkuning.com.my*). Pertukaran ini dikonfigurasi melalui papan pemuka Vercel di bahagian penjanaan sub-domain dan *SSL/TLS Certificate* automatik daripada Let's Encrypts diterbitkan bagi menjamin kelancaran HTTPS yang selamat sepanjang sesi.

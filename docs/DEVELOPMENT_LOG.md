@@ -1,46 +1,47 @@
-# Development Log: Phase-by-Phase Progress
+# LOG PEMBANGUNAN SISTEM (DEVELOPMENT LOG)
 
-This document tracks the chronological engineering progress of the CMS Akademi Daeng Kuning, detailing the paradigm shifts from foundational markup to complex data orchestration.
+Dokumen ini merekodkan fasa-fasa teknikal sepanjang kitaran hayat pembangunan (SDLC) skrip dan antaramuka sistem CMS Akademi Persilatan Daeng Kuning.
 
-***
+## FASA 1: Asas Pembangunan & Identiti (Foundation)
+**Fokus utama:** Pembinaan paksi visual dan tetapan struktur global.
+- Diimplementasikan persekitaran kerangka Tailwind CSS secara dalaman di dalam fail HTML melalui skrip arahan berpusat.
+- Mewujudkan "Brand Identity" melalui pendaftaran variabel warna global di struktur konfigurasi Tailwind: 
+  ```javascript
+  colors: {
+      gold: { DEFAULT: '#D4AF37', dark: '#B8860B' },
+      charcoal: '#111111'
+  }
+  ```
+- Penyediaan visual pemuatan (loading visual) pertama menggunakan logo rasmi pertubuhan berformat *.PNG* telus bagi membentuk reka letak antaramuka yang meyakinkan sebelum komponen sistem dipaparkan.
 
-## 🟢 Phase 1: Branding & UI Foundation
-**Objective:** Establish the visual identity and structural boilerplate of the portal.
-*   **Implementation:**
-    *   Developed the global `branding.css` containing the CSS variables for the 'Jewelry-Dojo' design system.
-    *   Redesigned the primary navigation header to feature a translucent glassmorphism background (`backdrop-blur`).
-    *   Engineered a global `footer-social.css` module and integrated it across all pages to ensure aesthetic consistency.
-    *   Standardized the usage of the Daeng Kuning crest logo (`logo.png`) by auto-cropping it via Python to produce high-resolution, perfectly boxed favicons across 17+ pages.
+## FASA 2: Integrasi Interaksi UX Moden (Interaction)
+**Fokus utama:** Meniup 'nyawa' pada sistem interaksi pengguna.
+- Penyepaduan enjin **GSAP + ScrollTrigger** digunakan pada modul Landing Page. Tatalan halaman dipacu skrip animasi di mana kad-kad informasi dan tipografi utama muncul dari bawah (fade-in-up) secara responsif.
+- Membina simulasi statistik "Running Numbers" pada ruang "Dashboard Admin" menggunakan fungsi perulangan gelung `Math.ceil()` yang membaca bilangan ahli secara *live* dari pangkalan data Supabase lalu dirender dengan efek nombor bergolek ke siling (counter upwards).
 
-## 🟡 Phase 2: Interaction Design & Micro-Animations
-**Objective:** Elevate user engagement statically before connecting absolute backend logic.
-*   **Implementation:**
-    *   Integrated **GSAP** and **ScrollTrigger** into `index.html`.
-    *   Built the cinematic "Hero Section" where the prominent 3D-styled martial arts character (`ahmad.png`) scales and translates upon hover to simulate depth.
-    *   Implemented "Running Numbers" to dynamically count up the academy's statistics (active students, training centers) during scroll intersections.
-    *   Applied refined transitions (`transition-all duration-300`) uniformly to create an expensive, weighty feel to buttons and cards.
+## FASA 3: Pembangunan Aset Imersif (Immersive Assets)
+**Fokus utama:** Mengintegrasikan imersif elemen WebGL dan fungsi interaktif galeri.
+- Ruang Galeri dibina berasaskan elemen *Masonry Grid Layout* dengan struktur "Shared-Element" di mana apabila imej bersaiz kecil diklik, skrin akan menggelap dan imej membesar ke hadapan secara pantas tanpa muat semula tab (Lightbox module).
+- Eksperimen awalan bersama **Three.js 3D Keris Viewer**. Elemen Canvas dipaut pada komponen utama DOM lalu satu skrip WebGL dibenihankan. Rendering pencahayaan *AmbientLight* berserta tekstur *reflection* memodelkan objek 3D senjata tradisional agar boleh diputarkan dengan kawalan tetikus.
 
-## 🟠 Phase 3: Immersive Experience & WebGL Integration
-**Objective:** Showcase the martial arts legacy utilizing bleeding-edge web APIs.
-*   **Implementation:**
-    *   Constructed `warisan.html` using **Three.js** to mount a 3D canvas spanning the entire viewport.
-    *   Added a GLTF loader in `warisan-logic.js` to asynchronously download and render the `keris_surakarta.glb`.
-    *   Integrated orbital controls (`OrbitControls`) allowing users to drag, rotate, and zoom the 3D Keris in lighting that replicates a museum exhibit.
-    *   *Optimization Action:* Initially used `particles.js` combined with high `window.devicePixelRatio`, which choked mobile GPUs. We performed an architectural overhaul, capping pixel ratios to `1.25` and reducing particle count from 120 to 30, solving massive mobile lag. An elegant golden loading overlay was deployed to mask the async model downloads.
-    *   Refactored the gallery page (`gallery.html`) into an immersive masonry grid system utilizing lightweight JavaScript iteration (`gallery-immersive.js`).
+## FASA 4: Pangkalan Data, Awan & Keselamatan (Database & Cloud)
+**Fokus utama:** Seni bina Supabase dan konfigurasi API.
+- Persediaan arkitektur backend secara *Client-Side JS*. Mengkonfigurasi fail `js/config.js` untuk mencipta klien sambungan (Supabase Client):
+  ```javascript
+  const supabaseUrl = 'YOUR_SUPABASE_URL';
+  const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+  const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+  ```
+- Perlindungan berganda diaplikasikan pada setiap persekitaran peribadi (Admin/Ahli) menerusi perintang skrip sebelum DOM dimuat. Skrip memeriksa pembolehubah localStorage untuk kunci pengesahan `userSession`.
+- Pendekatan perlindungan Row Level Security (RLS) diaktifkan ke atas jadual ahli bagi memastikan maklumat anggota tidak boleh dicapai oleh pelawat tanpa token keselamatan *(JWT tokens parameter)*.
 
-## 🔴 Phase 4: Backend Integration & Authentication (Supabase)
-**Objective:** Secure the system and transition from static dummy pages to a complete CRUD Web Entity.
-*   **Implementation:**
-    *   Injected Supabase v2 CDNs globally and established the secure connection payload within `database.js` / `auth.js`.
-    *   Architected the **Role-Based Access Control (RBAC)** restricting `superadmin` (`dk001`) from `admin` and `student`.
-    *   Reworked the login validation flow to reject brute-forcing. 
-    *   Migrated from forced auto-generated accounts to a resilient User Self-Registration workflow in `student-registration` logic. 
+## FASA 5: Modul Produk dan Semakan Pantas (Product & Identity)
+**Fokus utama:** Modul pentadbiran teras yang lengkap.
+- Menginovasikan paparan Busana Showcase menggunakan konsep grid berasaskan reka bentuk *Glassmorphism*. Admin diberi fasiliti untuk tambah, edit, atau padam entri.
+- Fungsi **Kad ID Digital "Waris Emas" 3D**. Kad ini dijana secara automatik dengan data dinamik spesifik mengikut murid (Nama, Bengkung, QR Code). Ciri transformasi CSS3 (persektif 3D) membolehkan kad dipusing di udara semasa krusor dilewatinya. Fungsi cetak ke dalam fail Imej (Download capability) dibangunkan menggunakan logik sokongan canvas API bagi memudahkan Ahli menyimpan Kad secara logikal dan nyata di dalam peranti mudah alih masing-masing.
 
-## 🟣 Phase 5: Specialized Modules & Admin Overhaul
-**Objective:** Provide operational tools for academy management.
-*   **Implementation:**
-    *   Developed the **Busana Showcase** (`koleksi.html`) featuring e-commerce style grids.
-    *   Built the **Virtual Dashboard** (`dashboard-student.html`), allowing students to query real-time data indicating their payment arrears and possessing a digital Gold Member Card.
-    *   Overhauled the **Admin Yuran** and **Admin Ahli** dashboards utilizing DataTables. Features introduced include checking individual payment histories with real-time DOM-rendering and dynamic SVG graphs.
-    *   *Data Pruning:* Evaluated usage statistics and aggressively executed a `DROP TABLE` on the `kehadiran` (attendance) database to drastically minimize payload queries and focus completely on priority objectives (Users, Fees, Memberships).
+## FASA 6: Model Bahasa Terbina "Sifu AI" (Generative AI Integration)
+**Fokus utama:** Sistem Interaktif Penguatkuasaan Identiti Silat.
+- Penjelmaan fungsi Asisten AI dalam Dashboard Pelajar yang dikuasakan oleh **Gemini 1.5 Flash**. AI dipertanggungjawabkan untuk membantu membedah maklumat silibus persilatan Daeng Kuning.
+- Mengimplementasi **Vercel Serverless Functions** (`/api/chat.js`) sebagai tembok penampan (Proxy) bagi mengelakkan Kunci Rahsia API Gemini (`process.env.GEMINI_API_KEY`) terekspos secara bebas ke klien.
+- Teknik aliran *System Prompting* rahsia ditanam sedalamnya supaya entiti Sifu AI menolak borak kosong atau topik pengajian akademik lantas mengekalkan ketulenan jawapan berkisar motivasi pendekar dan teras pertubuhan, bersama animasi seruan tulisan pelbagai (*chunked stream encoding*).

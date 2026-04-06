@@ -1,40 +1,37 @@
-# Project Management & Operational Timeline
+# PENGURUSAN PROJEK & RISIKO (PROJECT MANAGEMENT)
 
-## 1. 12-Week Development Gantt Chart
+Perancangan projek ini dirujuk selaras dengan metodologi akademik **Sistem Kitaran Hayat Pembangunan Agile** untuk pembangunan yang bersifat responsif terhadap pindaan fungsi secara iteratif, digabungkan pula dengan takwim jangka masa selama 12 Minggu.
 
-The project follows a rapid agile framework executed over 12 weeks, graduating from low-fidelity wireframes to full cloud-edge deployment.
+## 1. Jadual Tempoh Kemajuan Carta Gantt (Gantt Chart 12-Week)
 
-| Week   | Milestone Category       | Core Objectives Completed | Status |
-| :---:  | :---                     | :---                      | :---:  |
-| **W 1-2** | Requirements & UI | Brand analysis, Layout mapping, Color system established (`branding.css`). | 🟢 Completed |
-| **W 3-4** | Interactive Frontend | GSAP Integration. `index.html` cinematic overlays. Layout responsiveness. | 🟢 Completed |
-| **W 5**   | WebGL Integration | Three.js Keris implementation. 3D Model parameter calibrations. | 🟢 Completed |
-| **W 6-7** | Database Engineering | Supabase init. PostgreSQL Schema mapping (Tables: Users, Ahli, Yuran). | 🟢 Completed |
-| **W 8-9** | Auth & Dashboards | JWT Authentication setup. Built distinct Dashboards for Admin and Students. | 🟢 Completed |
-| **W 10**  | Data Linking | REST integrations. Chart injections mapping actual payload from `yuran`. | 🟢 Completed |
-| **W 11**  | System Audits | Removed legacy/redundant modules (`kehadiran`). Standardized `<title>` tab consistency. | 🟢 Completed |
-| **W 12**  | Deployment & QA | Final Vercel Production deployment. URL mapping (`silatdaengkuning.vercel.app`). | 🟢 Completed |
+| Tugasan Pembangunan / Masa (Minggu) | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Fasa Mula: Analisis Keperluan (Requirements)** | 🟩 | 🟩 | | | | | | | | | | |
+| Perolehan kehendak pengurusan, spesifikasi ERD | 🟩 | 🟩 | | | | | | | | | | |
+| **Fasa Rekaan: UI/UX "Jewelry-Dojo" Design** | | | 🟦 | 🟦 | | | | | | | | |
+| Mockup struktur aplikasi dan palet warna sasar | | | 🟦 | 🟦 | | | | | | | | |
+| **Fasa Kerangka: Frontend Prototyping (Tailwind)** | | | | | 🟨 | 🟨 | | | | | | |
+| Rantaian menu DOM, konfigurasi GSAP. | | | | | 🟨 | 🟨 | | | | | | |
+| **Fasa Enjin: Backend Integration (Supabase)** | | | | | | | 🟧 | 🟧 | | | | |
+| Integrasi pangkalan JS ke pangkalan Supabase. | | | | | | | 🟧 | 🟧 | | | | |
+| **Fasa Kompleksiti: Advanced Visual Features** | | | | | | | | | 🟪 | 🟪 | | |
+| Objek 3D & Kad Profil "Waris Emas" Digital, Matriks Yuran 12 Bulan | | | | | | | | | 🟪 | 🟪 | | |
+| **Fasa Sekuriti & Pelancaran (Testing & Deployment)** | | | | | | | | | | | 🟥 | 🟥 |
+| Penilaian (Testing), Vercel CI/CD Setup, Custom Domain | | | | | | | | | | | 🟥 | 🟥 |
 
-***
+*(Paksi Warna mewakili Fasa Pengukuran yang Ditepati mengikut masa)*.
 
-## 2. Risk Management & Mitigation Strategies
+## 2. Analisis & Penilaian Risiko (Risk Assessment)
 
-To maintain absolute system integrity and prevent user frustration, specific risks were identified and neutralized during development:
+Di bawah setiap produk sistem gred tinggi, kawalan risiko diramalkan agar kegagalan sistem dapat ditangani pada mod insiden terburuk (Worst-case scenarios):
 
-### Risk 1: WebGL 3D Payload Paralyzing Mobile Processors
-* **Threat:** The `keris_surakarta.glb` size, plus 120 animated JS particles natively caused 15 FPS jitter on iOS and midrange Android devices.
-* **Mitigation:**
-  * Forced a constrained limitation on spatial rendering mapping via `renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))`.
-  * Slashed background physics calculations (particles) by 75% down to 30 nodes.
-  * Injected an elegant golden CSS "Menempa Keris..." overlay spinner preventing users from interacting with un-rendered DOM structures during slow networks.
+### Risiko 1: Prestasi Visual Paparan pada Peranti Lemah (Low-end Devices)
+**Tafdiran Konflik:** Visual animasi melampau seperti manipulasi DOM secara masif (ScrollTrigger GSAP, Render Objek Maya Three.js) membebankan pemprosesan kad grafik di telefon lama lalu aplikasi boleh tersekat *lagging*.
+**Mitigasi (Langkah Penyelesaian):**  
+- Mematikan animasi atau meminimumkan kiraan render 3D menggunakan konfigurasi `requestAnimationFrame` dan tetapan "Fallback".
+- Gambar yang dipamer digunakan format termampat (.webp).
 
-### Risk 2: Malicious Privilege Escalation
-* **Threat:** A student forcefully changing their Local Storage role to "admin" to access financial spreadsheets.
-* **Mitigation:**
-  * Client-side roles are strictly mapped to cryptographic responses validated on the Supabase payload. Even if UI is bypassed, the Database Level Row-Security (RLS) directly rejects unauthorized `UPDATE` or `SELECT` queries without a cryptographic `Bearer token`.
-  * The `logs` CCTV table is completely isolated and cannot be tampered with by any standard admin without Superadmin terminal clearance.
-
-### Risk 3: Data Orphanization 
-* **Threat:** A student is deleted, but their fee records permanently loop in the database causing aggregate reporting errors.
-* **Mitigation:**
-  * Engineered all structural queries regarding child tables (`yuran`, `logs`) to execute standard `ON DELETE CASCADE`. Removing the master member cleanly flushes all dependent historical artifacts natively via PostgreSQL.
+### Risiko 2: Ketirisan Keselamatan & Logika Tenteran Sesi DB
+**Tatsiran Konflik:** Penggunaan Javascript berpusat (*Client-side rendering*) membuka kerentanan token capaian jika diteliti melalui *Browser Inspector Elements*.
+**Mitigasi (Langkah Penyelesaian):**  
+- Perlindungan berganda: Polisi pengesanan had pelayar (*Session Check*) digunakan sebelum badan laman dibaca. Parameter pangkalan data Supabase dipecahkan melalui Environment Variables rahsia tatkala sistem di-*build* ke persekitaran Vercel dan polisi RLS dikalibrasi pada *mode Strict* untuk mengekang penggodaman suntikan SQL (SQL-Injection via Client Headers).
