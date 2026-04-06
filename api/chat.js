@@ -78,6 +78,14 @@ FAKTA AKADEMI (Gunakan info ini jika ditanya):
 
     } catch (error) {
         console.error("Gemini API Error:", error);
-        res.status(500).json({ error: "Sifu AI sedang bertafakur. Sila cuba sebentar lagi dalam 5 minit." });
+        
+        let errorMsg = "Sifu AI sedang bertafakur. Sila cuba sebentar lagi dalam beberapa minit.";
+        const errMsgStr = error.message || "";
+        
+        if (errMsgStr.includes("429 Too Many Requests") || errMsgStr.includes("Quota exceeded")) {
+            errorMsg = "Wah, terlalu ramai anak murid bertanya soalan serentak! Sifu sedang mengimbangi nafas (Limit Kuota Google). Sila berehat seminit sebelum bertanya lagi ya.";
+        }
+
+        res.status(500).json({ error: errorMsg });
     }
 };

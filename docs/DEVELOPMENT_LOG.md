@@ -42,6 +42,6 @@ Dokumen ini merekodkan fasa-fasa teknikal sepanjang kitaran hayat pembangunan (S
 
 ## FASA 6: Model Bahasa Terbina "Sifu AI" (Generative AI Integration)
 **Fokus utama:** Sistem Interaktif Penguatkuasaan Identiti Silat.
-- Penjelmaan fungsi Asisten AI dalam Dashboard Pelajar yang dikuasakan oleh **Gemini 1.5 Flash**. AI dipertanggungjawabkan untuk membantu membedah maklumat silibus persilatan Daeng Kuning.
-- Mengimplementasi **Vercel Serverless Functions** (`/api/chat.js`) sebagai tembok penampan (Proxy) bagi mengelakkan Kunci Rahsia API Gemini (`process.env.GEMINI_API_KEY`) terekspos secara bebas ke klien.
-- Teknik aliran *System Prompting* rahsia ditanam sedalamnya supaya entiti Sifu AI menolak borak kosong atau topik pengajian akademik lantas mengekalkan ketulenan jawapan berkisar motivasi pendekar dan teras pertubuhan, bersama animasi seruan tulisan pelbagai (*chunked stream encoding*).
+- Penjelmaan fungsi Asisten AI berasaskan model terbaharu **Gemini 2.5 Flash**, diperkasa dengan Fakta Pengetahuan (Knowledge Base) eksklusif berkaitan silibus persilatan, hierarki kepimpinan (Guru Utama, Ketua Jurulatih, Srikandi), susunan bengkung, dan sejarah Akademi Persilatan Daeng Kuning.
+- Penstrukturan modular kod ke dalam skrip tunggal (`js/chatbot.js`) yang bertindak sebagai *Global Injector*, menterjemahkan Sifu AI secara terus ke kesemua helaian antaramuka awam (Landing Page, Galeri, Koleksi) tanpa mengganggu struktur HTML sedia ada.
+- Mengimplementasi **Vercel Serverless Functions** (`/api/chat.js`) sebagai tembok penampan (Proxy) bagi memastikan kesinambungan kunci rahsia API (API Key) dalam awan. Turut disertakan penapis *Error Handling* elegan yang berupaya meredam secara dinamik ralat *429 Too Many Requests* daripada Google sekiranya mencapai had kitaran maksimum.
