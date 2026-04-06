@@ -264,30 +264,6 @@
             
         </div>
         
-        <!-- Sifu AI Chat Widget (Floating) -->
-        <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-            <!-- Chat Window (Hidden) -->
-            <div id="aiChatWindow" class="hidden w-80 h-96 glass-panel border border-gold/30 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] mb-4 flex-col overflow-hidden bg-[#050505]">
-                <div class="bg-gradient-to-r from-gold dark:to-gold-dark text-black px-4 py-3 flex justify-between items-center z-10 relative">
-                    <div class="font-bold flex items-center"><i class="fas fa-robot text-xl mr-2"></i>Sifu AI</div>
-                    <button onclick="toggleAIChat()" class="hover:text-white transition-colors"><i class="fas fa-times"></i></button>
-                </div>
-                <div id="aiChatBody" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 text-sm">
-                    <div class="self-start bg-gray-800/80 text-gray-200 px-3 py-2 rounded-2xl rounded-tl-none border border-white/5 inline-block max-w-[85%]">
-                        Salam pendekar! Saya asisten algoritma warisan Daeng Kuning. Ada soalan tentang silibus atau bengkung?
-                    </div>
-                </div>
-                <div class="p-3 bg-black/60 border-t border-white/10 relative">
-                    <input type="text" id="aiChatInput" placeholder="Tanya sesuatu..." class="w-full bg-black/80 text-gray-200 px-4 py-2 rounded-full border border-gold/30 focus:outline-none focus:border-gold text-sm pr-10" onkeypress="if(event.key === 'Enter') sendAIMessage()">
-                    <button onclick="sendAIMessage()" class="absolute right-5 top-1/2 -translate-y-1/2 text-gold hover:scale-110 transition-transform"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </div>
-            
-            <!-- FAB Toggle -->
-            <button onclick="toggleAIChat()" class="w-14 h-14 bg-gradient-to-tr from-gold to-yellow-500 rounded-full shadow-[0_4px_20px_rgba(212,175,55,0.4)] text-black text-2xl flex items-center justify-center hover:scale-110 transition-all">
-                <i class="fas fa-comment-dots"></i>
-            </button>
-        </div>
 
     </main>
 
@@ -335,5 +311,7 @@
             window.open(`https://wa.me/6${phoneNum}?text=${text}`, '_blank');
         }
     </script>
+
+    <script src="js/chatbot.js"></script>
 </body>
 </html>
