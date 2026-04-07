@@ -67,3 +67,27 @@ Fungsi `fetch()` diulang dengan logik Penomboran (*Pagination Pagination Loader*
 Khusus menjadi 'Jantung Utama' operasi pada sudut visual portal pelajar. Antara kerja terberat dijalankan secara belakang tabir:
 - **Konstruktif Matriks Visual Yuran (12 Bulan):**  Fail menarik logik tarikh `new Date()` setempat, dan bertanyakan senarai di belakang pangkalan "Beri Semak Tahun X untuk Profile Y". Kemudian fungsi gelung Javascript memproses setiap rentas bulan menjadi 12 kiub warna yang tepat lalu disuntik *(Injection)* terus ke elemen innerHTML di persekitaran GUI.
 - **Kesimpulan Komunikasi Server-Klien:** Talian ini mengurangkan masa lengah interaksi web statik biasa dengan pemproseesaan memori pelanggan *(Client-Side GPU Rendering via Edge function equivalent)*.
+
+## 3. Penilaian Teknikal & Strategi Pertahanan (Technical Critique & Defense)
+
+Dokumentasi ini juga memuatkan analisis kritikal (Code Review) dari sudut kaca mata penilai teknikal, berserta strategi jawapan pertahanan (Defensive Answers) berdasarkan arkitektur sistem semasa.
+
+### A. Seni Bina Frontend (Vanilla JS vs Framework)
+*   **Isu:** Menguruskan fail JavaScript yang panjang tanpa kerangka moden (seperti React/Next.js) berpotensi mencetuskan kod sukar diselenggara (*Spaghetti Code*).
+*   **Pertahanan Sistem:** Untuk Versi 1 (Prototaip), fokus utama adalah kelajuan pembangunan (*Rapid Prototyping*) dan *Market Validation*. Vanilla JS dengan pendekatan fungsian serba lengkap memadai untuk mengesahkan aliran pengguna dan logik bisnes sebelum berhijrah ke arsitektur *Component-based* pada fasa seterusnya.
+
+### B. Keselamatan Pengesahan Pentadbir (Admin Auth Security)
+*   **Isu:** Pentadbir log masuk secara semakan langsung ke pangkalan data (`users` table) tanpa menggunakan Supabase Auth yang sepenuhnya.
+*   **Pertahanan Sistem:** Golongan 'Admin' sangat terhad (2-3 orang). Jadual kawalan dilindungi oleh Polisi Keselamatan Peringkat Barisan (Row-Level Security - RLS) di mana tetamu (*anon*) tidak mempunyai kebenaran untuk menulis/membaca data secara rambang. Walau bagaimanapun, penyatuan dengan JWT Supabase Auth disenaraikan dalam *Future Enhancements*.
+
+### C. Prestasi Pemautan Aset (Performance & Lazy Loading)
+*   **Isu:** Memuatkan elemen CDN Tailwind, GSAP, dan aset media resolusi tinggi berpotensi menjejaskan Web Vitals.
+*   **Tindakan Semasa:** Pengoptimuman muatan lambat atribut `loading="lazy"` telah ditambah pada majoriti imej bersaiz besar untuk mengelakkan beban paparan serentak. Aset video kritikal masih bersandar kepada *caching browser*.
+
+### D. Mengurus Ralat dan Henti Tugas (Error Handling Fallback)
+*   **Isu:** Kebergantungan tinggi terhadap pelayan pihak ketiga (Gemini AI dan Supabase API).
+*   **Pertahanan Sistem (Selesai):** Pendekatan *Graceful Degradation* diwujudkan, contohnya pada fungsi Sifu AI yang akan menangkap ralat (`try-catch`) terlebih muatan API dan memaparkan fallback paparan mesra ("Sifu sedang berehat sebentar") tanpa merosakkan fungsi UI/DOM halaman. 
+
+### E. Skalabiliti Pangkalan Data (Database Delete Anomalies)
+*   **Isu:** Memadam profil ahli (Pelajar) berisiko meninggalkan "data yatim" (Orphan Data) pada jadual berkaitan (Yuran, Log Kehadiran) jika struktur tidak digabungkan.
+*   **Tindakan Semasa (Selesai):** Semua Kekunci Asing (Foreign Keys) antara jadual-jadual di Supabase telah diikat dengan penetapan `ON DELETE CASCADE`. Manipulasi rantaian penghapusan ini memastikan jika susut `Pangkalan A`, maka terbuang automatik nilai berkait di `Pangkalan B`. Pangkalan data ini sah 'bersih teguh'.
