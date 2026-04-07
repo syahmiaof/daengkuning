@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
@@ -380,11 +380,26 @@
         }
 
         // CSV Export Data
+        // CSV Export Data (Fixed - uses window.allMembers, BOM, PSSGM column)
         function exportToExcel() {
             if (!window.allMembers || window.allMembers.length === 0) {
-                alert("Tiada data ahli untuk diekstrak.");
+                alert("Tiada data ahli untuk diekstrak. Sila tunggu data dimuatkan dahulu.");
                 return;
             }
+            var BOM = "\uFEFF";
+            var csv = BOM + "ID Ahli,Nama Penuh,No IC,No. PSSGM,No. Telefon,Bengkung,Gelanggang,Tarikh Daftar\n";
+            window.allMembers.forEach(function(row) {
+                function q(v) { return "\"" + String(v || "-").replace(/"/g, "\"\"") + "\""; }
+                csv += [q(row.id_ahli),q(row.nama),q(row.ic),q(row.no_pssgm),q(row.no_tel),q(row.bengkung),q(row.gelanggang),q(row.tarikh_daftar)].join(",") + "\n";
+            });
+            var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "Senarai_Ahli_DaengKuning_" + new Date().toISOString().slice(0,10) + ".csv";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
 
             // CSV Header
             let csvContent = "data:text/csv;charset=utf-8,";

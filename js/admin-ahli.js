@@ -1,4 +1,5 @@
 let allMembers = [];
+window.allMembers = allMembers;
 
 document.addEventListener('DOMContentLoaded', () => {
     // Basic Auth Check
@@ -39,6 +40,7 @@ async function fetchAhliData() {
         if (error) throw error;
         
         allMembers = data || [];
+        window.allMembers = allMembers; // expose for exportToExcel()
         renderTable(allMembers);
     } catch (err) {
         console.error("Fetch Error:", err);
