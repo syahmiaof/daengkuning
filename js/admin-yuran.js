@@ -333,4 +333,35 @@ function adminPrintReceipt(pk) {
     };
 
     window.utils.generateReceiptPDF(structuredData);
+
+    // Provide Whatsapp Notification option after 1.5 seconds (gives time to download)
+    setTimeout(() => {
+        window.ui.showConfirm(
+            'Resit Dicetak', 
+            'Resit berjaya dimuat turun! Adakah anda ingin hantar notis segera kepada pelajar melalui WhatsApp?', 
+            () => {
+                const phone = record.ahli ? (record.ahli.no_telefon || record.ahli.phone || '') : '';
+                const nama = structuredData.nama;
+                const bln = structuredData.bulan || '';
+                const thn = structuredData.tahun || '';
+                
+                let msg = `Salam hormat Pendekar ${nama},\n\n`;
+                msg += `Bayaran Yuran Latihan APDK (Bulan ${bln} ${thn}) telah disahkan. Resit rasmi anda kini boleh dimuat turun.\n\n`;
+                msg += `Terima kasih atas komitmen anda.\n\n`;
+                msg += `*"Biar Patah Tulang, Jangan Puteh Mata"*`;
+
+                const encodedMsg = encodeURIComponent(msg);
+                
+                let waUrl = `https://api.whatsapp.com/send?text=${encodedMsg}`;
+                // If we have a phone number, attempt direct
+                if (phone && phone.length > 8) {
+                    let cleanPhone = phone.replace(/\D/g,'');
+                    if(cleanPhone.startsWith('0')) cleanPhone = '6' + cleanPhone;
+                    waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`;
+                }
+
+                window.open(waUrl, '_blank');
+            }
+        );
+    }, 1500);
 }

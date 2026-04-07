@@ -152,24 +152,50 @@ async function fetchRecentMembers() {
         const { data: members, error } = await supabaseClient
             .from('ahli')
             .select('id_ahli, nama, tarikh_daftar')
-            // Requires tarikh_daftar column. Fallback to ordering by id_ahli if missing
             .order('id_ahli', { ascending: false })
             .limit(5);
 
         if (error) throw error;
 
+        // Fetch yuran status for current month for these members
+        const now = new Date();
+        const curMonth = String(now.getMonth() + 1);
+        const curYear = String(now.getFullYear());
+        const memberIds = (members || []).map(m => m.id_ahli);
+
+        let yuranMap = {};
+        if (memberIds.length > 0) {
+            const { data: yuranData } = await supabaseClient
+                .from('yuran')
+                .select('id_ahli, status')
+                .in('id_ahli', memberIds)
+                .eq('bulan', curMonth)
+                .eq('tahun', curYear);
+            
+            if (yuranData) {
+                yuranData.forEach(y => { yuranMap[y.id_ahli] = y.status; });
+            }
+        }
+
         const tbody = document.getElementById('recent-members-table');
         
         if (members && members.length > 0) {
-            tbody.innerHTML = ''; // Clear empty placeholder
+            tbody.innerHTML = '';
             
             members.forEach(member => {
-                // Generate relative date string
                 const dateObj = new Date(member.tarikh_daftar || Date.now());
                 const dateStr = dateObj.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' });
                 
-                // Demo default value for missing structure points
-                const statusYuranHtml = `<span class="px-2 py-1 bg-green-900/30 text-green-400 text-xs rounded border border-green-500/20">Lunas</span>`;
+                // Real yuran status for this month
+                const rawStatus = (yuranMap[member.id_ahli] || '').toLowerCase();
+                let statusYuranHtml;
+                if (rawStatus === 'paid' || rawStatus === 'lunas' || rawStatus === 'selesai') {
+                    statusYuranHtml = `<span class="px-2 py-1 bg-green-900/30 text-green-400 text-xs rounded border border-green-500/20">Lunas</span>`;
+                } else if (rawStatus === 'pending') {
+                    statusYuranHtml = `<span class="px-2 py-1 bg-blue-900/30 text-blue-400 text-xs rounded border border-blue-500/20">Pending</span>`;
+                } else {
+                    statusYuranHtml = `<span class="px-2 py-1 bg-gray-800/60 text-gray-500 text-xs rounded border border-white/10">Belum Ada</span>`;
+                }
                 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-white/5 transition-colors";
@@ -276,50 +302,89 @@ function setupAddMemberLogic() {
 
 // 1. Data Visualization (The Graphs in Gold & Black Theme)
 async function initCharts() {
-    // Fetch Dynamic Data First
     let lineLabels = ['Nov', 'Dis', 'Jan', 'Feb', 'Mac', 'Apr'];
     let lineData = [0, 0, 0, 0, 0, 0];
     let doughnutData = [0, 0];
+    let cawanganLabels = [];
+    let cawanganData = [];
+    let bengkungLabels = [];
+    let bengkungData = [];
+    let bengkungColors = [];
 
     try {
-        // --- Process Line Chart (Member Growth Last 6 Months) ---
-        const { data: ahliData } = await supabaseClient.from('ahli').select('tarikh_daftar');
+        const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+        const { data: ahliData } = await supabaseClient.from('ahli').select('tarikh_daftar, gelanggang, bengkung');
+        const curr = new Date();
         const months = [];
         const counts = [];
-        const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
-        
-        const curr = new Date();
         for(let i=5; i>=0; i--) {
             let d = new Date(curr.getFullYear(), curr.getMonth() - i, 1);
             months.push({ m: d.getMonth(), y: d.getFullYear(), label: monthNames[d.getMonth()] });
             counts.push(0);
         }
-        
         if (ahliData) {
+            // Line data
             ahliData.forEach(a => {
                 if(!a.tarikh_daftar) return;
                 const ad = new Date(a.tarikh_daftar);
                 months.forEach((mo, idx) => {
-                     if (ad.getMonth() === mo.m && ad.getFullYear() === mo.y) counts[idx]++;
+                    if (ad.getMonth() === mo.m && ad.getFullYear() === mo.y) counts[idx]++;
                 });
             });
             lineLabels = months.map(m => m.label);
             lineData = counts;
+
+            // Cawangan data
+            const cawanganMap = {};
+            ahliData.forEach(a => {
+                const g = a.gelanggang || 'Lain-lain';
+                cawanganMap[g] = (cawanganMap[g] || 0) + 1;
+            });
+            const sortedCawangan = Object.entries(cawanganMap).sort((a,b) => b[1]-a[1]);
+            cawanganLabels = sortedCawangan.map(e => e[0]);
+            cawanganData = sortedCawangan.map(e => e[1]);
+
+            // Bengkung data
+            const bengkungMap = {};
+            ahliData.forEach(a => {
+                const b = a.bengkung || 'Hitam Mulus';
+                bengkungMap[b] = (bengkungMap[b] || 0) + 1;
+            });
+            const beltOrder = ['Hitam Mulus','Awan Putih','Pelangi Hijau','Pelangi Merah','Pelangi Merah (Cula 1-3)','Pelangi Kuning','Pelangi Kuning (Cula 1-5)','Pelangi Hitam Harimau Chula Sakti (Cula 1-6)','Pelangi Hitam Harimau Chula Sakti 7'];
+            const beltColorMap = {
+                'Hitam Mulus': '#555555', 'Awan Putih': '#e5e7eb',
+                'Pelangi Hijau': '#22c55e', 'Pelangi Merah': '#ef4444',
+                'Pelangi Merah (Cula 1-3)': '#f87171', 'Pelangi Kuning': '#eab308',
+                'Pelangi Kuning (Cula 1-5)': '#fde047', 
+                'Pelangi Hitam Harimau Chula Sakti (Cula 1-6)': '#a3a3a3',
+                'Pelangi Hitam Harimau Chula Sakti 7': '#D4AF37'
+            };
+            beltOrder.forEach(b => {
+                if(bengkungMap[b]) {
+                    bengkungLabels.push(b.replace('Pelangi ', '').replace('Hitam Harimau Chula Sakti', 'Chula Sakti'));
+                    bengkungData.push(bengkungMap[b]);
+                    bengkungColors.push(beltColorMap[b] || '#888');
+                }
+            });
+            // Add any unlisted belts
+            Object.entries(bengkungMap).forEach(([b, cnt]) => {
+                if(!beltOrder.includes(b)) {
+                    bengkungLabels.push(b);
+                    bengkungData.push(cnt);
+                    bengkungColors.push('#888888');
+                }
+            });
         }
 
-        // --- Process Doughnut Chart (Finance) ---
+        // Finance doughnut data
         const { data: yuranD } = await supabaseClient.from('yuran').select('jumlah, status');
-        let paid = 0;
-        let unpaid = 0;
+        let paid = 0, unpaid = 0;
         if(yuranD) {
             yuranD.forEach(y => {
                 const j = parseFloat(y.jumlah) || 0;
                 const stat = (y.status || '').toLowerCase();
-                if(['paid', 'lunas', 'telah dibayar'].includes(stat)) {
-                    paid += j;
-                } else {
-                    unpaid += j;
-                }
+                if(['paid','lunas','telah dibayar','selesai'].includes(stat)) paid += j;
+                else unpaid += j;
             });
             doughnutData = [paid, unpaid];
         }
@@ -327,109 +392,175 @@ async function initCharts() {
         console.error("Charts data fetch error:", err);
     }
 
-    // Global Defaults Theme
-    Chart.defaults.color = '#9ca3af'; // gray-400
+    Chart.defaults.color = '#9ca3af';
     Chart.defaults.font.family = "'Inter', sans-serif";
 
-    // Chart 1: Member Growth (Line Chart)
+    // === Chart 1: Member Growth Line ===
     const ctxLine = document.getElementById('memberGrowthChart');
     if (ctxLine) {
-        new Chart(ctxLine, {
+        const chartLine = new Chart(ctxLine, {
             type: 'line',
             data: {
                 labels: lineLabels,
                 datasets: [{
                     label: 'Pendaftaran Baru',
                     data: lineData,
-                    borderColor: '#D4AF37', // Gold
+                    borderColor: '#D4AF37',
                     backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#B8860B',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#D4AF37',
                     pointBorderColor: '#111111',
                     pointBorderWidth: 2,
                     pointRadius: 5,
-                    pointHoverRadius: 7,
+                    pointHoverRadius: 8,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.45
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
+                animation: { duration: 1500, easing: 'easeInOutCubic' },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(17, 17, 17, 0.9)',
-                        titleColor: '#D4AF37',
-                        bodyColor: '#ffffff',
-                        borderColor: 'rgba(212, 175, 55, 0.3)',
-                        borderWidth: 1,
-                        padding: 12,
+                        backgroundColor: 'rgba(17,17,17,0.95)', titleColor: '#D4AF37',
+                        bodyColor: '#fff', borderColor: 'rgba(212,175,55,0.3)', borderWidth: 1, padding: 12,
                         displayColors: false,
-                        callbacks: {
-                            label: function(context) { return `+${context.parsed.y} Ahli`; }
-                        }
+                        callbacks: { label: (c) => `+${c.parsed.y} Ahli` }
                     }
                 },
                 scales: {
-                    x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }
-                    },
-                    y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
+                    x: { grid: { color: 'rgba(255,255,255,0.04)' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true, ticks: { precision: 0 } }
                 }
             }
         });
+        // Auto-animate: pulse data points
+        setInterval(() => {
+            chartLine.data.datasets[0].pointRadius = chartLine.data.datasets[0].pointRadius === 5 ? 7 : 5;
+            chartLine.update('none');
+        }, 2000);
     }
 
-    // Chart 2: Finance Overview (Doughnut Chart)
+    // === Chart 2: Finance Doughnut ===
     const ctxDoughnut = document.getElementById('financeChart');
     if (ctxDoughnut) {
-        new Chart(ctxDoughnut, {
+        const chartDonut = new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
-                labels: ['Yuran Dibayar', 'Yuran Tertunggak'],
+                labels: ['Yuran Dibayar', 'Belum/Tertunggak'],
                 datasets: [{
                     data: doughnutData,
-                    backgroundColor: [
-                        '#D4AF37', // Gold for Paid
-                        '#ef4444'  // Red-500 for Pending
-                    ],
-                    borderColor: '#111111',
-                    borderWidth: 4,
-                    hoverOffset: 4
+                    backgroundColor: ['#D4AF37', '#ef4444'],
+                    borderColor: '#111111', borderWidth: 4, hoverOffset: 8
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '75%',
+                responsive: true, maintainAspectRatio: false, cutout: '72%',
+                animation: { duration: 1800, easing: 'easeInOutQuart' },
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' }
-                    },
+                    legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyle: 'circle' } },
                     tooltip: {
-                        backgroundColor: 'rgba(17, 17, 17, 0.9)',
-                        titleColor: '#ffffff',
-                        bodyColor: '#ffffff',
-                        borderColor: 'rgba(212, 175, 55, 0.3)',
-                        borderWidth: 1,
-                        padding: 12,
-                        callbacks: {
-                            label: function(context) {
-                                return ` RM ${context.parsed.toLocaleString('ms-MY', {minimumFractionDigits: 2})}`;
-                            }
-                        }
+                        backgroundColor: 'rgba(17,17,17,0.95)', titleColor: '#fff', bodyColor: '#fff',
+                        borderColor: 'rgba(212,175,55,0.3)', borderWidth: 1, padding: 12,
+                        callbacks: { label: (c) => ` RM ${c.parsed.toLocaleString('ms-MY', {minimumFractionDigits:2})}` }
                     }
                 }
             }
         });
+        // Auto-animate: rotate hoverOffset
+        let hoverDir = 1;
+        setInterval(() => {
+            chartDonut.data.datasets[0].hoverOffset += hoverDir;
+            if(chartDonut.data.datasets[0].hoverOffset >= 12 || chartDonut.data.datasets[0].hoverOffset <= 4) hoverDir = -hoverDir;
+            chartDonut.update('none');
+        }, 1500);
+    }
+
+    // === Chart 3: Cawangan Bar ===
+    const ctxBar = document.getElementById('cawanganChart');
+    if (ctxBar && cawanganLabels.length > 0) {
+        const emeraldGradient = ctxBar.getContext('2d').createLinearGradient(0, 0, 0, 200);
+        emeraldGradient.addColorStop(0, 'rgba(52, 211, 153, 0.9)');
+        emeraldGradient.addColorStop(1, 'rgba(16, 185, 129, 0.3)');
+
+        const chartBar = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: cawanganLabels,
+                datasets: [{
+                    label: 'Bilangan Ahli',
+                    data: cawanganData,
+                    backgroundColor: emeraldGradient,
+                    borderColor: '#34d399',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                animation: { duration: 1600, easing: 'easeInOutBounce' },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(17,17,17,0.95)', titleColor: '#34d399',
+                        bodyColor: '#fff', borderColor: 'rgba(52,211,153,0.3)', borderWidth: 1, padding: 12,
+                        callbacks: { label: (c) => ` ${c.parsed.y} Ahli` }
+                    }
+                },
+                scales: {
+                    x: { grid: { color: 'rgba(255,255,255,0.03)' },
+                         ticks: { maxRotation: 30, font: { size: 10 } } },
+                    y: { grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true, ticks: { precision: 0 } }
+                }
+            }
+        });
+        // Auto-animate: sequential highlight effect
+        let highlightIdx = 0;
+        setInterval(() => {
+            const n = cawanganData.length;
+            const colors = Array(n).fill('rgba(52, 211, 153, 0.35)');
+            colors[highlightIdx % n] = 'rgba(52, 211, 153, 0.95)';
+            chartBar.data.datasets[0].backgroundColor = colors;
+            chartBar.update('none');
+            highlightIdx++;
+        }, 1200);
+    }
+
+    // === Chart 4: Bengkung Doughnut ===
+    const ctxBengkung = document.getElementById('bengkungChart');
+    if (ctxBengkung && bengkungLabels.length > 0) {
+        const chartBengkung = new Chart(ctxBengkung, {
+            type: 'doughnut',
+            data: {
+                labels: bengkungLabels,
+                datasets: [{
+                    data: bengkungData,
+                    backgroundColor: bengkungColors,
+                    borderColor: '#111111', borderWidth: 3, hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '60%',
+                animation: { duration: 2000, easing: 'easeInOutQuart' },
+                plugins: {
+                    legend: { position: 'right', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } },
+                    tooltip: {
+                        backgroundColor: 'rgba(17,17,17,0.95)', titleColor: '#D4AF37',
+                        bodyColor: '#fff', borderColor: 'rgba(212,175,55,0.2)', borderWidth: 1, padding: 12,
+                        callbacks: { label: (c) => ` ${c.parsed} Ahli (${Math.round(c.parsed/bengkungData.reduce((a,b)=>a+b,0)*100)}%)` }
+                    }
+                }
+            }
+        });
+        // Auto-animate: rotate chart
+        let rotation = 0;
+        setInterval(() => {
+            rotation = (rotation + 1) % 360;
+            chartBengkung.options.rotation = rotation * (Math.PI / 180);
+            chartBengkung.update('none');
+        }, 50);
     }
 }
 
@@ -437,42 +568,92 @@ async function initCharts() {
 // Phase 3: Analytics Integration
 // -------------------------------------------------------------
 
+
 async function fetchFinancialProjection() {
     try {
-        const standardRate = 30; // Standard RM 30 formula
-        
-        const { count: totalAhli, error: errAhli } = await supabaseClient
+        // Fetch gelanggang rates
+        const { data: gelanggangData } = await supabaseClient
+            .from('gelanggang')
+            .select('nama_gelanggang, kadar_yuran');
+
+        const rateMap = {};
+        if (gelanggangData) {
+            gelanggangData.forEach(g => {
+                rateMap[g.nama_gelanggang] = parseFloat(g.kadar_yuran) || 30;
+            });
+        }
+
+        // Fetch all ahli with their gelanggang
+        const { data: ahliList } = await supabaseClient
             .from('ahli')
-            .select('*', { count: 'exact', head: true });
-        
-        let targetAmount = (totalAhli || 0) * standardRate;
-        
-        // Count actual collected from yuran where status = Paid
-        const { data: yuranD, error: errYuran } = await supabaseClient
+            .select('gelanggang');
+
+        // Calculate target: sum of (count_per_cawangan * rate_per_cawangan)
+        let targetAmount = 0;
+        if (ahliList) {
+            ahliList.forEach(a => {
+                const rate = rateMap[a.gelanggang] || 30;
+                targetAmount += rate;
+            });
+        }
+
+        // Actual collected (paid yuran this month)
+        const now = new Date();
+        const curMonth = String(now.getMonth() + 1);
+        const curYear = String(now.getFullYear());
+
+        const { data: yuranD } = await supabaseClient
             .from('yuran')
-            .select('jumlah')
-            .in('status', ['Paid', 'lunas', 'paid', 'Lunas']); 
-            
+            .select('jumlah, status')
+            .eq('bulan', curMonth)
+            .eq('tahun', curYear);
+
         let actualAmount = 0;
-        if (!errYuran && yuranD) {
-            actualAmount = yuranD.reduce((acc, curr) => acc + parseFloat(curr.jumlah || 0), 0);
+        if (yuranD) {
+            yuranD.forEach(y => {
+                const stat = (y.status || '').toLowerCase();
+                if (['paid', 'lunas', 'selesai'].includes(stat)) {
+                    actualAmount += parseFloat(y.jumlah || 0);
+                }
+            });
         }
 
         let percentage = targetAmount > 0 ? (actualAmount / targetAmount) * 100 : 0;
-        if(percentage > 100) percentage = 100; // Cap visual at 100%
+        if (percentage > 100) percentage = 100;
 
         const projActEl = document.getElementById('projActual');
         const projTargEl = document.getElementById('projTarget');
         const projBarEl = document.getElementById('projBar');
         const projPercEl = document.getElementById('projPercent');
 
-        if(projActEl) projActEl.innerText = window.utils.formatCurrency(actualAmount);
-        if(projTargEl) projTargEl.innerText = window.utils.formatCurrency(targetAmount);
-        if(projBarEl) projBarEl.style.width = percentage.toFixed(1) + '%';
-        if(projPercEl) projPercEl.innerText = percentage.toFixed(1) + '%';
+        // Animated counter for actual
+        if (projActEl) animateCounter(projActEl, actualAmount, 'RM ');
+        if (projTargEl) projTargEl.innerText = window.utils.formatCurrency(targetAmount);
+        if (projBarEl) {
+            setTimeout(() => { projBarEl.style.width = percentage.toFixed(1) + '%'; }, 300);
+        }
+        if (projPercEl) projPercEl.innerText = percentage.toFixed(1) + '%';
 
-    } catch (e) { console.error('Financial Projection Error:', e) }
+    } catch (e) { console.error('Financial Projection Error:', e); }
 }
+
+// Animated number counter
+function animateCounter(el, targetVal, prefix = '', suffix = '') {
+    const duration = 1500;
+    const start = performance.now();
+    const startVal = 0;
+    function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
+        const current = startVal + (targetVal - startVal) * eased;
+        el.innerText = prefix + current.toFixed(2);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.innerText = prefix + targetVal.toFixed(2) + suffix;
+    }
+    requestAnimationFrame(step);
+}
+
 
 async function fetchBengkungPipeline() {
     try {

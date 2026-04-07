@@ -57,34 +57,115 @@
         }
     </script>
     <style>
-        /* Hide scrollbar for smooth clean aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #111111;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333333;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #D4AF37;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111111; }
+        ::-webkit-scrollbar-thumb { background: #333333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
 
         .glass-panel {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(212, 175, 55, 0.2);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            animation: borderGlow 3s ease-in-out infinite;
         }
+
+        /* PARTICLE CANVAS - z-index: -1 goes behind ALL elements automatically */
+        #particle-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; opacity: 0.45;
+        }
+
+        /* PULSING GOLD GLOW BORDERS */
+        @keyframes borderGlow {
+            0%,100% { box-shadow: 0 0 8px rgba(212,175,55,0.1), 0 4px 30px rgba(0,0,0,0.5); border-color: rgba(212,175,55,0.2); }
+            50%      { box-shadow: 0 0 28px rgba(212,175,55,0.55), 0 4px 30px rgba(0,0,0,0.5); border-color: rgba(212,175,55,0.7); }
+        }
+
+        /* SHIMMER SWEEP */
+        @keyframes shimmerMove {
+            0%   { transform: translateX(-150%) skewX(-20deg); }
+            100% { transform: translateX(350%) skewX(-20deg); }
+        }
+        .stat-shimmer { position: relative; overflow: hidden; }
+        .stat-shimmer::after {
+            content: ""; position: absolute; top: 0; left: 0;
+            width: 40%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.07), transparent);
+            animation: shimmerMove 2.8s ease-in-out infinite;
+            pointer-events: none; z-index: 2;
+        }
+
+        /* BREATHING NUMBER GLOW */
+        @keyframes numBreath {
+            0%,100% { text-shadow: none; }
+            50%      { text-shadow: 0 0 22px rgba(212,175,55,0.85); }
+        }
+        .stat-number { animation: numBreath 2.5s ease-in-out infinite; display: inline-block; }
+
+        /* ICON FLOAT */
+        @keyframes iconFloat {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            33%      { transform: translateY(-5px) rotate(-6deg); }
+            66%      { transform: translateY(3px) rotate(4deg); }
+        }
+        .stat-icon { animation: iconFloat 3s ease-in-out infinite; }
+
+        /* PROGRESS BAR SHIMMER */
+        @keyframes barShimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        #projBar {
+            background: linear-gradient(90deg, #B8860B 0%, #D4AF37 30%, #FFD700 50%, #D4AF37 70%, #B8860B 100%);
+            background-size: 200% 100%;
+            animation: barShimmer 2s linear infinite;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* CHART CARD AMBIENT GLOW */
+        @keyframes chartGlow {
+            0%,100% { box-shadow: 0 0 12px rgba(212,175,55,0.06), 0 4px 30px rgba(0,0,0,0.5); }
+            50%      { box-shadow: 0 0 42px rgba(212,175,55,0.25), 0 4px 30px rgba(0,0,0,0.5); }
+        }
+        .chart-card { animation: chartGlow 4s ease-in-out infinite; }
+
+        /* STREAM SLIDE-IN */
+        @keyframes slideIn {
+            from { transform: translateX(-12px); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+        .stream-item { animation: slideIn 0.35s ease-out forwards; }
+
+        /* TABLE ROW PULSE */
+        @keyframes rowPulse {
+            0%,100% { background: transparent; }
+            50%      { background: rgba(212,175,55,0.025); }
+        }
+        #recent-members-table tr:nth-child(1) { animation: rowPulse 4s ease-in-out 0.0s infinite; }
+        #recent-members-table tr:nth-child(2) { animation: rowPulse 4s ease-in-out 0.8s infinite; }
+        #recent-members-table tr:nth-child(3) { animation: rowPulse 4s ease-in-out 1.6s infinite; }
+        #recent-members-table tr:nth-child(4) { animation: rowPulse 4s ease-in-out 2.4s infinite; }
+        #recent-members-table tr:nth-child(5) { animation: rowPulse 4s ease-in-out 3.2s infinite; }
+
+        /* FINGERPRINT ROTATE */
+        @keyframes fpRotate { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+        .fp-bg { animation: fpRotate 35s linear infinite; opacity: 0.06; }
+
+        /* LIVE DOT BREATHE */
+        @keyframes liveDot {
+            0%,100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(2.2); opacity: 0.15; }
+        }
+        .live-dot-inner { animation: liveDot 1.2s ease-in-out infinite; }
     </style>
 
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 
 <body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
+    <canvas id="particle-canvas"></canvas>
 
     <!-- Mobile Overlay -->
     <div id="mobile-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden transition-opacity lg:hidden" onclick="toggleSidebar()"></div>
@@ -191,12 +272,12 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 
                 <!-- Stat Card 1 -->
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                <div class="glass-panel stat-shimmer rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-gold/5 blur-2xl group-hover:bg-gold/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
                             <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-gold">Jumlah Ahli</p>
-                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest stat-number group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
                         </div>
                         <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold shadow-inner group-hover:bg-gold/20 group-hover:border-gold/50 transition-all duration-300">
                             <i class="fas fa-users text-xl group-hover:animate-bounce"></i>
@@ -205,12 +286,12 @@
                 </div>
 
                 <!-- Stat Card 2 -->
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                <div class="glass-panel stat-shimmer rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-red-500/5 blur-2xl group-hover:bg-red-500/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
                             <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-red-400">Yuran Tertunggak</p>
-                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest text-red-100 group-hover:scale-105 origin-left transition-transform duration-300">RM 0.00</h3>
+                            <h3 class="text-4xl font-bold text-white font-serif tracking-widest stat-number text-red-100 group-hover:scale-105 origin-left transition-transform duration-300">RM 0.00</h3>
                         </div>
                         <div class="w-12 h-12 rounded-full bg-red-900/20 border border-red-500/30 flex items-center justify-center text-red-400 shadow-inner group-hover:bg-red-500/30 group-hover:border-red-500 transition-all duration-300">
                             <i class="fas fa-exclamation-triangle text-xl group-hover:animate-pulse group-hover:rotate-12 transition-all duration-300"></i>
@@ -219,12 +300,12 @@
                 </div>
 
                 <!-- Stat Card 3 -->
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                <div class="glass-panel stat-shimmer rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-blue-500/5 blur-2xl group-hover:bg-blue-500/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
                             <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-blue-400">Pendaftaran Baru (Bulan Ini)</p>
-                            <h3 id="stat-new" class="text-4xl font-bold text-white font-serif tracking-widest text-blue-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                            <h3 id="stat-new" class="text-4xl font-bold text-white font-serif tracking-widest stat-number text-blue-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
                         </div>
                         <div class="w-12 h-12 rounded-full bg-blue-900/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner group-hover:bg-blue-500/30 group-hover:border-blue-500 transition-all duration-300">
                             <i class="fas fa-user-plus text-xl group-hover:animate-bounce transition-all duration-300"></i>
@@ -233,12 +314,12 @@
                 </div>
 
                 <!-- Stat Card 4 (Hebahan) -->
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                <div class="glass-panel stat-shimmer rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-purple-500/5 blur-2xl group-hover:bg-purple-500/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
                             <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-purple-400">Hebahan Aktif</p>
-                            <h3 id="stat-hebahan" class="text-4xl font-bold text-white font-serif tracking-widest text-purple-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                            <h3 id="stat-hebahan" class="text-4xl font-bold text-white font-serif tracking-widest stat-number text-purple-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
                         </div>
                         <div class="w-12 h-12 rounded-full bg-purple-900/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-inner group-hover:bg-purple-500/30 group-hover:border-purple-500 transition-all duration-300">
                             <i class="fas fa-bullhorn text-xl group-hover:-rotate-12 group-hover:scale-125 transition-all duration-300"></i>
@@ -247,12 +328,12 @@
                 </div>
 
                 <!-- Stat Card 5 (Cawangan) -->
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                <div class="glass-panel stat-shimmer rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-emerald-500/5 blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
                             <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-emerald-400">Cawangan Gelanggang</p>
-                            <h3 id="stat-gelanggang" class="text-4xl font-bold text-white font-serif tracking-widest text-emerald-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                            <h3 id="stat-gelanggang" class="text-4xl font-bold text-white font-serif tracking-widest stat-number text-emerald-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
                         </div>
                         <div class="w-12 h-12 rounded-full bg-emerald-900/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner group-hover:bg-emerald-500/30 group-hover:border-emerald-500 transition-all duration-300">
                             <i class="fas fa-map-marked-alt text-xl group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:scale-110 transition-all duration-300"></i>
@@ -261,12 +342,12 @@
                 </div>
 
                 <!-- Stat Card 6 (Admin) -->
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
+                <div class="glass-panel stat-shimmer rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] border-gold/30">
                     <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-orange-500/5 blur-2xl group-hover:bg-orange-500/10 transition-colors"></div>
                     <div class="flex items-start justify-between relative z-10">
                         <div>
                             <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-orange-400">Total Pentadbir</p>
-                            <h3 id="stat-admin" class="text-4xl font-bold text-white font-serif tracking-widest text-orange-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                            <h3 id="stat-admin" class="text-4xl font-bold text-white font-serif tracking-widest stat-number text-orange-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
                         </div>
                         <div class="w-12 h-12 rounded-full bg-orange-900/20 border border-orange-500/30 flex items-center justify-center text-orange-400 shadow-inner group-hover:bg-orange-500/30 group-hover:border-orange-500 transition-all duration-500">
                             <i class="fas fa-user-shield text-xl group-hover:animate-spin"></i>
@@ -298,7 +379,7 @@
 
                 <!-- UI: Live Activity Stream -->
                 <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-white/5 flex flex-col h-64 shadow-inner relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 opacity-10"><i class="fas fa-fingerprint text-9xl text-white"></i></div>
+                    <div class="absolute -right-4 -top-4 opacity-10"><i class="fas fa-fingerprint text-9xl text-white fp-bg"></i></div>
                     <h3 class="font-serif text-lg font-bold text-white mb-4 border-b border-white/5 pb-2 relative z-10"><i class="fas fa-satellite-dish text-blue-400 mr-2"></i> Live Activity Stream</h3>
                     <div class="flex-1 overflow-y-auto pr-2 space-y-3 relative z-10" id="logStreamContainer">
                         <div class="text-center text-xs text-gray-500 py-8"><i class="fas fa-spinner fa-spin mr-2"></i>Menarik Audit Trail...</div>
@@ -307,22 +388,68 @@
             </div>
 
 
-            <!-- Charts Area -->
+            <!-- Charts Area (2x2 Grid) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-                <div class="glass-panel rounded-2xl p-6 border-gold/30 relative shadow-[0_0_20px_rgba(212,175,55,0.05)] group hover:shadow-[0_0_40px_rgba(212,175,55,0.2)] hover:-translate-y-2 transition-all duration-500">
-                    <h3 class="font-serif text-lg font-bold text-white mb-6 tracking-wide drop-shadow-md flex items-center"><i class="fas fa-chart-line text-gold mr-3 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300"></i> Pertumbuhan Ahli Baru</h3>
-                    <div class="relative h-64 w-full group-hover:scale-[1.02] transition-transform duration-500">
+
+                <!-- Chart 1: Member Growth Line -->
+                <div class="chart-card glass-panel rounded-2xl p-6 border-gold/30 relative hover:-translate-y-1 transition-transform duration-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-serif text-lg font-bold text-white flex items-center">
+                            <i class="fas fa-chart-line text-gold mr-3"></i> Pertumbuhan Ahli Baru
+                        </h3>
+                        <span class="text-[10px] text-gold/60 uppercase tracking-widest border border-gold/20 px-2 py-1 rounded-full">6 Bulan</span>
+                    </div>
+                    <div class="relative h-56 w-full">
                         <canvas id="memberGrowthChart"></canvas>
                     </div>
                 </div>
-                <div class="glass-panel rounded-2xl p-6 border-gold/30 relative shadow-[0_0_20px_rgba(212,175,55,0.05)] group hover:shadow-[0_0_40px_rgba(212,175,55,0.2)] hover:-translate-y-2 transition-all duration-500">
-                    <h3 class="font-serif text-lg font-bold text-white mb-6 tracking-wide drop-shadow-md flex items-center"><i class="fas fa-chart-pie text-gold mr-3 group-hover:rotate-[360deg] transition-all duration-700"></i> Status Kutipan Yuran (RM)</h3>
-                    <div class="relative h-64 w-full flex justify-center">
+
+                <!-- Chart 2: Finance Doughnut -->
+                <div class="chart-card glass-panel rounded-2xl p-6 border-gold/30 relative hover:-translate-y-1 transition-transform duration-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-serif text-lg font-bold text-white flex items-center">
+                            <i class="fas fa-chart-pie text-gold mr-3"></i> Status Kutipan Yuran (RM)
+                        </h3>
+                        <span class="flex items-center gap-1.5 text-[10px] text-green-400 border border-green-500/30 px-2 py-1 rounded-full">
+                            <span class="live-dot-inner w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>Live
+                        </span>
+                    </div>
+                    <div class="relative h-56 w-full flex justify-center">
                         <canvas id="financeChart"></canvas>
                     </div>
                 </div>
-            </div>
 
+                <!-- Chart 3: Ahli Per Cawangan Bar -->
+                <div class="chart-card glass-panel rounded-2xl p-6 border-emerald-500/20 relative hover:-translate-y-1 transition-transform duration-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-serif text-lg font-bold text-white flex items-center">
+                            <i class="fas fa-map-marked-alt text-emerald-400 mr-3"></i> Ahli Mengikut Cawangan
+                        </h3>
+                        <span class="flex items-center gap-1.5 text-[10px] text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-full">
+                            <span class="live-dot-inner w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>Live
+                        </span>
+                    </div>
+                    <div class="relative h-56 w-full">
+                        <canvas id="cawanganChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Agihan Bengkung -->
+                <div class="chart-card glass-panel rounded-2xl p-6 border-yellow-500/20 relative hover:-translate-y-1 transition-transform duration-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-serif text-lg font-bold text-white flex items-center">
+                            <i class="fas fa-medal text-yellow-400 mr-3"></i> Agihan Tahap Bengkung
+                        </h3>
+                        <span class="flex items-center gap-1.5 text-[10px] text-yellow-400 border border-yellow-500/30 px-2 py-1 rounded-full">
+                            <span class="live-dot-inner w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>Live
+                        </span>
+                    </div>
+                    <div class="relative h-56 w-full flex justify-center">
+                        <canvas id="bengkungChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
             <!-- Table Area -->
             <div class="glass-panel rounded-2xl border-gold/30 shadow-2xl overflow-hidden">
                 <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-black/40">
@@ -363,9 +490,10 @@
     </main>
 
     <!-- Floating Action Button -->
-    <button onclick="ui.showModal('add-member-modal')" class="rbac-superadmin hidden fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Ahli Baru">
+    <button onclick="ui.showModal('add-member-modal')" class="rbac-superadmin hidden fixed bottom-24 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Ahli Baru">
         <i class="fas fa-plus text-charcoal text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
     </button>
+
 
     <!-- Add Member Modal -->
     <div id="add-member-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
@@ -469,5 +597,111 @@
     </script>
 
     <script src="js/chatbot.js"></script>
+
+    <!-- Live Animation Engine -->
+    <script>
+    // === PARTICLE CANVAS ===
+    (function() {
+        const canvas = document.getElementById('particle-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const GOLD = 'rgba(212,175,55,';
+        const N = 55;
+        let particles = [];
+
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function Particle() { this.reset(); }
+        Particle.prototype.reset = function() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.r = Math.random() * 1.8 + 0.3;
+            this.vx = (Math.random() - 0.5) * 0.35;
+            this.vy = -(Math.random() * 0.3 + 0.05);
+            this.life = 0;
+            this.maxLife = 200 + Math.random() * 200;
+            this.pulse = Math.random() * Math.PI * 2;
+        };
+        Particle.prototype.draw = function() {
+            this.pulse += 0.035;
+            const alpha = Math.sin((this.life / this.maxLife) * Math.PI) * (0.55 + 0.35 * Math.sin(this.pulse));
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fillStyle = GOLD + alpha.toFixed(3) + ')';
+            ctx.fill();
+            this.x += this.vx; this.y += this.vy; this.life++;
+            if (this.life >= this.maxLife) this.reset();
+        };
+
+        for (let i = 0; i < N; i++) {
+            const p = new Particle();
+            p.life = Math.floor(Math.random() * p.maxLife);
+            particles.push(p);
+        }
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 110) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = GOLD + ((1 - dist/110) * 0.1).toFixed(3) + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function loop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawConnections();
+            particles.forEach(p => p.draw());
+            requestAnimationFrame(loop);
+        }
+        loop();
+    })();
+
+    // === STAT COUNTER ANIMATE ===
+    // Intercept innerText assignments on stat elements & animate them
+    function animateStatCard(el, targetNum, isRM) {
+        if (!el || isNaN(targetNum) || targetNum === 0) return;
+        const duration = 1400;
+        const start = performance.now();
+        function step(now) {
+            const t = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const current = Math.round(targetNum * eased);
+            el.textContent = isRM ? 'RM ' + (current).toLocaleString() : current;
+            if (t < 1) requestAnimationFrame(step);
+            else el.textContent = isRM ? 'RM ' + targetNum.toLocaleString() : targetNum;
+        }
+        requestAnimationFrame(step);
+    }
+
+    // Observe stat number changes and animate them
+    document.addEventListener('DOMContentLoaded', () => {
+        const statEls = document.querySelectorAll('.stat-number');
+        if (!statEls.length) return;
+        statEls.forEach(el => {
+            const obs = new MutationObserver(() => {
+                const raw = el.textContent.replace(/[^0-9.]/g, '');
+                const isRM = el.textContent.includes('RM');
+                const num = parseFloat(raw);
+                if (!isNaN(num) && num > 0) {
+                    obs.disconnect();
+                    animateStatCard(el, num, isRM);
+                }
+            });
+            obs.observe(el, { childList: true, characterData: true, subtree: true });
+        });
+    });
+    </script>
 </body>
 </html>

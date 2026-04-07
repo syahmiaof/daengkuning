@@ -48,8 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         throw new Error("E-mel atau Kata Laluan salah.");
                     }
 
-                    // Map Auth metadata to Local Storage for backward compatibility
-                    const studentId = authData.user.user_metadata?.id_ahli || 'TIDAK_DIJUMPAI';
+                    // Map Auth metadata to Local Storage, always uppercase ID to match DB
+                    const rawStudentId = authData.user.user_metadata?.id_ahli || 'TIDAK_DIJUMPAI';
+                    const studentId = rawStudentId.toUpperCase();
                     const userSession = {
                         id: authData.user.id,
                         username: studentId,

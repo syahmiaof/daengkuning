@@ -94,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     headerRight.insertBefore(nameSpan, headerRight.firstChild);
 
                     if (typeof supabaseClient !== 'undefined') {
-                        supabaseClient.from('users').select('remarks').eq('username', user.username).single().then(resp => {
-                            const nm = resp.data?.remarks || user.username;
+                        supabaseClient.from('users').select('remarks').ilike('username', user.username).single().then(resp => {
+                            const nm = resp.data?.remarks || user.remarks || user.username;
                             const el = document.getElementById('header-admin-name');
                             if(el) el.innerText = nm;
                             

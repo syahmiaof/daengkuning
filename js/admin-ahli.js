@@ -33,7 +33,7 @@ async function fetchAhliData() {
     try {
         const { data, error } = await supabaseClient
             .from('ahli')
-            .select('id_ahli, nama, ic, no_tel, bengkung, gelanggang, tarikh_daftar')
+            .select('id_ahli, nama, ic, no_pssgm, no_tel, bengkung, gelanggang, tarikh_daftar')
             .order('id_ahli', { ascending: true });
 
         if (error) throw error;
@@ -53,9 +53,13 @@ async function fetchGelanggangList() {
         if (error) throw error;
         
         sel.innerHTML = '<option value="">-- Pilih Gelanggang --</option>';
+        const filterSel = document.getElementById('gelanggangFilter');
+        if (filterSel) filterSel.innerHTML = '<option value="">Semua Cawangan</option>';
+        
         if (data) {
             data.forEach(g => {
                 sel.innerHTML += `<option value="${g.nama_gelanggang}" class="bg-charcoal">${g.nama_gelanggang} - ${g.lokasi}</option>`;
+                if (filterSel) filterSel.innerHTML += `<option value="${g.nama_gelanggang}" class="bg-charcoal">${g.nama_gelanggang}</option>`;
             });
         }
     } catch(err) {
@@ -87,6 +91,7 @@ function renderTable(dataArray) {
         const id = m.id_ahli || '';
         const name = m.nama || 'Tiada Nama';
         const ic = m.ic || ' - ';
+        const pssgm = m.no_pssgm || ' - ';
         const bengkung = m.bengkung || ' - ';
         const gelanggang = m.gelanggang || ' - ';
         const dateRaw = m.tarikh_daftar || '';
@@ -106,6 +111,7 @@ function renderTable(dataArray) {
             <td class="py-4 px-6 text-gold font-medium">#${id}</td>
             <td class="py-4 px-6 font-medium text-white">${name}</td>
             <td class="py-4 px-6 text-gray-400">${ic}</td>
+            <td class="py-4 px-6 text-gray-400">${pssgm}</td>
             <td class="py-4 px-6 text-center">
                 <span class="px-3 py-1 rounded-full text-xs font-semibold border ${beltBg}">${bengkung}</span>
             </td>
@@ -127,10 +133,12 @@ function renderTable(dataArray) {
 function setupFilters() {
     const searchInp = document.getElementById('searchInput');
     const bengkungSel = document.getElementById('bengkungFilter');
+    const gelanggangSel = document.getElementById('gelanggangFilter');
 
     const executeFilter = () => {
         const query = searchInp.value.toLowerCase();
         const belt = bengkungSel.value;
+        const loc = gelanggangSel ? gelanggangSel.value : '';
 
         const filtered = allMembers.filter(m => {
             const matchesQuery = (m.id_ahli && m.id_ahli.toLowerCase().includes(query)) ||
@@ -138,8 +146,9 @@ function setupFilters() {
                                  (m.ic && m.ic.toLowerCase().includes(query));
             
             const matchesBelt = belt === '' || (m.bengkung && m.bengkung === belt);
+            const matchesLoc = loc === '' || (m.gelanggang && m.gelanggang === loc);
             
-            return matchesQuery && matchesBelt;
+            return matchesQuery && matchesBelt && matchesLoc;
         });
 
         renderTable(filtered);
@@ -147,20 +156,48 @@ function setupFilters() {
 
     searchInp.addEventListener('input', executeFilter);
     bengkungSel.addEventListener('change', executeFilter);
+    if(gelanggangSel) gelanggangSel.addEventListener('change', executeFilter);
 }
 
 // ---------------- CRUD LOGIC ----------------
 
-function openAddModal() {
+async function openAddModal() {
     document.getElementById('memberForm').reset();
     document.getElementById('formMode').value = 'create';
     document.getElementById('originalMemberId').value = '';
     
     document.getElementById('modal-title-text').innerText = 'Tambah Ahli';
-    document.getElementById('memberId').readOnly = false; // allow editing PK
-    document.getElementById('memberId').classList.remove('opacity-50');
+    const idInput = document.getElementById('memberId');
+    idInput.readOnly = false; // allow editing PK
+    idInput.classList.remove('opacity-50');
+    idInput.value = "Menjana ID...";
 
     window.ui.showModal('member-form-modal');
+
+    try {
+        // Auto-generate next DK ID (4-digits)
+        const { data, error } = await supabaseClient
+            .from('ahli')
+            .select('id_ahli')
+            .ilike('id_ahli', 'dk%')
+            .order('id_ahli', { ascending: false })
+            .limit(1);
+
+        if (!error && data && data.length > 0) {
+            let lastId = data[0].id_ahli.toUpperCase();
+            let numPart = parseInt(lastId.replace('DK', ''), 10);
+            if (!isNaN(numPart)) {
+                let nextNum = numPart + 1;
+                idInput.value = 'DK' + nextNum.toString().padStart(4, '0');
+            } else {
+                idInput.value = 'DK0001';
+            }
+        } else {
+            idInput.value = 'DK0001';
+        }
+    } catch(e) {
+        idInput.value = '';
+    }
 }
 
 function openEditModal(idAhli) {
@@ -178,6 +215,7 @@ function openEditModal(idAhli) {
 
     document.getElementById('memberName').value = mem.nama;
     document.getElementById('memberIC').value = mem.ic;
+    document.getElementById('memberPSSGM').value = mem.no_pssgm || '';
     document.getElementById('memberTel').value = mem.no_tel || '';
     
     // Safely set dropdown
@@ -236,9 +274,10 @@ function setupFormListener() {
 
         try {
             const payloadAhli = {
-                id_ahli: document.getElementById('memberId').value.trim(),
+                id_ahli: document.getElementById('memberId').value.trim().toUpperCase(),
                 nama: document.getElementById('memberName').value.trim(),
                 ic: document.getElementById('memberIC').value.trim(),
+                no_pssgm: document.getElementById('memberPSSGM').value.trim(),
                 no_tel: document.getElementById('memberTel').value.trim(),
                 bengkung: document.getElementById('memberBelt').value,
                 gelanggang: document.getElementById('memberLocation').value.trim()
@@ -266,6 +305,7 @@ function setupFormListener() {
                     .update({
                         nama: payloadAhli.nama,
                         ic: payloadAhli.ic,
+                        no_pssgm: payloadAhli.no_pssgm,
                         no_tel: payloadAhli.no_tel,
                         bengkung: payloadAhli.bengkung,
                         gelanggang: payloadAhli.gelanggang
@@ -354,4 +394,16 @@ window.handleImportCSV = function(event) {
             }
         });
     });
+};
+
+// Download CSV Template
+window.downloadCSVTemplate = function() {
+    const csvContent = "data:text/csv;charset=utf-8,ID Ahli,Nama Penuh,No IC,No. Telefon,Bengkung,Gelanggang,Tarikh Daftar\nDK0001,Ali Bin Abu,010203040506,0123456789,Mulus,Utama,2026-04-01";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Templat_Ahli_DaengKuning.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };

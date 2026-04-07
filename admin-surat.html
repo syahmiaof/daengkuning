@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Utama | Akademi Persilatan Daeng Kuning</title>
+
+    <!-- Security Guard (Auth Guard) -->
+    <script>
+        const sessionStr = localStorage.getItem('userSession');
+        if (!sessionStr) {
+            alert('Akses Ditolak! Sila log masuk terlebih dahulu.');
+            window.location.replace('login.html');
+        } else {
+            try {
+                const user = JSON.parse(sessionStr);
+                if (user.role !== 'admin' && user.role !== 'superadmin') {
+                    alert('Akses Ditolak! Khusus untuk pentadbir sahaja.');
+                    window.location.replace('login.html');
+                }
+            } catch (e) {
+                alert('Sesi tidak sah. Sila log masuk semula.');
+                window.location.replace('login.html');
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/branding.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        gold: {
+                            DEFAULT: '#D4AF37',
+                            dark: '#B8860B',
+                        },
+                        charcoal: '#111111',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Hide scrollbar for smooth clean aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+
+        .glass-panel {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden transition-opacity lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gold/20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.6)] object-cover bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+        
+        <!-- Sidebar Header (Logo) -->
+        <div class="h-20 flex items-center px-4 md:px-6 border-b border-gold/10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent"></div>
+            <a href="index.html" class="flex items-center gap-1 cursor-pointer z-10 w-full transition-transform hover:scale-105">
+                <img loading="lazy" src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <span class="royal-brand-logo text-2xl md:text-[1.6rem] md:leading-[1.6rem] mt-1.5" style="margin-left: -0.6rem; letter-spacing: -0.02em;">Daeng<span class="brand-gold">Kuning</span></span>
+            </a>
+            <button class="ml-auto text-gray-400 hover:text-white lg:hidden z-10" onclick="toggleSidebar()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
+            <ul class="space-y-2">
+                <li>
+                    <a href="dashboard-admin.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all">
+                        <i class="fas fa-th-large w-6"></i>
+                        <span class="font-medium tracking-wide">Ringkasan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-ahli.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-users w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Senarai Ahli</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-yuran.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-file-invoice-dollar w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Pengurusan Yuran</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-gelanggang.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-map-marked-alt w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Pengurusan Gelanggang</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-notis.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-bullhorn w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Hebahan (Notis)</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="admin-surat.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-envelope-open-text w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Surat Rasmi (AI)</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-pengurusan.html" class="rbac-superadmin hidden flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-user-shield w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Urus Pentadbir</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Logout Bottom -->
+            <div class="mt-auto">
+                <button onclick="logout()" class="w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400 transition-all border border-transparent hover:border-red-900/50 group">
+                    <i class="fas fa-sign-out-alt w-6 group-hover:text-red-400 transition-colors"></i>
+                    <span class="font-medium tracking-wide">Log Keluar</span>
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main ContentWrapper -->
+    <main class="flex-1 flex flex-col min-h-screen lg:ml-72 transition-all duration-300 relative">
+        
+        <!-- Header -->
+        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30">
+            <div class="flex items-center gap-4">
+                <!-- Hamburger Menu -->
+                <button class="lg:hidden text-gray-300 hover:text-gold focus:outline-none transition-colors" onclick="toggleSidebar()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <div>
+                    <h2 class="font-serif text-lg sm:text-2xl font-bold text-white tracking-wide leading-tight sm:leading-normal">Selamat Datang, <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200 block sm:inline">Pentadbir</span></h2>
+                    <p class="text-[10px] sm:text-sm text-gray-400 font-light mt-0.5 sm:mt-0" id="current-date">Ahad, 1 Januari 2026</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4 border-l border-white/10 pl-4 sm:pl-6 ml-2">
+                <div class="w-10 h-10 rounded-full bg-gold/20 border border-gold/50 flex items-center justify-center text-gold shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Inner -->
+        <div class="flex-1 p-6 lg:p-10 pb-24">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-white font-serif"><i class="fas fa-robot text-gold mr-3"></i>Setiausaha AI (Surat Rasmi)</h1>
+                <p class="text-gray-400 mt-2">Jana pelbagai jenis surat rasmi menggunakan kecerdasan buatan dengan format Daeng Kuning yang standard.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Form -->
+                <div class="glass-panel p-6 rounded-2xl border-gold/30 shadow-lg">
+                    <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">Parameter Surat</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1 ml-1">Jenis Surat</label>
+                            <select id="surat-jenis" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold outline-none transition-all">
+                                <option value="Jemputan Rasmi" class="bg-charcoal">Jemputan Rasmi</option>
+                                <option value="Lantikan Jawatan" class="bg-charcoal">Lantikan Jawatan</option>
+                                <option value="Sokongan" class="bg-charcoal">Sokongan Khusus</option>
+                                <option value="Pemberitahuan" class="bg-charcoal">Pemberitahuan / Makluman</option>
+                                <option value="Lain-lain" class="bg-charcoal">Lain-lain</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1 ml-1">Penerima (Nama / Jawatan)</label>
+                            <input type="text" id="surat-penerima" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold outline-none transition-all placeholder:text-gray-600" placeholder="Cth: Pengarah KBS Malaysia">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1 ml-1">Tujuan Utama (Prompt Khusus)</label>
+                            <textarea id="surat-tujuan" rows="4" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold outline-none transition-all placeholder:text-gray-600" placeholder="Cth: Menjemput merasmikan majlis penutup silat pada sabtu depan di dewan orang ramai kijang..."></textarea>
+                        </div>
+                        <button onclick="generateSuratAI()" class="w-full py-3 px-4 rounded-lg font-bold text-charcoal bg-gradient-to-r from-gold to-gold-dark hover:scale-[1.02] shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center transition-all mt-4">
+                            <i class="fas fa-magic mr-2"></i> Jana Surat Sekarang
+                        </button>
+                    </div>
+                </div>
+                <!-- Preview -->
+                <div class="glass-panel p-6 rounded-2xl border-gold/30 shadow-lg flex flex-col">
+                    <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2 flex justify-between items-center">Draf Janaan AI <button onclick="downloadSuratPDF()" class="text-sm bg-white/10 hover:bg-gold hover:text-black px-3 py-1 rounded transition-colors}><i class="fas fa-file-pdf mr-1"></i>PDF</button></h3>
+                    <div id="surat-preview-container" class="flex-1 bg-white p-6 rounded text-black overflow-y-auto max-h-[500px] shadow-inner font-serif leading-relaxed text-sm whitespace-pre-wrap"><div class="text-gray-400 text-center mt-20 flex flex-col items-center"><i class="fas fa-robot text-4xl mb-3 opacity-50"></i>Sila masukkan parameter di sebelah dan tekan 'Jana Surat Sekarang'</div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button onclick="ui.showModal('add-member-modal')" class="rbac-superadmin hidden fixed bottom-28 right-8 w-14 h-14 bg-gradient-to-r from-gold to-gold-dark rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-110 transition-transform duration-300 z-40 group border border-yellow-200/50 outline-none" title="Tambah Ahli Baru">
+        <i class="fas fa-plus text-charcoal text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
+    </button>
+
+    <!-- Add Member Modal -->
+    <div id="add-member-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="ui.hideModal('add-member-modal')"></div>
+        <div class="relative glass-panel bg-charcoal p-8 rounded-2xl border flex flex-col w-full max-w-md border-gold/40 shadow-[0_0_40px_rgba(212,175,55,0.2)] animate-fade-in-up mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-serif font-bold text-white flex items-center"><div class="w-8 h-8 rounded bg-gold/20 flex items-center justify-center mr-3"><i class="fas fa-user-plus text-gold text-sm"></i></div> Tambah Ahli</h2>
+                <button onclick="ui.hideModal('add-member-modal')" class="text-gray-400 hover:text-red-400 transition-colors"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <form id="addMemberForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1 ml-1">ID Ahli</label>
+                        <input type="text" id="newMemberId" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: DK001">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1 ml-1">No. IC</label>
+                        <input type="text" id="newMemberIC" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required maxlength="14" placeholder="Cth: 010203-04-0506" oninput="window.formatAdminIC(this)">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1 ml-1">Nama Penuh</label>
+                        <input type="text" id="newMemberName" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: Ali Bin Abu">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1 ml-1">No. Telefon (Warisan / Sendiri)</label>
+                        <input type="text" id="newMemberTel" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all placeholder:text-gray-600" required placeholder="Cth: 0123456789">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1 ml-1">Bengkung</label>
+                        <select id="newMemberBelt" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all" required>
+                            <option value="Hitam Mulus" class="bg-charcoal text-gray-300">Hitam Mulus</option>
+                            <option value="Awan Putih" class="bg-charcoal text-white">Awan Putih</option>
+                            <option value="Pelangi Hijau" class="bg-charcoal text-green-400">Pelangi Hijau</option>
+                            <option value="Pelangi Merah" class="bg-charcoal text-red-500">Pelangi Merah</option>
+                            <option value="Pelangi Merah (Cula 1-3)" class="bg-charcoal text-red-400">Pelangi Merah (Cula 1-3)</option>
+                            <option value="Pelangi Kuning" class="bg-charcoal text-yellow-500">Pelangi Kuning</option>
+                            <option value="Pelangi Kuning (Cula 1-5)" class="bg-charcoal text-yellow-300">Pelangi Kuning (Cula 1-5)</option>
+                            <option value="Pelangi Hitam Harimau Chula Sakti (Cula 1-6)" class="bg-charcoal text-gray-500">Pelangi Hitam Harimau Chula Sakti (Cula 1-6)</option>
+                            <option value="Pelangi Hitam Harimau Chula Sakti 7" class="bg-charcoal text-gold">Pelangi Hitam Harimau Chula Sakti 7</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1 ml-1">Gelanggang</label>
+                        <select id="newMemberLocation" class="w-full px-4 py-2.5 bg-black/40 border border-white/10 rounded-lg text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-all" required>
+                            <option value="">Muat turun data...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-3 px-4 rounded-lg font-bold text-charcoal bg-gradient-to-r from-gold to-gold-dark hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i> Simpan Rekod
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Project Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+
+    <!-- Dashboard Interaction Scripts -->
+    <script>
+        // Set Header Date
+        function updateDate() {
+            const dateEl = document.getElementById('current-date');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            // Format Melayu
+            const today = new Date().toLocaleDateString('ms-MY', options);
+            dateEl.textContent = today;
+        }
+        updateDate();
+
+        // Sidebar Toggle for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                // Small delay to allow display:block before fading opacity
+                setTimeout(() => { overlay.classList.add('opacity-100'); }, 10);
+            } else {
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => { overlay.classList.add('hidden'); }, 300);
+            }
+        }
+    </script>
+
+    <script src="js/chatbot.js"></script>
+    <script src="js/admin-surat.js"></script>
+</body>
+</html>
+
+
+

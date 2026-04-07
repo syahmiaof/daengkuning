@@ -354,7 +354,7 @@
                     <div class="des">Persaudaraan sejati yang dipupuk melangkaui batas gelanggang. Susah senang diheret bersama membina kelangsungan hidup anak bangsa demi panji Daeng Kuning.</div>
                 </div>
             </div>
-            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-77.jpg');">
+            <div class="carousel-item" style="background-image: url('assets/img/index.html/galeri-55.jpg');">
                 <div class="carousel-content">
                     <div class="title">Seni <span>Tari</span></div>
                     <div class="des">Bunga persilatan yang menggabungkan kelembutan dan ancaman. Setiap langkah lenggok berseni ini tersimpan rahsia pasang dan serang yang mustahil dibaca oleh musuh.</div>
@@ -575,6 +575,30 @@
         };
     </script>
 
+    <!-- Vibe Music Player -->
+    <audio id="vibeMusic" loop preload="auto">
+        <source src="assets/music/semerahpadi.mpeg" type="audio/mpeg">
+    </audio>
+    <button onclick="toggleMusic()" id="musicFab" class="fixed bottom-6 left-6 z-[100] w-14 h-14 bg-gradient-to-tr from-gold to-yellow-500 rounded-full shadow-[0_4px_20px_rgba(212,175,55,0.4)] text-black text-2xl flex items-center justify-center hover:scale-110 transition-all font-sans" title="Mainkan Lagu Semerah Padi">
+        <i class="fas fa-music animate-pulse" id="musicIcon"></i>
+    </button>
+    <script>
+        function toggleMusic() {
+            var audio = document.getElementById("vibeMusic");
+            var icon = document.getElementById("musicIcon");
+            if (audio.paused) {
+                audio.play();
+                icon.classList.remove("fa-music", "animate-pulse");
+                icon.classList.add("fa-pause", "animate-spin", "text-xl");
+            } else {
+                audio.pause();
+                icon.classList.add("fa-music", "animate-pulse");
+                icon.classList.remove("fa-pause", "animate-spin", "text-xl");
+            }
+        }
+    </script>
+
     <script src="js/chatbot.js"></script>
 </body>
 </html>
+

@@ -24,7 +24,7 @@ window.utils = {
         return 'RM ' + num.toLocaleString('ms-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     },
 
-    // Generates Premium PDF Receipt using jsPDF & autoTable
+    // Generates PDF Receipt
     generateReceiptPDF: function(paymentData) {
         if (!window.jspdf) {
             alert('Enjin PDF belum dimuatkan. Sila semak pautan CDN.');
@@ -34,91 +34,198 @@ window.utils = {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
 
+        // Helper for Month Format
+        const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+        let properBulan = paymentData.bulan || '-';
+        if (!isNaN(properBulan) && properBulan >= 1 && properBulan <= 12) {
+            properBulan = monthNames[properBulan - 1];
+        }
+
         // Extract Data Safely
         const namaAhli = paymentData.nama || 'Pesilat Tanda Nama';
         const idAhli = paymentData.id_ahli || 'N/A';
         const bengkung = paymentData.bengkung || 'Tiada Maklumat';
-        const bulan = paymentData.bulan || '-';
+        const bulan = properBulan;
         const tahun = paymentData.tahun || '-';
         const jumlahObj = parseFloat(paymentData.jumlah || 0);
-
-        // 1. Watermark - OFFICIAL RECEIPT (Rotated & Opacity via color)
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(240, 240, 240); // Sangat cerah kelabu untuk elak serabut
-        doc.setFontSize(60);
-        // Put in center, rotate -45 deg
-        doc.text('OFFICIAL RECEIPT', 30, 200, { angle: 45 });
-
-        // 2. HEADER - Typography
-        doc.setTextColor(17, 17, 17); // Charcoal Black
-        doc.setFontSize(22);
-        doc.setFont('times', 'bold');
-        doc.text('AKADEMI PERSILATAN DAENG KUNING', 105, 30, { align: 'center' });
         
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(100, 100, 100);
-        doc.text('Resit Rasmi Latihan • Janaan Sistem Automatik', 105, 38, { align: 'center' });
+        // Detailed data extracting assuming Supabase timestamps
+        const tarikhTrans = paymentData.created_at ? new Date(paymentData.created_at).toLocaleDateString('ms-MY') : '-';
+        const teraMasa = new Date().toLocaleString('ms-MY', { hour12: true });
 
-        // Line Break
-        doc.setDrawColor(212, 175, 55); // Gold
-        doc.setLineWidth(0.5);
-        doc.line(20, 45, 190, 45);
+        // Pre-load logo image
+        const logoImg = new Image();
+        logoImg.src = 'assets/img/logo.png';
 
-        // 3. MEMBER INFO
-        doc.setTextColor(50, 50, 50);
-        doc.setFontSize(11);
-        doc.text('Maklumat Pelajar:', 20, 60);
-        doc.setFont('helvetica', 'bold');
-        doc.text(namaAhli.toUpperCase(), 20, 67);
-        doc.setFont('helvetica', 'normal');
-        doc.text('ID Pesilat : ' + idAhli, 20, 73);
-        doc.text('Bengkung : ' + bengkung, 20, 79);
+        // Pre-render true cursive text via canvas trick to bypass jsPDF font limitations
+        const sigCanvas = document.createElement('canvas');
+        sigCanvas.width = 400;
+        sigCanvas.height = 120;
+        const ctx = sigCanvas.getContext('2d');
+        // Fallbacks included just in case
+        ctx.font = "italic 68px 'Alex Brush', 'Brush Script MT', 'Great Vibes', cursive";
+        ctx.fillStyle = "#D4AF37"; // Signature Gold
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Daeng Kuning", 200, 60);
+        const sigDataUrl = sigCanvas.toDataURL("image/png");
 
-        const printDate = new Date().toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' });
-        doc.text('Tarikh : ' + printDate, 140, 67);
-        doc.text('No. Rujukan : REC-' + (paymentData.id_yuran || Math.floor(Math.random() * 9000) + 1000), 140, 73);
+        setTimeout(() => {
+            // 1. ROYAL BORDER
+            doc.setDrawColor(212, 175, 55); 
+            doc.setLineWidth(1.5);
+            doc.rect(10, 10, 190, 277); 
+            doc.setLineWidth(0.3);
+            doc.rect(12, 12, 186, 273); 
 
-        // 4. TRANSACTION TABLE
-        const tableCol = ["Penerangan Kelulusan", "Tempoh (Bulan/Tahun)", "Amaun"];
-        const tableRows = [
-            ["Yuran Latihan Bulanan Daeng Kuning", `${bulan}/${tahun}`, window.utils.formatCurrency(jumlahObj)]
-        ];
+            // 2. WATERMARK
+            doc.setFont('times', 'bolditalic');
+            doc.setTextColor(250, 246, 230); 
+            doc.setFontSize(80);
+            doc.text('DAENG KUNING', 105, 170, { angle: 45, align: 'center' });
 
-        doc.autoTable({
-            startY: 95,
-            head: [tableCol],
-            body: tableRows,
-            theme: 'plain',
-            styles: { font: 'helvetica', fontSize: 11, cellPadding: 6 },
-            headStyles: { fillColor: [212, 175, 55], textColor: [255, 255, 255], fontStyle: 'bold' },
-            bodyStyles: { textColor: [50, 50, 50], lineWidth: 0.1, lineColor: [200, 200, 200] },
-            columnStyles: { 2: { halign: 'right' } } // 0-indexed: Align amaun ke kanan
-        });
+            // 3. HEADER
+            try { doc.addImage(logoImg, 'PNG', 90, 18, 25, 25); } catch(e){}
 
-        // 5. TOTAL BOX (Bold Gold)
-        const finalY = doc.lastAutoTable.finalY + 15;
-        doc.setDrawColor(212, 175, 55); // border-#D4AF37
-        doc.setFillColor(255, 253, 243); // Off-white gold tint
-        doc.setLineWidth(1);
-        doc.rect(120, finalY, 70, 15, 'FD'); // Fill & Draw
-        
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(17, 17, 17);
-        doc.text('JUMLAH:', 125, finalY + 10);
-        doc.setTextColor(184, 134, 11); // Gold text
-        doc.text(window.utils.formatCurrency(jumlahObj), 185, finalY + 10, { align: 'right' });
+            // TITLE: RESIT RASMI
+            doc.setTextColor(212, 175, 55); // Gold
+            doc.setFontSize(18);
+            doc.setFont('times', 'bold');
+            doc.text('RESIT RASMI', 105, 50, { align: 'center' }); // Centered Huge Title
 
-        // 6. FOOTER
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(9);
-        doc.setTextColor(150, 150, 150);
-        doc.text('Dikeluarkan pada: ' + new Date().toLocaleString('ms-MY'), 105, 270, { align: 'center' });
-        doc.text('Ini adalah resit janaan komputer. Tiada tandatangan fizikal diperlukan.', 105, 275, { align: 'center' });
+            doc.setTextColor(50, 40, 20); 
+            doc.setFontSize(22);
+            doc.setFont('times', 'bold');
+            doc.text('AKADEMI PERSILATAN DAENG KUNING', 105, 60, { align: 'center' });
 
-        // Generate Filename & Save
-        const fileName = `Resit_DaengKuning_${idAhli}_${bulan}-${tahun}.pdf`;
-        doc.save(fileName);
+            // Line Break
+            doc.setDrawColor(212, 175, 55); 
+            doc.setLineWidth(0.5);
+            doc.line(20, 65, 190, 65);
+
+            // 4. MEMBER INFO (Proper Grid Alignment)
+            doc.setTextColor(30, 30, 30);
+            doc.setFontSize(11);
+            
+            // Left Column
+            doc.setFont('times', 'normal');
+            doc.text('Diterima daripada:', 20, 75);
+            
+            doc.setFont('times', 'bold');
+            doc.setFontSize(13);
+            doc.text(namaAhli.toUpperCase(), 20, 81);
+            
+            doc.setFontSize(11);
+            doc.setFont('times', 'normal');
+            doc.text('ID Pendaftaran', 20, 87);
+            doc.text(':', 45, 87);
+            doc.setFont('times', 'bold');
+            doc.text(idAhli, 50, 87);
+
+            doc.setFont('times', 'normal');
+            doc.text('Taraf Bengkung', 20, 92);
+            doc.text(':', 45, 92);
+            doc.setFont('times', 'bold');
+            doc.text(bengkung, 50, 92);
+
+            // Right Column (Aligned perfectly to avoid border overlap)
+            const rightLabelX = 125;
+            const rightColonX = 150;
+            const rightValueX = 154;
+
+            doc.setFont('times', 'normal');
+            doc.text('Tarikh Bayaran', rightLabelX, 75);
+            doc.text(':', rightColonX, 75);
+            doc.setFont('times', 'bold');
+            doc.text(tarikhTrans, rightValueX, 75);
+
+            doc.setFont('times', 'normal');
+            doc.text('No. Resit', rightLabelX, 81);
+            doc.text(':', rightColonX, 81);
+            doc.setFont('times', 'bold');
+            doc.text('DK-REC/' + (paymentData.id_yuran || Math.floor(Math.random() * 900+100)), rightValueX, 81);
+
+            doc.setFont('times', 'normal');
+            doc.text('Status', rightLabelX, 87);
+            doc.text(':', rightColonX, 87);
+            doc.setFont('times', 'bold');
+            doc.setTextColor(34, 197, 94); // Green
+            doc.text('SAH (DILULUSKAN)', rightValueX, 87);
+            
+            doc.setTextColor(30, 30, 30); 
+
+            // 5. TRANSACTION TABLE
+            const tableCol = ["PERIHAL", "BULAN / TAHUN", "JUMLAH (RM)"];
+            const tableRows = [
+                ["YURAN LATIHAN BULANAN", `${bulan.toUpperCase()} ${tahun}`, window.utils.formatCurrency(jumlahObj)]
+            ];
+
+            doc.autoTable({
+                startY: 102,
+                head: [tableCol],
+                body: tableRows,
+                theme: 'plain',
+                styles: { font: 'times', fontSize: 11, cellPadding: 8, textColor: [30, 30, 30] },
+                headStyles: { fillColor: [248, 245, 235], fontStyle: 'bold', textColor: [100, 80, 40], lineWidth: 0.1, lineColor: [212, 175, 55] },
+                bodyStyles: { lineWidth: 0.1, lineColor: [212, 175, 55] },
+                columnStyles: { 2: { halign: 'right', fontStyle: 'bold' }, 1: { halign: 'center' } },
+                margin: { left: 20, right: 20 }
+            });
+
+            // 6. TOTAL AMOUNT (Adjusted Box Size and Text)
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setDrawColor(212, 175, 55); 
+            doc.setFillColor(250, 248, 242); 
+            doc.setLineWidth(0.5);
+            // Box is from X=110 to X=190 (width 80)
+            doc.rect(110, finalY, 80, 15, 'FD'); 
+            
+            doc.setFont('times', 'bold');
+            doc.setTextColor(50, 40, 20);
+            doc.setFontSize(14);
+            doc.text('JUMLAH :', 120, finalY + 10);
+            // Value perfectly aligned to the right inside the box (width spans up to 190, center margin is 185)
+            doc.text(window.utils.formatCurrency(jumlahObj), 185, finalY + 10, { align: 'right' });
+
+            // 7. SIGNATURE (True Cursive Rendering via Canvas)
+            try { 
+                // Draw the generated canvas as an image to guarantee cursive font rendering without jsPDF VFS
+                doc.addImage(sigDataUrl, 'PNG', 15, finalY + 28, 80, 24); 
+            } catch(e) {
+                // emergency fallback
+                doc.setFont('times', 'italic'); doc.setFontSize(30); doc.setTextColor(212, 175, 55); 
+                doc.text('Daeng Kuning', 55, finalY + 48, { align: 'center' }); 
+            }
+            
+            doc.setDrawColor(150, 130, 100);
+            doc.setLineWidth(0.3);
+            doc.line(20, finalY + 55, 90, finalY + 55);
+            
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.setTextColor(30, 30, 30);
+            doc.text('SETIAUSAHA', 20, finalY + 62);
+            doc.setFontSize(10);
+            doc.setFont('times', 'normal');
+            doc.text('AKADEMI PERSILATAN DAENG KUNING', 20, finalY + 68);
+
+            // Thank You Note
+            doc.setFont('times', 'italic');
+            doc.setFontSize(11);
+            doc.setTextColor(100, 90, 70);
+            const quoteY = finalY + 85;
+            doc.text('Terima kasih di atas komitmen dan pembayaran yuran ini.', 105, quoteY, { align: 'center' });
+
+            // 8. FOOTER
+            doc.setFont('times', 'italic');
+            doc.setFontSize(9);
+            doc.setTextColor(150, 140, 120);
+            doc.text(`Dijana secara automatik oleh pangkalan data APDK pada ${teraMasa}.`, 105, 280, { align: 'center' });
+
+            // Generate
+            const fileName = `Resit_Bayaran_${idAhli}_${bulan}-${tahun}.pdf`;
+            doc.save(fileName);
+        }, 400); // Wait 400ms to allow canvas and image buffering
     },
 
     // Phase 3: Global Activity Logger

@@ -33,7 +33,7 @@ async function initStudentDashboard(myId) {
         const { data: ahliData, error: errA } = await supabaseClient
             .from('ahli')
             .select('*')
-            .eq('id_ahli', myId)
+            .ilike('id_ahli', myId)
             .single();
 
         if (!errA && ahliData) {
@@ -101,7 +101,7 @@ async function initStudentDashboard(myId) {
         const { data: yuranData, error: errY } = await supabaseClient
             .from('yuran')
             .select('bulan, status')
-            .eq('id_ahli', myId)
+            .ilike('id_ahli', myId)
             .eq('tahun', curYearNum.toString());
 
         const yuranMap = {};
@@ -524,8 +524,44 @@ function sendAIMessage() {
 // ============================================
 // 2. LAPOR YURAN (PAYMENT SUBMISSION)
 // ============================================
-function initStudentPayment(myId) {
+async function initStudentPayment(myId) {
     fetchStudentHistory(myId);
+
+    // Auto-fetch gelanggang rate for this student
+    try {
+        const { data: ahliData } = await supabaseClient
+            .from('ahli')
+            .select('gelanggang, nama')
+            .ilike('id_ahli', myId)
+            .single();
+
+        if (ahliData && ahliData.gelanggang) {
+            const { data: gData } = await supabaseClient
+                .from('gelanggang')
+                .select('kadar_yuran')
+                .eq('nama_gelanggang', ahliData.gelanggang)
+                .single();
+
+            const rate = gData ? parseFloat(gData.kadar_yuran) || 30 : 30;
+            const amountEl = document.getElementById('payAmount');
+            if (amountEl) {
+                amountEl.value = rate.toFixed(2);
+                amountEl.readOnly = true;
+                amountEl.classList.add('opacity-80', 'cursor-not-allowed');
+                // Add rate info label
+                const parentDiv = amountEl.closest('div.mb-6');
+                if (parentDiv && !document.getElementById('rate-info')) {
+                    const info = document.createElement('p');
+                    info.id = 'rate-info';
+                    info.className = 'mt-2 text-xs text-gold/70';
+                    info.innerHTML = `<i class="fas fa-info-circle mr-1"></i>Kadar yuran bulanan ${ahliData.gelanggang}: <strong class="text-gold">RM ${rate.toFixed(2)}</strong>`;
+                    parentDiv.appendChild(info);
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('Could not fetch gelanggang rate:', err);
+    }
 
     const form = document.getElementById('payment-form');
     if (!form) return;
@@ -603,7 +639,7 @@ async function fetchStudentHistory(myId) {
         const { data, error } = await supabaseClient
             .from('yuran')
             .select('*, ahli(nama, bengkung)')
-            .eq('id_ahli', myId)
+            .ilike('id_ahli', myId)
             .order('tahun', { ascending: false })
             .order('bulan', { ascending: false });
         
@@ -682,10 +718,11 @@ async function initStudentProfile(myId) {
         const { data: ahli, error } = await supabaseClient
             .from('ahli')
             .select('*')
-            .eq('id_ahli', myId)
+            .ilike('id_ahli', myId)
             .single();
 
         if (error) throw error;
+        window.currentAhliProfile = ahli; // Cache for edit modal
         
         // Populate Membership Card visually
         document.getElementById('card-id').innerText = ahli.id_ahli || 'N/A';
@@ -762,5 +799,73 @@ function bindCardTiltEffect() {
         card.style.transform = `scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg)`;
         card.style.background = `linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%)`;
     });
+}
+
+// --------------------------------------------
+// Student Edit Profile Modal Logic
+// --------------------------------------------
+window.openStudentEditModal = function() {
+    const ahli = window.currentAhliProfile;
+    if (!ahli) {
+        alert("Sila tunggu data dimuat turun sepenuhnya.");
+        return;
+    }
+
+    // Populate Modal
+    document.getElementById('studEditName').value = ahli.nama || '';
+    document.getElementById('studEditPssgm').value = ahli.no_pssgm || '';
+    document.getElementById('studEditTel').value = ahli.no_tel || '';
+    document.getElementById('studEditTelWaris').value = ahli.no_tel_waris || '';
+    document.getElementById('studEditBelt').value = ahli.bengkung || 'Tiada';
+
+    window.ui.showModal('student-edit-modal');
+    setupStudentEditFormListener();
+};
+
+function setupStudentEditFormListener() {
+    const form = document.getElementById('studentEditForm');
+    if (!form || form.dataset.listenerAttached) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('studSubmitBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+        btn.disabled = true;
+
+        try {
+            const myId = JSON.parse(localStorage.getItem('userSession')).username;
+            
+            const payload = {
+                nama: document.getElementById('studEditName').value.trim(),
+                no_pssgm: document.getElementById('studEditPssgm').value.trim(),
+                no_tel: document.getElementById('studEditTel').value.trim(),
+                no_tel_waris: document.getElementById('studEditTelWaris').value.trim()
+            };
+
+            const { error } = await supabaseClient
+                .from('ahli')
+                .update(payload)
+                .eq('id_ahli', myId);
+
+            if (error) throw error;
+
+            alert("Profil anda telah berjaya dikemaskini.");
+            window.ui.hideModal('student-edit-modal');
+            
+            // Reload page to refresh data in card seamlessly
+            window.location.reload();
+
+        } catch (err) {
+            console.error("Student Edit Error:", err);
+            alert("Ralat mengemaskini maklumat: " + err.message);
+        } finally {
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-save mr-2"></i> Simpan Perubahan';
+                btn.disabled = false;
+            }
+        }
+    });
+
+    form.dataset.listenerAttached = 'true';
 }
 
