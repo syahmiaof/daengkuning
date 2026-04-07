@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
@@ -401,32 +401,7 @@
             URL.revokeObjectURL(url);
         }
 
-            // CSV Header
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "ID Ahli,Nama Penuh,No IC,No. Telefon,Bengkung,Gelanggang,Tarikh Daftar\n";
 
-            window.allMembers.forEach(function(row) {
-                let rId = row.id_ahli || "";
-                let rName = (row.nama || "").replace(/,/g, " "); // safe comma
-                let rIC = row.ic || "";
-                let rTel = row.no_tel || "";
-                let rBelt = row.bengkung || "";
-                let rLoc = row.gelanggang || "";
-                let rDate = row.tarikh_daftar || "";
-                
-                let rowStr = `${rId},${rName},='${rIC}',='${rTel}',${rBelt},${rLoc},${rDate}`;
-                csvContent += rowStr + "\n";
-            });
-
-            // Create download link
-            var encodedUri = encodeURI(csvContent);
-            var link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Senarai_Ahli_DK_${new Date().getTime()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
     </script>
 
     <script src="js/chatbot.js"></script>
