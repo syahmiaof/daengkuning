@@ -170,11 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = true;
 
             try {
-                // Determine base URL dynamically for deployment vs local
-                const baseURL = window.location.origin + window.location.pathname.replace('login.html', 'reset-password.html');
+                // Always redirect to the production reset page
+                const resetRedirectUrl = 'https://silatdaengkuning.vercel.app/reset-password.html';
                 
                 const { error } = await supabaseClient.auth.resetPasswordForEmail(reqEmail, {
-                    redirectTo: baseURL,
+                    redirectTo: resetRedirectUrl,
                 });
 
                 if (error) throw error;
