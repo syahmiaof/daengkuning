@@ -181,6 +181,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 sucDiv.classList.remove('hidden');
                 document.getElementById('forgot-email').value = '';
+
+                // Enable resend button with cooldown
+                const resendBtn = document.getElementById('btnResendForgot');
+                if (resendBtn) {
+                    let countdown = 60;
+                    resendBtn.disabled = true;
+                    resendBtn.innerHTML = `<i class="fas fa-clock text-[9px]"></i> Hantar semula dalam ${countdown}s`;
+                    const timer = setInterval(() => {
+                        countdown--;
+                        resendBtn.innerHTML = `<i class="fas fa-clock text-[9px]"></i> Hantar semula dalam ${countdown}s`;
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            resendBtn.disabled = false;
+                            resendBtn.innerHTML = `<i class="fas fa-paper-plane text-[9px]"></i> Hantar Semula E-mel`;
+                        }
+                    }, 1000);
+
+                    resendBtn.onclick = async () => {
+                        const emailVal = resendBtn.closest('form')?.querySelector('#forgot-email')?.value ||
+                                         document.getElementById('forgot-email').value;
+                        // Re-read email from a data attribute we'll store
+                        const lastEmail = resendBtn.dataset.lastEmail;
+                        if (!lastEmail) return;
+                        resendBtn.disabled = true;
+                        resendBtn.innerHTML = `<i class="fas fa-spinner fa-spin text-[9px]"></i> Menghantar...`;
+                        await supabaseClient.auth.resetPasswordForEmail(lastEmail, {
+                            redirectTo: 'https://silatdaengkuning.vercel.app/reset-password.html'
+                        });
+                        resendBtn.innerHTML = `<i class="fas fa-check text-[9px]"></i> E-mel dihantar!`;
+                        setTimeout(() => {
+                            resendBtn.innerHTML = `<i class="fas fa-paper-plane text-[9px]"></i> Hantar Semula E-mel`;
+                        }, 3000);
+                    };
+                    // Store the email for resend use
+                    resendBtn.dataset.lastEmail = reqEmail;
+                }
+
             } catch(e) {
                 errDiv.innerText = "Gagal memproses e-mel. Pastikan e-mel sah.";
                 errDiv.classList.remove('hidden');
