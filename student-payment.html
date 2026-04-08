@@ -42,14 +42,14 @@
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-        <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
+                <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
             <ul class="space-y-2">
                 <li><a href="dashboard-student.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-home w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Laman Utama</span></a></li>
-                <li><a href="student-payment.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all"><i class="fas fa-receipt w-6"></i><span class="font-medium">Sejarah Yuran</span></a></li>
-                <li><a href="student-silibus.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-book-open w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Silibus & Bengkung</span></a></li>
+                <li><a href="student-payment.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all"><i class="fas fa-receipt w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Sejarah Yuran</span></a></li>
                 <li><a href="student-profile.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-id-badge w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Profil & Kad ID</span></a></li>
+                <li><a href="student-silibus.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group"><i class="fas fa-book-open w-6 group-hover:text-gold transition-colors"></i><span class="font-medium">Silibus & Bengkung</span></a></li>
             </ul>
-            <button onclick="logout()" class="mt-auto w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400"><i class="fas fa-sign-out-alt w-6"></i><span class="font-medium">Log Keluar</span></button>
+            <button onclick="logout()" class="mt-auto w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400 transition-all group"><i class="fas fa-sign-out-alt w-6 group-hover:text-red-400"></i><span class="font-medium">Log Keluar</span></button>
         </nav>
     </aside>
 
@@ -73,15 +73,20 @@
                 <p class="text-sm text-gray-400 mb-8">Lampirkan fail resit pembayaran yuran di sini. Pengesahan akan dibuat dalam tempoh 1-3 hari bekerja.</p>
                 
                 <form id="payment-form">
+                                        <!-- Maklumat Bank & QR -->
+                    <div class="bg-black/40 border border-white/10 rounded-xl p-6 mb-8 text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                        <p class="text-gray-400 text-sm tracking-widest uppercase mb-4 relative z-10">Bayaran Secara Manual / QR Pay</p>
+                        <img src="assets/img/qr.jpg" alt="QR Code APDK" class="w-48 h-48 mx-auto rounded-lg mb-4 border-2 border-gold/30 shadow-[0_0_20px_rgba(212,175,55,0.2)] relative z-10 object-cover bg-white">
+                        <p class="text-white font-bold tracking-widest text-lg relative z-10">BANK ISLAM MALAYSIA BERHAD</p>
+                        <p class="text-gold font-mono text-2xl font-bold tracking-[0.1em] my-1 relative z-10 select-all">08040010056980</p>
+                        <p class="text-gray-400 text-sm uppercase relative z-10">Akademi Persilatan Daeng Kuning</p>
+                    </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Bulan Bayaran</label>
-                            <select id="payMonth" required class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors">
-                                <option value="" disabled selected>Pilih Bulan</option>
-                                <option value="1">Januari</option>                                <option value="2">Februari</option>  <option value="3">Mac</option>       <option value="4">April</option>
-                                <option value="5">Mei</option>                                    <option value="6">Jun</option>       <option value="7">Julai</option>     <option value="8">Ogos</option>
-                                <option value="9">September</option>                              <option value="10">Oktober</option>  <option value="11">November</option> <option value="12">Disember</option>
-                            </select>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Bayaran Untuk (Tulis Bulan &amp; Nama Jika Ramai)</label>
+                            <input type="text" id="payMonth" required placeholder="Cth: Jan, Feb (Ali & Abu)" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-400 mb-2">Tahun</label>

@@ -1,4 +1,4 @@
-// Logik Pusat Portal Pesilat (Student Module)
+﻿// Logik Pusat Portal Pesilat (Student Module)
 
 document.addEventListener('DOMContentLoaded', () => {
     // Pengawal Keselamatan - Pastikan hanya pelajar yang melepasi halangan ini
@@ -106,8 +106,17 @@ async function initStudentDashboard(myId) {
 
         const yuranMap = {};
         if (yuranData && !errY) {
+            const blnNamesFull = ['jan', 'feb', 'mac', 'apr', 'mei', 'jun', 'jul', 'ogo', 'sep', 'okt', 'nov', 'dis'];
             yuranData.forEach(y => {
-                yuranMap[parseInt(y.bulan)] = (y.status || 'pending').toLowerCase();
+                const s = (y.status || 'pending').toLowerCase();
+                const strB = (y.bulan || '').toLowerCase();
+                // Number check
+                const nums = strB.match(/\b([1-9]|1[0-2])\b/g);
+                if (nums) nums.forEach(m => yuranMap[parseInt(m)] = s);
+                // String check
+                blnNamesFull.forEach((bn, idx) => {
+                    if (strB.includes(bn)) yuranMap[idx + 1] = s;
+                });
             });
         }
         
@@ -546,15 +555,14 @@ async function initStudentPayment(myId) {
             const amountEl = document.getElementById('payAmount');
             if (amountEl) {
                 amountEl.value = rate.toFixed(2);
-                amountEl.readOnly = true;
-                amountEl.classList.add('opacity-80', 'cursor-not-allowed');
+                // Dibiarkan boleh diubah (editable) jika bayar untuk adik beradik / lebih sebulan
                 // Add rate info label
                 const parentDiv = amountEl.closest('div.mb-6');
                 if (parentDiv && !document.getElementById('rate-info')) {
                     const info = document.createElement('p');
                     info.id = 'rate-info';
-                    info.className = 'mt-2 text-xs text-gold/70';
-                    info.innerHTML = `<i class="fas fa-info-circle mr-1"></i>Kadar yuran bulanan ${ahliData.gelanggang}: <strong class="text-gold">RM ${rate.toFixed(2)}</strong>`;
+                    info.className = 'mt-2 text-xs text-gold/70 leading-relaxed';
+                    info.innerHTML = `<i class="fas fa-info-circle mr-1"></i>Kadar sebulan ${ahliData.gelanggang}: <strong class="text-gold">RM ${rate.toFixed(2)}</strong><br><em>*Sila ubah jumlah sekiranya bayaran meliputi ramai ahli / banyak bulan.</em>`;
                     parentDiv.appendChild(info);
                 }
             }
