@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ms">
 
 <head>
@@ -304,6 +304,7 @@
             transform: scale(1.1);
         }
     </style>
+    <link rel="stylesheet" href="css/transitions.css">
 </head>
 
 <body class="font-sans antialiased text-white bg-silat-dark overflow-x-hidden selection:bg-silat-gold selection:text-silat-dark">
@@ -591,22 +592,42 @@
         <i class="fas fa-music animate-pulse" id="musicIcon"></i>
     </button>
     <script>
-        function toggleMusic() {
-            var audio = document.getElementById("vibeMusic");
-            var icon = document.getElementById("musicIcon");
-            if (audio.paused) {
-                audio.play();
-                icon.classList.remove("fa-music", "animate-pulse");
-                icon.classList.add("fa-pause", "animate-spin", "text-xl");
+        var vibeAudio = document.getElementById("vibeMusic");
+        var musicIcon = document.getElementById("musicIcon");
+
+        function setPlayingState(isPlaying) {
+            if (isPlaying) {
+                musicIcon.classList.remove("fa-music", "animate-pulse");
+                musicIcon.classList.add("fa-pause", "animate-spin", "text-xl");
             } else {
-                audio.pause();
-                icon.classList.add("fa-music", "animate-pulse");
-                icon.classList.remove("fa-pause", "animate-spin", "text-xl");
+                musicIcon.classList.remove("fa-pause", "animate-spin", "text-xl");
+                musicIcon.classList.add("fa-music", "animate-pulse");
             }
         }
+
+        function toggleMusic() {
+            if (vibeAudio.paused) {
+                vibeAudio.play().then(() => setPlayingState(true)).catch(() => setPlayingState(false));
+            } else {
+                vibeAudio.pause();
+                setPlayingState(false);
+            }
+        }
+
+        // Cuba autoplay bila page load
+        document.addEventListener('DOMContentLoaded', () => {
+            vibeAudio.volume = 0.5;
+            vibeAudio.play()
+                .then(() => { setPlayingState(true); })
+                .catch(() => {
+                    // Browser block autoplay — kekal icon music, user klik sendiri
+                    setPlayingState(false);
+                });
+        });
     </script>
 
     <script src="js/chatbot.js"></script>
+    <script src="js/transitions.js"></script>
 </body>
 </html>
 

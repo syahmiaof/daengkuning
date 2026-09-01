@@ -70,6 +70,7 @@
         }
     </style>
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="css/transitions.css">
 </head>
 
 <body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
@@ -89,8 +90,7 @@
         </div>
 
         <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
-            <ul class="space-y-2">
-                <li>
+                                                            <ul class="space-y-2">                <li>
                     <a href="dashboard-admin.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
                         <i class="fas fa-th-large w-6 group-hover:text-gold transition-colors"></i>
                         <span class="font-medium tracking-wide">Ringkasan</span>
@@ -120,7 +120,12 @@
                         <span class="font-medium tracking-wide">Hebahan (Notis)</span>
                     </a>
                 </li>
-                
+                <li>
+                    <a href="admin-suara.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-comments w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Suara Pesilat</span>
+                    </a>
+                </li>
                 <li>
                     <a href="admin-surat.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
                         <i class="fas fa-envelope-open-text w-6 group-hover:text-gold transition-colors"></i>
@@ -273,7 +278,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/utils.js"></script>
@@ -314,7 +319,8 @@
                     html += `
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="py-4 px-6 text-xs text-gray-500 font-mono">${x.id}</td>
-                            <td class="py-4 px-6 font-bold text-gold cursor-pointer" onclick="alert('Lokasi: ${x.lokasi}\\nDitubuhkan pada: ${new Date(x.created_at).toLocaleDateString()}')">${x.nama_gelanggang}</td>
+                            <td class="py-4 px-6 font-bold text-gold cursor-pointer" onclick="alert('Lokasi: ${x.lokasi}\
+Ditubuhkan pada: ${new Date(x.created_at).toLocaleDateString()}')">${x.nama_gelanggang}</td>
                             <td class="py-4 px-6 text-gray-400 text-sm truncate max-w-xs">${x.lokasi}</td>
                             <td class="py-4 px-6 text-right flex justify-end gap-2">
                                 <button onclick="editGelanggang('${x.id}', '${x.nama_gelanggang.replace(/'/g, "\\'")}', '${x.lokasi.replace(/'/g, "\\'")}')" class="rbac-superadmin hidden w-8 h-8 rounded bg-blue-900/20 hover:bg-blue-500/20 text-blue-500 hover:text-blue-400 border border-blue-500/30 transition-colors flex items-center justify-center" title="Edit Gelanggang">
@@ -448,6 +454,7 @@
     </script>
 
     <script src="js/chatbot.js"></script>
+    <script src="js/transitions.js"></script>
 </body>
 </html>
 

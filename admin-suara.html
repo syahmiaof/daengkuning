@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5DPJ5K6BSE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5DPJ5K6BSE');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderasi Suara Pesilat | Admin Portal Daeng Kuning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }, colors: { gold: { DEFAULT: '#D4AF37', dark: '#B8860B' }, charcoal: '#111111' } } } }
+    </script>
+    <link rel="stylesheet" href="css/branding.css">
+    <style>
+        .glass-panel { background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(212,175,55,0.2); box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 99px; }
+        .post-card { transition: border-color 0.2s, background 0.2s; }
+        .post-card:hover { border-color: rgba(212,175,55,0.3) !important; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .feed-item { animation: fadeUp 0.3s ease forwards; }
+    </style>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="css/transitions.css">
+</head>
+<body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex relative">
+
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden transition-opacity lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gold/20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.6)] object-cover bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+        <div class="h-20 flex items-center px-4 md:px-6 border-b border-gold/10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent"></div>
+            <a href="index.html" class="flex items-center gap-1 cursor-pointer z-10 w-full transition-transform hover:scale-105">
+                <img loading="lazy" src="assets/img/logo.png" alt="Daeng Kuning Logo" class="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <span class="royal-brand-logo text-2xl md:text-[1.6rem] md:leading-[1.6rem] mt-1.5" style="margin-left:-0.6rem;letter-spacing:-0.02em;">Daeng<span class="brand-gold">Kuning</span></span>
+            </a>
+            <button class="ml-auto text-gray-400 hover:text-white lg:hidden z-10" onclick="toggleSidebar()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
+                        <ul class="space-y-2">                <li>
+                    <a href="dashboard-admin.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-th-large w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Ringkasan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-ahli.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-users w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Senarai Ahli</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-yuran.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-file-invoice-dollar w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Pengurusan Yuran</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-gelanggang.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-map-marked-alt w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Pengurusan Gelanggang</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-notis.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-bullhorn w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Hebahan (Notis)</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-suara.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all">
+                        <i class="fas fa-comments w-6"></i>
+                        <span class="font-medium tracking-wide">Suara Pesilat</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-surat.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-envelope-open-text w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Surat Rasmi (AI)</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-pengurusan.html" class="rbac-superadmin hidden flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-user-shield w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Urus Pentadbir</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="mt-auto">
+                <button onclick="logout()" class="w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400 transition-all border border-transparent hover:border-red-900/50 group">
+                    <i class="fas fa-sign-out-alt w-6 group-hover:text-red-400 transition-colors"></i>
+                    <span class="font-medium tracking-wide">Log Keluar</span>
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 flex flex-col min-h-screen lg:ml-72 transition-all duration-300 relative">
+
+        <!-- Header -->
+        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-30">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-gray-300 hover:text-gold focus:outline-none transition-colors" onclick="toggleSidebar()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <div>
+                    <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Moderasi <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">Suara Pesilat</span></h2>
+                    <p class="text-xs sm:text-sm text-gray-400 font-light">Pantau, pin, dan uruskan hantaran komuniti</p>
+                </div>
+            </div>
+            <div id="adminBadge" class="hidden items-center gap-2 border-l border-white/10 pl-4 sm:pl-6 ml-2">
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs text-gray-500 uppercase tracking-widest" id="adminRoleLabel">SUPERADMIN</p>
+                    <p class="text-sm font-bold text-white" id="adminNameLabel">—</p>
+                </div>
+                <div class="w-9 h-9 rounded-full bg-gold/20 border border-gold/50 flex items-center justify-center text-gold shadow-[0_0_10px_rgba(212,175,55,0.3)]">
+                    <i class="fas fa-user-shield text-sm"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-6 lg:p-10 pb-24">
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                <div class="glass-panel rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold"><i class="fas fa-comments"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Jumlah Hantaran</p>
+                        <p class="text-xl font-bold text-white" id="stat-total-posts">—</p>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-400"><i class="fas fa-thumbtack"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Dipinkan</p>
+                        <p class="text-xl font-bold text-white" id="stat-pinned">—</p>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400"><i class="fas fa-heart"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Jumlah Suka</p>
+                        <p class="text-xl font-bold text-white" id="stat-total-likes">—</p>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-xl p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400"><i class="fas fa-comment-dots"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Jumlah Komen</p>
+                        <p class="text-xl font-bold text-white" id="stat-total-comments">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed Panel -->
+            <div class="glass-panel rounded-2xl border-gold/30 shadow-2xl overflow-hidden">
+                <!-- Toolbar -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-white/5">
+                    <h3 class="text-lg font-bold text-white font-serif flex items-center gap-2">
+                        <i class="fas fa-stream text-gold text-base"></i> Semua Hantaran Komuniti
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <input id="searchPost" type="text" placeholder="Cari hantaran..." class="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-gray-600 focus:border-gold focus:outline-none transition-colors w-48">
+                        <button onclick="loadAdminSuara()" class="px-4 py-2 bg-gold/10 border border-gold/30 text-gold rounded-lg text-xs hover:bg-gold/20 transition-colors flex items-center gap-1.5">
+                            <i class="fas fa-sync-alt"></i> Muat Semula
+                        </button>
+                    </div>
+                </div>
+
+                <!-- List -->
+                <div id="suara-admin-list" class="divide-y divide-white/5 max-h-[65vh] overflow-y-auto custom-scrollbar">
+                    <div class="flex items-center justify-center py-16 gap-3 text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl text-gold"></i>
+                        <span>Memuat hantaran pesilat...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        let allPosts = [];
+
+        function timeAgo(dStr) {
+            const diffInMins = Math.floor((new Date() - new Date(dStr)) / 60000);
+            if (diffInMins < 1) return 'Baru sahaja';
+            if (diffInMins < 60) return diffInMins + ' minit lepas';
+            if (diffInMins < 1440) return Math.floor(diffInMins/60) + ' jam lepas';
+            return Math.floor(diffInMins/1440) + ' hari lepas';
+        }
+
+        async function loadAdminSuara() {
+            const list = document.getElementById('suara-admin-list');
+            list.innerHTML = '<div class="flex items-center justify-center py-16 gap-3 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl text-gold"></i><span>Memuat hantaran...</span></div>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('suara_post')
+                    .select('*, ahli!suara_post_id_ahli_fkey(nama, avatar_url, bengkung), suara_likes(id_ahli), suara_comments(id, id_ahli, teks_komen, created_at)')
+                    .order('is_pinned', { ascending: false })
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                allPosts = data || [];
+                renderPosts(allPosts);
+                updateStats(allPosts);
+
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = `<div class="py-12 text-center text-red-400"><i class="fas fa-exclamation-circle text-3xl mb-3"></i><br>Ralat memuat data: ${err.message}</div>`;
+            }
+        }
+
+        function updateStats(posts) {
+            document.getElementById('stat-total-posts').textContent = posts.length;
+            document.getElementById('stat-pinned').textContent = posts.filter(p => p.is_pinned).length;
+            document.getElementById('stat-total-likes').textContent = posts.reduce((s, p) => s + (p.suara_likes?.length || 0), 0);
+            document.getElementById('stat-total-comments').textContent = posts.reduce((s, p) => s + (p.suara_comments?.length || 0), 0);
+        }
+
+        function renderPosts(posts) {
+            const list = document.getElementById('suara-admin-list');
+            if (!posts || posts.length === 0) {
+                list.innerHTML = '<div class="py-16 text-center text-gray-500"><i class="fas fa-comment-slash text-4xl mb-3 text-white/10"></i><p>Tiada hantaran ditemui.</p></div>';
+                return;
+            }
+
+            list.innerHTML = posts.map(x => {
+                const pinCls = x.is_pinned ? 'text-gold bg-gold/10 border-gold/30' : 'text-gray-500 hover:text-white bg-white/5 border-white/10';
+                const pinTitle = x.is_pinned ? 'Nyahpin' : 'Pin Hantaran';
+                const avatar = x.ahli?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(x.ahli?.nama||x.id_ahli)}&background=1a1a1a&color=D4AF37`;
+                const bengkung = x.ahli?.bengkung || '';
+                const likes = x.suara_likes?.length || 0;
+                const comments = x.suara_comments?.length || 0;
+
+                let beltColor = 'bg-white/10 text-gray-300';
+                const bLow = bengkung.toLowerCase();
+                if (bLow.includes('hijau')) beltColor = 'bg-green-500/20 text-green-300';
+                else if (bLow.includes('merah')) beltColor = 'bg-red-500/20 text-red-300';
+                else if (bLow.includes('kuning')) beltColor = 'bg-yellow-500/20 text-yellow-300';
+                else if (bLow.includes('chula')) beltColor = 'bg-black text-gold';
+
+                const pinBadge = x.is_pinned ? '<span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded bg-gold/20 text-gold border border-gold/30 uppercase"><i class="fas fa-thumbtack"></i>PIN</span>' : '';
+
+                return `
+                <div class="feed-item post-card px-6 py-5 flex items-start gap-4 border border-transparent hover:bg-white/2">
+                    <img src="${avatar}" class="w-11 h-11 rounded-full border border-gold/30 object-cover flex-shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="font-bold text-white text-sm">${x.ahli?.nama || x.id_ahli}</span>
+                            ${bengkung ? `<span class="text-[10px] px-1.5 py-0.5 rounded font-medium ${beltColor}">${bengkung}</span>` : ''}
+                            ${pinBadge}
+                            <span class="text-[10px] text-gray-500 ml-auto">${timeAgo(x.created_at)}</span>
+                        </div>
+                        <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap break-words mb-3">${x.kandungan_teks}</p>
+                        <div class="flex items-center gap-4 text-xs text-gray-500 font-semibold">
+                            <span><i class="fas fa-heart text-red-400 mr-1"></i>${likes} Suka</span>
+                            <span><i class="fas fa-comment text-blue-400 mr-1"></i>${comments} Komen</span>
+                            <span class="text-[10px] text-gray-600">ID: ${x.id_ahli}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        <button onclick="togglePin(${x.id}, ${x.is_pinned})" title="${pinTitle}"
+                            class="w-8 h-8 rounded border ${pinCls} flex items-center justify-center transition-all hover:scale-110">
+                            <i class="fas fa-thumbtack text-xs"></i>
+                        </button>
+                        <button onclick="deleteSuaraAdmin(${x.id})" title="Padam Hantaran"
+                            class="w-8 h-8 rounded border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 flex items-center justify-center transition-all hover:scale-110">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.togglePin = async function(id, curState) {
+            try {
+                const { error } = await supabaseClient.from('suara_post').update({ is_pinned: !curState }).eq('id', id);
+                if (error) throw error;
+                if (window.ui) ui.showToast(curState ? 'Hantaran dinyahpin.' : 'Hantaran berjaya dipinkan!', 'success');
+                await loadAdminSuara();
+            } catch(e) {
+                console.error(e);
+                if (window.ui) ui.showToast('Gagal mengemas kini pin.', 'error');
+            }
+        };
+
+        window.deleteSuaraAdmin = async function(id) {
+            if (!confirm('Padam hantaran komuniti ini sepenuhnya? Suka dan komen juga akan lesap.')) return;
+            try {
+                await supabaseClient.from('suara_likes').delete().eq('post_id', id);
+                await supabaseClient.from('suara_comments').delete().eq('post_id', id);
+                const { error } = await supabaseClient.from('suara_post').delete().eq('id', id);
+                if (error) throw error;
+                if (window.ui) ui.showToast('Hantaran berjaya dipadam.', 'success');
+                await loadAdminSuara();
+            } catch(e) {
+                console.error(e);
+                if (window.ui) ui.showToast('Gagal memadam hantaran.', 'error');
+            }
+        };
+
+        // Live search
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auth check — admin only
+            const sessionStr = localStorage.getItem('userSession');
+            if (!sessionStr) { window.location.replace('login.html'); return; }
+            try {
+                const user = JSON.parse(sessionStr);
+                if (user.role !== 'admin' && user.role !== 'superadmin') {
+                    window.location.replace('login.html');
+                    return;
+                }
+                // Show admin badge
+                const badge = document.getElementById('adminBadge');
+                if (badge) badge.classList.remove('hidden'), badge.classList.add('flex');
+                const roleLabel = document.getElementById('adminRoleLabel');
+                const nameLabel = document.getElementById('adminNameLabel');
+                if (roleLabel) roleLabel.textContent = (user.role || 'ADMIN').toUpperCase();
+                if (nameLabel) nameLabel.textContent = user.nama || user.username || '—';
+            } catch(e) { window.location.replace('login.html'); return; }
+
+            loadAdminSuara();
+
+            document.getElementById('searchPost').addEventListener('input', function() {
+                const q = this.value.toLowerCase();
+                if (!q) { renderPosts(allPosts); return; }
+                const filtered = allPosts.filter(p =>
+                    (p.kandungan_teks || '').toLowerCase().includes(q) ||
+                    (p.ahli?.nama || '').toLowerCase().includes(q) ||
+                    (p.id_ahli || '').toLowerCase().includes(q)
+                );
+                renderPosts(filtered);
+            });
+        });
+    </script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/transitions.js"></script>
+</body>
+</html>

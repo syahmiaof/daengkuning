@@ -2,7 +2,8 @@
 
 // Initialize Supabase Client
 // CDN creates a global 'supabase' variable, so we name our client 'supabaseClient'
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var supabaseClient = window.supabaseClient;
 
 // Function to check connection by selecting 1 row from 'ahli' table
 async function checkConnection() {

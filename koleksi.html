@@ -70,6 +70,7 @@
     </style>
 
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="css/transitions.css">
 </head>
 
 <body
@@ -459,7 +460,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/database.js"></script>
@@ -647,18 +648,27 @@
                 return;
             }
 
-            let message = "Salam Daeng Kuning, saya ingin menempah barangan Khazanah berikut:\n\n";
+            let message = "Salam Daeng Kuning, saya ingin menempah barangan Khazanah berikut:
+
+";
             let total = 0;
             
             cartItems.forEach((item, i) => {
                 const val = parseFloat(item.price.replace(/[^\d.-]/g, ''));
                 total += val;
-                message += `${i+1}. *${item.title}*\n`;
-                if(item.size) message += `   - Saiz: ${item.size}\n`;
-                message += `   - RM ${val.toFixed(2)}\n\n`;
+                message += `${i+1}. *${item.title}*
+`;
+                if(item.size) message += `   - Saiz: ${item.size}
+`;
+                message += `   - RM ${val.toFixed(2)}
+
+`;
             });
 
-            message += `\n*Jumlah Keseluruhan: RM ${total.toFixed(2)}*\n\nMohon pengesahan status stok untuk saya buat pembayaran. Terima kasih.`;
+            message += `
+*Jumlah Keseluruhan: RM ${total.toFixed(2)}*
+
+Mohon pengesahan status stok untuk saya buat pembayaran. Terima kasih.`;
             
             const encoded = encodeURIComponent(message);
             window.open(`https://wa.me/60107965236?text=${encoded}`, '_blank');
@@ -666,5 +676,6 @@
     </script>
 
     <script src="js/chatbot.js"></script>
+    <script src="js/transitions.js"></script>
 </body>
 </html>

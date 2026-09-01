@@ -34,20 +34,21 @@ window.utils = {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
 
-        // Helper for Month Format
+        // Helper for Month Format - handles both "4" and "4 2026" from DB
         const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
-        let properBulan = paymentData.bulan || '-';
-        if (!isNaN(properBulan) && properBulan >= 1 && properBulan <= 12) {
-            properBulan = monthNames[properBulan - 1];
-        }
+        let rawBulan = (paymentData.bulan || '-').toString().trim();
+        let bulanNum = parseInt(rawBulan.split(' ')[0]); // ambik nombor bulan je
+        let properBulan = (bulanNum >= 1 && bulanNum <= 12) ? monthNames[bulanNum - 1] : rawBulan;
 
         // Extract Data Safely
         const namaAhli = paymentData.nama || 'Pesilat Tanda Nama';
         const idAhli = paymentData.id_ahli || 'N/A';
         const bengkung = paymentData.bengkung || 'Tiada Maklumat';
-        const bulan = properBulan;
         const tahun = paymentData.tahun || '-';
         const jumlahObj = parseFloat(paymentData.jumlah || 0);
+        
+        // For group: use kumpulan_bulan if available (e.g. "Mac, April"), else single month
+        const bulanDisplay = paymentData.kumpulan_bulan || `${properBulan} ${tahun}`;
         
         // Detailed data extracting assuming Supabase timestamps
         const tarikhTrans = paymentData.created_at ? new Date(paymentData.created_at).toLocaleDateString('ms-MY') : '-';
@@ -107,28 +108,39 @@ window.utils = {
             doc.setTextColor(30, 30, 30);
             doc.setFontSize(11);
             
-            // Left Column
+            // Left Column - Names (stacked vertically, each name on its own line)
             doc.setFont('times', 'normal');
             doc.text('Diterima daripada:', 20, 75);
             
             doc.setFont('times', 'bold');
-            doc.setFontSize(13);
-            doc.text(namaAhli.toUpperCase(), 20, 81);
+            doc.setFontSize(11);
+            
+            // Split names by \n (group) or by splitTextToSize (single long name)
+            const nameLines = namaAhli.includes('\n')
+                ? namaAhli.split('\n').map(n => n.trim().toUpperCase())
+                : doc.splitTextToSize(namaAhli.toUpperCase(), 100);
+            
+            doc.text(nameLines, 20, 81);
+            
+            // Push other items down based on number of name lines
+            let extraHeight = (nameLines.length - 1) * 5.5;
+            let leftNextY1 = 87 + extraHeight;
+            let leftNextY2 = 92 + extraHeight;
             
             doc.setFontSize(11);
             doc.setFont('times', 'normal');
-            doc.text('ID Pendaftaran', 20, 87);
-            doc.text(':', 45, 87);
+            doc.text('ID Pendaftaran', 20, leftNextY1);
+            doc.text(':', 45, leftNextY1);
             doc.setFont('times', 'bold');
-            doc.text(idAhli, 50, 87);
+            doc.text(idAhli, 50, leftNextY1);
 
             doc.setFont('times', 'normal');
-            doc.text('Taraf Bengkung', 20, 92);
-            doc.text(':', 45, 92);
+            doc.text('Taraf Bengkung', 20, leftNextY2);
+            doc.text(':', 45, leftNextY2);
             doc.setFont('times', 'bold');
-            doc.text(bengkung, 50, 92);
+            doc.text(bengkung, 50, leftNextY2);
 
-            // Right Column (Aligned perfectly to avoid border overlap)
+            // Right Column
             const rightLabelX = 125;
             const rightColonX = 150;
             const rightValueX = 154;
@@ -157,11 +169,11 @@ window.utils = {
             // 5. TRANSACTION TABLE
             const tableCol = ["PERIHAL", "BULAN / TAHUN", "JUMLAH (RM)"];
             const tableRows = [
-                ["YURAN LATIHAN BULANAN", `${bulan.toUpperCase()} ${tahun}`, window.utils.formatCurrency(jumlahObj)]
+                ["YURAN LATIHAN BULANAN", bulanDisplay, window.utils.formatCurrency(jumlahObj)]
             ];
 
             doc.autoTable({
-                startY: 102,
+                startY: Math.max(102, leftNextY2 + 10),
                 head: [tableCol],
                 body: tableRows,
                 theme: 'plain',
@@ -223,7 +235,7 @@ window.utils = {
             doc.text(`Dijana secara automatik oleh pangkalan data APDK pada ${teraMasa}.`, 105, 280, { align: 'center' });
 
             // Generate
-            const fileName = `Resit_Bayaran_${idAhli}_${bulan}-${tahun}.pdf`;
+            const fileName = `Resit_Bayaran_${idAhli}_${properBulan}-${tahun}.pdf`;
             doc.save(fileName);
         }, 400); // Wait 400ms to allow canvas and image buffering
     },

@@ -1,4 +1,4 @@
-﻿// Logik Pusat Portal Pesilat (Student Module)
+// Logik Pusat Portal Pesilat (Student Module)
 
 document.addEventListener('DOMContentLoaded', () => {
     // Pengawal Keselamatan - Pastikan hanya pelajar yang melepasi halangan ini
@@ -536,46 +536,114 @@ function sendAIMessage() {
 async function initStudentPayment(myId) {
     fetchStudentHistory(myId);
 
-    // Auto-fetch gelanggang rate for this student
+    // Fetch ALL Ahli for Multi-Select Dropdown
     try {
-        const { data: ahliData } = await supabaseClient
+        const { data: allAhli, error } = await supabaseClient
             .from('ahli')
-            .select('gelanggang, nama')
-            .ilike('id_ahli', myId)
-            .single();
+            .select('id_ahli, nama, gelanggang')
+            .order('nama', { ascending: true });
 
-        if (ahliData && ahliData.gelanggang) {
-            const { data: gData } = await supabaseClient
-                .from('gelanggang')
-                .select('kadar_yuran')
-                .eq('nama_gelanggang', ahliData.gelanggang)
-                .single();
+        const listDiv = document.getElementById('multiSelectListContent');
+        if (listDiv && !error && allAhli) {
+            listDiv.innerHTML = '';
 
-            const rate = gData ? parseFloat(gData.kadar_yuran) || 30 : 30;
-            const amountEl = document.getElementById('payAmount');
-            if (amountEl) {
-                amountEl.value = rate.toFixed(2);
-                // Dibiarkan boleh diubah (editable) jika bayar untuk adik beradik / lebih sebulan
-                // Add rate info label
-                const parentDiv = amountEl.closest('div.mb-6');
-                if (parentDiv && !document.getElementById('rate-info')) {
-                    const info = document.createElement('p');
-                    info.id = 'rate-info';
-                    info.className = 'mt-2 text-xs text-gold/70 leading-relaxed';
-                    info.innerHTML = `<i class="fas fa-info-circle mr-1"></i>Kadar sebulan ${ahliData.gelanggang}: <strong class="text-gold">RM ${rate.toFixed(2)}</strong><br><em>*Sila ubah jumlah sekiranya bayaran meliputi ramai ahli / banyak bulan.</em>`;
-                    parentDiv.appendChild(info);
-                }
+            allAhli.forEach(a => {
+                const isChecked = a.id_ahli.toLowerCase() === myId.toLowerCase() ? 'checked' : '';
+                const item = document.createElement('label');
+                item.className = 'flex items-center px-4 py-2.5 hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0 transition-colors student-label-item';
+                item.innerHTML = `
+                    <input type="checkbox" value="${a.id_ahli}" data-name="${a.nama}" class="student-checkbox mr-3 w-4 h-4 rounded accent-yellow-400" ${isChecked}>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-medium text-white student-name-text">${a.nama}</span>
+                        <span class="text-[10px] text-gold/60 uppercase tracking-widest">${a.id_ahli} | ${a.gelanggang || 'Tiada Gelanggang'}</span>
+                    </div>`;
+                listDiv.appendChild(item);
+            });
+
+            // Search filter
+            const searchInput = document.getElementById('searchStudentInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    document.querySelectorAll('.student-label-item').forEach(lbl => {
+                        const txt = lbl.querySelector('.student-name-text')?.innerText.toLowerCase() || '';
+                        lbl.style.display = txt.includes(term) ? 'flex' : 'none';
+                    });
+                });
             }
+
+            const updateSelectionLabel = () => {
+                const checked = document.querySelectorAll('.student-checkbox:checked');
+                const label = document.getElementById('selectedNamesText');
+                const tagsContainer = document.getElementById('selectedTagsContainer');
+
+                if (checked.length === 0) {
+                    if (label) label.innerText = '-- Pilih Nama Pesilat --';
+                    if (tagsContainer) tagsContainer.innerHTML = '';
+                } else {
+                    const names = Array.from(checked).map(c => c.dataset.name);
+                    if (label) label.innerText = names.join(', ');
+                    
+                    if (tagsContainer) {
+                        tagsContainer.innerHTML = '';
+                        Array.from(checked).forEach(c => {
+                            const tag = document.createElement('div');
+                            tag.className = 'bg-gold/10 border border-gold/30 text-gold px-3 py-1 rounded-full text-xs font-medium flex items-center shadow-lg';
+                            tag.innerHTML = `<i class="fas fa-user-check mr-2"></i> ${c.dataset.name}`;
+                            tagsContainer.appendChild(tag);
+                        });
+                    }
+                }
+                
+                if (checked.length > 0) {
+                    loadStudentYuranMonths(checked[0].value);
+                    fetchGelanggangRate(checked[0].value);
+                }
+            };
+
+            document.querySelectorAll('.student-checkbox').forEach(cb => {
+                cb.addEventListener('change', updateSelectionLabel);
+            });
+
+            // Close dropdown on outside click
+            document.addEventListener('click', (e) => {
+                const drop = document.getElementById('multiSelectDropdown');
+                const list = document.getElementById('multiSelectList');
+                if (drop && list && !drop.contains(e.target) && !list.contains(e.target)) {
+                    list.classList.add('hidden');
+                }
+            });
+
+            updateSelectionLabel(); // init state
         }
-    } catch (err) {
-        console.warn('Could not fetch gelanggang rate:', err);
-    }
+    } catch (err) { console.warn('Gagal muatkan senarai ahli:', err); }
 
     const form = document.getElementById('payment-form');
-    if (!form) return;
+    if (!form || form.dataset.listenerAttached) return;
+    form.dataset.listenerAttached = 'true';
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        const checkedStudents = Array.from(document.querySelectorAll('.student-checkbox:checked'));
+        if (checkedStudents.length === 0) {
+            alert('Sila pilih minimum SATU nama pesilat.');
+            return;
+        }
+
+        const checkedMonths = Array.from(document.querySelectorAll('.month-checkbox:checked'));
+        if (checkedMonths.length === 0) {
+            alert('Sila pilih sekurang-kurangnya SATU bulan untuk dibayar.');
+            return;
+        }
+
+        const tahun = (document.getElementById('payYear')?.value) || new Date().getFullYear().toString();
+        const jumlah = document.getElementById('payAmount').value;
+        const payCatatan = document.getElementById('payCatatan')?.value.trim() || '';
+        const fileInput = document.getElementById('payReceipt');
+        const file = fileInput?.files[0];
+
+        if (!file) { alert('Sila lampirkan fail resit pembayaran.'); return; }
 
         const btn = document.getElementById('submitBtn');
         const originalBtn = btn.innerHTML;
@@ -583,63 +651,128 @@ async function initStudentPayment(myId) {
         btn.disabled = true;
 
         try {
-            const bulan = document.getElementById('payMonth').value;
-            const tahun = document.getElementById('payYear').value;
-            const jumlah = document.getElementById('payAmount').value;
-            const fileInput = document.getElementById('payReceipt');
-            const file = fileInput.files[0];
+            const totalRows = checkedStudents.length * checkedMonths.length;
+            const splitAmount = (parseFloat(jumlah) / totalRows).toFixed(2);
 
-            if (!file) {
-                throw new Error("Sila lampirkan fail resit pembayaran.");
-            }
-
-            // Upload ke Supabase Storage Bucket 'resit-yuran'
             btn.innerHTML = '<i class="fas fa-upload fa-bounce mr-2"></i>Memuat Naik Fail...';
             const ext = file.name.split('.').pop();
-            // Format fail selamat & unik: id_bulan_tahun_timestamp.ext
-            const filePath = `${myId}_${bulan}_${tahun}_${Date.now()}.${ext}`;
+            const filePath = `bulk_${Date.now()}.${ext}`;
 
-            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+            const { error: uploadError } = await supabaseClient.storage
                 .from('resit-yuran')
                 .upload(filePath, file, { cacheControl: '3600', upsert: true });
-
             if (uploadError) throw uploadError;
 
-            // Dapatkan URL Awam
-            btn.innerHTML = '<i class="fas fa-link fa-spin mr-2"></i>Mengesahkan URL...';
-            const { data: publicData } = supabaseClient.storage
-                .from('resit-yuran')
-                .getPublicUrl(filePath);
-
+            const { data: publicData } = supabaseClient.storage.from('resit-yuran').getPublicUrl(filePath);
             const resitUrl = publicData.publicUrl;
 
-            // Memasukkan pautan sebenar ke dalam database
             btn.innerHTML = '<i class="fas fa-database fa-pulse mr-2"></i>Menyimpan Rekod...';
-            const payload = {
-                id_ahli: myId,
-                bulan: bulan,
-                tahun: tahun,
-                jumlah: parseFloat(jumlah),
-                status: 'Pending',
-                bukti_bayar_url: resitUrl
-            };
+            const payloadArray = [];
+            checkedStudents.forEach(stu => {
+                checkedMonths.forEach(m => {
+                    payloadArray.push({
+                        id_ahli: stu.value,
+                        bulan: m.value + ' ' + tahun,
+                        tahun: tahun,
+                        jumlah: parseFloat(splitAmount),
+                        status: 'Pending',
+                        bukti_bayar_url: resitUrl,
+                        catatan: payCatatan
+                    });
+                });
+            });
 
-            const { error } = await supabaseClient.from('yuran').insert(payload);
-            
+            const { error } = await supabaseClient.from('yuran').insert(payloadArray);
             if (error) throw error;
 
-            alert("Bayaran bagi bulan " + bulan + " berjaya di laporkan dan sedang menunggu kelulusan Pentadbir.");
+            // Notify ADMIN
+            try {
+                const firstStu = checkedStudents[0];
+                await supabaseClient.from('notis_interaksi').insert({
+                    user_id: 'ADMIN',
+                    type: 'yuran_baru',
+                    mesej: `Pesilat ${firstStu.dataset.name} (${firstStu.value}) telah menghantar bukti bayaran yuran baharu untuk semakan.`
+                });
+            } catch(_) {}
+
+            alert(`Berjaya! ${totalRows} rekod yuran telah dihantar dan menunggu kelulusan Pentadbir.`);
             form.reset();
+            fetchStudentHistory(myId);
 
         } catch (err) {
-            console.error("Payment Error:", err);
-            alert("Sistem gagal memproses resit: " + err.message);
+            console.error('Payment Error:', err);
+            alert('Sistem gagal memproses resit: ' + err.message);
         } finally {
             btn.innerHTML = originalBtn;
             btn.disabled = false;
         }
     });
+
+    // Year change → reload months
+    const yearSel = document.getElementById('payYear');
+    if (yearSel) {
+        yearSel.addEventListener('change', () => {
+            const stu = document.querySelector('.student-checkbox:checked');
+            if (stu) loadStudentYuranMonths(stu.value);
+        });
+    }
 }
+
+async function fetchGelanggangRate(studentId) {
+    try {
+        const { data: ahliData } = await supabaseClient.from('ahli').select('gelanggang, nama').ilike('id_ahli', studentId).single();
+        if (ahliData && ahliData.gelanggang) {
+            const { data: gData } = await supabaseClient.from('gelanggang').select('kadar_yuran').eq('nama_gelanggang', ahliData.gelanggang).single();
+            const rate = gData ? parseFloat(gData.kadar_yuran) || 30 : 30;
+            const amountEl = document.getElementById('payAmount');
+            if (amountEl) {
+                amountEl.value = rate.toFixed(2);
+                const parentDiv = amountEl.closest('div.mb-6');
+                if (parentDiv) {
+                    let info = document.getElementById('rate-info');
+                    if (!info) { info = document.createElement('p'); info.id = 'rate-info'; info.className = 'mt-2 text-xs text-gold/70 leading-relaxed'; parentDiv.appendChild(info); }
+                    info.innerHTML = `<i class="fas fa-info-circle mr-1"></i>Kadar sebulan <strong>${ahliData.gelanggang}</strong>: <strong class="text-gold">RM ${rate.toFixed(2)}</strong><br><em>*Sila ubah jumlah sekiranya bayaran meliputi ramai ahli / banyak bulan.</em>`;
+                }
+            }
+        }
+    } catch (err) {}
+}
+
+async function loadStudentYuranMonths(studentId) {
+    const curYearNum = document.getElementById('payYear')?.value || new Date().getFullYear().toString();
+    const grid = document.getElementById('monthGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '<div class="col-span-6 text-gold text-sm text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Menyemak status...</div>';
+
+    try {
+        const { data: yuranData } = await supabaseClient.from('yuran').select('bulan, status').ilike('id_ahli', studentId).eq('tahun', curYearNum);
+        let paidMap = {};
+        (yuranData || []).forEach(y => {
+            const s = (y.status || 'pending').toLowerCase();
+            const nums = (y.bulan || '').match(/\b([1-9]|1[0-2])\b/g);
+            if (nums) nums.forEach(m => paidMap[parseInt(m)] = s);
+        });
+
+        const blnNames = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+        grid.innerHTML = '';
+        for (let i = 1; i <= 12; i++) {
+            const isPaid = (paidMap[i] === 'paid' || paidMap[i] === 'lunas');
+            const isPending = (paidMap[i] === 'pending');
+            const disabled = (isPaid || isPending) ? 'disabled' : '';
+            const statusLabel = isPaid ? '(Lunas)' : (isPending ? '(Semakan)' : '(Bayar)');
+            const colorClass = isPaid ? 'bg-green-500/10 border-green-500/30 text-green-500 opacity-60' :
+                               (isPending ? 'bg-blue-500/10 border-blue-500/30 text-blue-500 opacity-60' : 'bg-black/50 border-white/10 text-white cursor-pointer hover:border-gold');
+            const lbl = document.createElement('label');
+            lbl.className = `flex flex-col items-center justify-center gap-1 p-2 border rounded-lg transition-colors ${colorClass}`;
+            lbl.innerHTML = `<span class="text-xs font-bold uppercase tracking-widest">${blnNames[i-1]}</span><input type="checkbox" value="${i}" class="month-checkbox mt-1" ${disabled}><span class="text-[9px] font-bold">${statusLabel}</span>`;
+            grid.appendChild(lbl);
+        }
+    } catch(err) {
+        grid.innerHTML = '<div class="col-span-3 text-red-500 text-sm">Gagal menyemak rekod. Sila muat semula.</div>';
+    }
+}
+
 
 // Student History Extractor
 async function fetchStudentHistory(myId) {
@@ -671,8 +804,24 @@ function renderStudentHistory() {
 
     tbody.innerHTML = '';
     myPaymentHistory.forEach(y => {
-        const bulan = y.bulan || '-';
-        const tahun = y.tahun || '-';
+        const bRaw = (y.bulan || '-').toString();
+        const bParts = bRaw.split(' ');
+        let mIdx = parseInt(bParts[0]);
+        let mName = bParts[0];
+        if (!isNaN(mIdx) && mIdx >= 1 && mIdx <= 12) {
+            const mlist = ["", "Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+            mName = mlist[mIdx];
+        } else if (bRaw === '-') {
+            mName = '-';
+        }
+        
+        let tahun = y.tahun || '-';
+        if (String(tahun).toLowerCase() === 'tiada') tahun = '';
+        
+        const displayBulanTahun = (mName !== '-' && tahun && tahun !== '-') 
+            ? `${mName} ${tahun}` 
+            : (mName !== '-' ? mName : `${bRaw} / ${tahun}`);
+
         const jumlah = parseFloat(y.jumlah || 0);
         const statusRaw = (y.status || 'pending').toLowerCase();
         
@@ -687,7 +836,6 @@ function renderStudentHistory() {
 
         let actionBtn = '-';
         if (statusRaw === 'paid' || statusRaw === 'lunas') {
-            // Kita pass `id_yuran` or fallback `id` to the print trigger
             const pk = y.id_yuran || y.id;
             actionBtn = `<button onclick="studentPrintReceipt('${pk}')" class="text-xs font-semibold px-3 py-1.5 rounded bg-gold/10 text-gold border border-gold/30 hover:bg-gold hover:text-black transition-all"><i class="fas fa-file-pdf mr-1"></i> Cetak PDF</button>`;
         }
@@ -695,7 +843,7 @@ function renderStudentHistory() {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-white/5 transition-colors";
         tr.innerHTML = `
-            <td class="px-6 py-4 text-gray-300 font-medium">${bulan} / ${tahun}</td>
+            <td class="px-6 py-4 text-gray-300 font-medium whitespace-nowrap">${displayBulanTahun}</td>
             <td class="px-6 py-4 text-white">${window.utils.formatCurrency(jumlah)}</td>
             <td class="px-6 py-4 text-center">${statusTag}</td>
             <td class="px-6 py-4 text-right">${actionBtn}</td>
@@ -819,12 +967,16 @@ window.openStudentEditModal = function() {
         return;
     }
 
-    // Populate Modal
-    document.getElementById('studEditName').value = ahli.nama || '';
-    document.getElementById('studEditPssgm').value = ahli.no_pssgm || '';
-    document.getElementById('studEditTel').value = ahli.no_tel || '';
-    document.getElementById('studEditTelWaris').value = ahli.no_tel_waris || '';
-    document.getElementById('studEditBelt').value = ahli.bengkung || 'Tiada';
+    // Populate semua field modal dengan data terkini
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    set('studEditName',       ahli.nama);
+    set('studEditPssgm',      ahli.no_pssgm);
+    set('studEditTel',        ahli.no_tel);
+    set('studEditTelWaris',   ahli.no_tel_waris);
+    set('studEditIC',         ahli.ic);
+    set('studEditBelt',       ahli.bengkung || 'Tiada');
+    set('studEditIdDisabled', ahli.id_ahli || JSON.parse(localStorage.getItem('userSession'))?.username || '-');
+    set('studEditGelanggang', ahli.gelanggang || 'Tiada Gelanggang');
 
     window.ui.showModal('student-edit-modal');
     setupStudentEditFormListener();
@@ -845,10 +997,13 @@ function setupStudentEditFormListener() {
             
             const payload = {
                 nama: document.getElementById('studEditName').value.trim(),
-                no_pssgm: document.getElementById('studEditPssgm').value.trim(),
+                ic: document.getElementById('studEditIC')?.value.trim() || undefined,
+                no_pssgm: document.getElementById('studEditPssgm').value.trim() || null,
                 no_tel: document.getElementById('studEditTel').value.trim(),
-                no_tel_waris: document.getElementById('studEditTelWaris').value.trim()
+                no_tel_waris: document.getElementById('studEditTelWaris')?.value.trim() || null
             };
+            // Remove undefined keys
+            Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
 
             const { error } = await supabaseClient
                 .from('ahli')

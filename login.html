@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ms">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -177,6 +177,7 @@
     </style>
 
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="css/transitions.css">
 </head>
 
 <body class="font-sans antialiased min-h-screen relative overflow-x-hidden bg-[#080808]">
@@ -361,7 +362,7 @@
                     <label class="premium-label">ID Pesilat (cth: DK0001)</label>
                 </div>
                 <div class="relative">
-                    <input type="text" id="reg-ic" placeholder=" " class="premium-input text-white" required>
+                    <input type="text" id="reg-ic" placeholder=" " class="premium-input text-white" maxlength="14" required oninput="formatIC(this)">
                     <label class="premium-label">No. Kad Pengenalan</label>
                 </div>
                 <div class="mt-2 border-t border-white/10 pt-4 mb-2">
@@ -455,7 +456,7 @@
 
 
     <!-- ── Scripts ── -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/database.js"></script>
@@ -667,5 +668,6 @@
     </script>
 
     <script src="js/chatbot.js"></script>
+    <script src="js/transitions.js"></script>
 </body>
 </html>

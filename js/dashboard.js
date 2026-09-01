@@ -135,10 +135,19 @@ async function fetchStats() {
         const { count: totalAdmin, error: errAdmin } = await supabaseClient
             .from('users')
             .select('*', { count: 'exact', head: true })
-            .eq('role', 'admin');
+            .in('role', ['admin', 'superadmin']);
         if (!errAdmin) {
             const el = document.getElementById('stat-admin');
             if (el) el.innerText = totalAdmin || 0;
+        }
+
+        // Fetch Akaun Portal (Berdaftar)
+        const { count: totalAkaun, error: errAkaun } = await supabaseClient
+            .from('akaun_portal')
+            .select('*', { count: 'exact', head: true });
+        if (!errAkaun) {
+            const el = document.getElementById('stat-akaun-portal');
+            if (el) el.innerText = totalAkaun || 0;
         }
 
     } catch (err) {
@@ -336,6 +345,12 @@ async function initCharts() {
 
             // Cawangan data
             const cawanganMap = {};
+            // Populasikan dengan senarai gelanggang sebenar terlebih dahulu supaya 0 pun dapat masuk
+            const { data: senaraiGelanggang } = await supabaseClient.from('gelanggang').select('nama_gelanggang');
+            if (senaraiGelanggang) {
+                senaraiGelanggang.forEach(g => { cawanganMap[g.nama_gelanggang] = 0; });
+            }
+            
             ahliData.forEach(a => {
                 const g = a.gelanggang || 'Lain-lain';
                 cawanganMap[g] = (cawanganMap[g] || 0) + 1;
@@ -511,7 +526,7 @@ async function initCharts() {
                 },
                 scales: {
                     x: { grid: { color: 'rgba(255,255,255,0.03)' },
-                         ticks: { maxRotation: 30, font: { size: 10 } } },
+                         ticks: { maxRotation: 45, minRotation: 45, font: { size: 9 }, autoSkip: false } },
                     y: { grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true, ticks: { precision: 0 } }
                 }
             }
@@ -599,20 +614,23 @@ async function fetchFinancialProjection() {
 
         // Actual collected (paid yuran this month)
         const now = new Date();
-        const curMonth = String(now.getMonth() + 1);
+        const curMonth = now.getMonth() + 1; // nombor 1-12
         const curYear = String(now.getFullYear());
 
         const { data: yuranD } = await supabaseClient
             .from('yuran')
-            .select('jumlah, status')
-            .eq('bulan', curMonth)
+            .select('jumlah, status, bulan')
             .eq('tahun', curYear);
 
         let actualAmount = 0;
         if (yuranD) {
             yuranD.forEach(y => {
                 const stat = (y.status || '').toLowerCase();
-                if (['paid', 'lunas', 'selesai'].includes(stat)) {
+                // bulan disimpan sebagai "4 2026" atau "4" — extract nombor
+                const bulanNum = parseInt((y.bulan || '').toString().trim());
+                const isThisMonth = bulanNum === curMonth;
+                const isPaid = ['paid', 'lunas', 'selesai', 'telah dibayar'].includes(stat);
+                if (isThisMonth && isPaid) {
                     actualAmount += parseFloat(y.jumlah || 0);
                 }
             });

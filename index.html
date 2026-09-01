@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ms">
 
 <head>
@@ -300,6 +300,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="css/transitions.css">
 </head>
 
 <body
@@ -519,7 +520,7 @@
 
                 <!-- Gelanggang 4 -->
                 <div
-                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col lg:col-start-1 lg:col-end-2">
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col">
                     <div class="mb-4">
                         <span
                             class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Sabtu
@@ -547,7 +548,7 @@
 
                 <!-- Gelanggang 5 -->
                 <div
-                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col lg:col-start-2 lg:col-end-3">
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col">
                     <div class="mb-4">
                         <span
                             class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Ahad
@@ -570,6 +571,34 @@
                     </div>
                     <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-500 italic">
                         * Persediaan latihan atlet (olahraga & seni diasingkan)
+                    </div>
+                </div>
+
+                <!-- Gelanggang 6 (Baru) -->
+                <div
+                    class="bg-[#111111] border border-silat-gold/30 rounded-lg p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:border-silat-gold group cursor-pointer relative flex flex-col">
+                    <div class="mb-4">
+                        <span
+                            class="inline-block px-2 py-1 bg-silat-gold/10 text-silat-gold text-[10px] uppercase font-bold tracking-widest rounded mb-2">Sabtu
+                            Pagi</span>
+                        <h3
+                            class="text-xl font-serif text-white group-hover:text-silat-gold transition-colors leading-snug">
+                            SK Tun Doktor Ismail</h3>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-white/5 flex-grow">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-time mr-3 text-silat-gold"></i> 11:00 AM - 1:00 PM
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="bx bx-user mr-3 text-silat-gold"></i> Semua Peringkat Umur
+                        </div>
+                        <div class="flex items-start text-sm text-gray-400 leading-relaxed">
+                            <i class="bx bx-target-lock mr-3 mt-1 text-silat-gold"></i> Fokus: Silibus Gayong, Teori &
+                            Ujian Bengkung
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-500 italic">
+                        * Kumpulan kanak-kanak & dewasa diasingkan
                     </div>
                 </div>
             </div>
@@ -1057,7 +1086,7 @@
     </footer>
 
     <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
     <!-- GSAP Core & ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -1074,6 +1103,7 @@
     <script src="js/animations.js"></script>
 
     <script src="js/chatbot.js"></script>
+    <script src="js/transitions.js"></script>
 </body>
 
 </html>

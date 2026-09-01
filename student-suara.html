@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5DPJ5K6BSE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5DPJ5K6BSE');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silibus - Portal Pendekar | Akademi Persilatan Daeng Kuning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] }, colors: { gold: { DEFAULT: '#D4AF37', dark: '#B8860B' }, charcoal: '#111111' } } } }
+    </script>
+    <link rel="stylesheet" href="css/branding.css">
+    <style>
+        .glass-panel { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); border: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .bengkung-img { width: 100px; height: 18px; display: inline-block; background-size: cover; background-position: center; border-radius: 2px;}
+    </style>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="css/transitions.css">
+</head>
+<body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex relative">
+
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden transition-opacity lg:hidden" onclick="toggleSidebar()"></div>
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gold/20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.6)]">
+        <div class="h-20 flex items-center px-4 md:px-6 border-b border-gold/10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent"></div>
+            <a href="index.html" class="flex items-center gap-1 cursor-pointer z-10 w-full transition-transform hover:scale-105">
+                <img loading="lazy" src="assets/img/logo.png" alt="Daeng Kuning" class="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <span class="royal-brand-logo text-2xl md:text-[1.6rem] md:leading-[1.6rem] mt-1.5" style="margin-left: -0.6rem; letter-spacing: -0.02em;">Daeng<span class="brand-gold">Kuning</span></span>
+            </a>
+            <button class="ml-auto text-gray-400 hover:text-white lg:hidden z-10" onclick="toggleSidebar()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+                <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
+                                                <ul class="space-y-2">                <li>
+                    <a href="dashboard-student.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-home w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Laman Utama</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="student-payment.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-receipt w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Pembayaran Yuran</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="student-profile.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-id-badge w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Profil & Kad ID</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="student-silibus.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-book-open w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Silibus & Bengkung</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="student-suara.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all">
+                        <i class="fas fa-bullhorn w-6"></i>
+                        <span class="font-medium tracking-wide">Suara Pesilat</span>
+                    </a>
+                </li>
+            </ul>
+            <button onclick="logout()" class="mt-auto w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-red-900/20 hover:text-red-400 transition-all group"><i class="fas fa-sign-out-alt w-6 group-hover:text-red-400"></i><span class="font-medium">Log Keluar</span></button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-h-screen lg:ml-72 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+        <header class="h-20 glass-panel border-x-0 border-t-0 flex items-center px-6 lg:px-10 sticky top-0 z-30 justify-between">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-gray-300 hover:text-gold focus:outline-none transition-colors" onclick="toggleSidebar()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <h2 class="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide">Hebahan Komuniti <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">Daeng Kuning</span></h2>
+            </div>
+        </header>
+
+        
+        <div class="flex-1 p-6 lg:p-10 pb-24 max-w-4xl mx-auto w-full">
+            <!-- Suara Pesilat (Feed) -->
+            <div class="glass-panel rounded-2xl p-6 lg:p-8 border-gold/30 overflow-hidden shadow-2xl">
+                <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                    <div>
+                        <h4 class="text-2xl font-bold text-white font-serif mb-1"><i class="fas fa-bullhorn text-gold mr-2"></i>Suara Pesilat</h4>
+                        <p class="text-sm text-gray-400">Ruang komuniti untuk bertukar fikiran & berkongsi maklumat dalam suasana tertutup.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6 flex gap-3">
+                    <div class="w-10 h-10 rounded-full bg-black/40 border border-gold/30 flex items-center justify-center shadow-inner"><i class="fas fa-pen-nib text-gold"></i></div>
+                    <div class="flex-1 relative group">
+                        <textarea id="suaraInput" rows="3" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white placeholder-gray-500 focus:border-gold focus:ring-1 focus:ring-gold transition-all resize-none shadow-inner" placeholder="Pencak langkah bermula di gelanggang, bicara bertebaran di halaman. Laungkan suaramu..."></textarea>
+                        <button onclick="suaraPost()" id="suaraPostBtn" class="absolute bottom-3 right-3 px-5 py-2 bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold rounded-lg text-xs hover:scale-105 transition-transform shadow-[0_0_10px_rgba(212,175,55,0.4)]"><i class="fas fa-paper-plane mr-1"></i> Post</button>
+                    </div>
+                </div>
+                
+                <div id="suaraFeedContainer" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar border-t border-white/5 pt-4">
+                    <!-- Dimuatkan menerusi JS -->
+                    <div class="text-center py-8 text-gray-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Mendengar gema dari gelanggang...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Core Scripts -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/database.js?v=2"></script>
+    <script src="js/utils.js?v=2"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/student.js?v=6"></script>
+    <script src="js/student-social.js?v=2"></script>
+    
+    <script>
+        function toggleSidebar() {
+            const s = document.getElementById('sidebar');
+            const o = document.getElementById('mobile-overlay');
+            s.classList.toggle('-translate-x-full');
+            if(o.classList.contains('hidden')){ o.classList.remove('hidden'); setTimeout(()=>o.classList.add('opacity-100'),10) }
+            else { o.classList.remove('opacity-100'); setTimeout(()=>o.classList.add('hidden'),300) }
+        }
+    </script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/transitions.js"></script>
+</body>
+</html>

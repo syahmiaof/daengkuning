@@ -1,4 +1,5 @@
 let allMembers = [];
+let portalAccounts = [];
 window.allMembers = allMembers;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -39,8 +40,17 @@ async function fetchAhliData() {
 
         if (error) throw error;
         
+        // Fetch akaun_portal to check registration status
+        const { data: akaunData, error: akaunErr } = await supabaseClient
+            .from('akaun_portal')
+            .select('id_ahli, email, tarikh_daftar')
+            .order('tarikh_daftar', { ascending: false });
+            
+        portalAccounts = akaunData || [];
+
         allMembers = data || [];
         window.allMembers = allMembers; // expose for exportToExcel()
+        window.filteredMembers = allMembers;
         renderTable(allMembers);
     } catch (err) {
         console.error("Fetch Error:", err);
@@ -98,6 +108,12 @@ function renderTable(dataArray) {
         const gelanggang = m.gelanggang || ' - ';
         const dateRaw = m.tarikh_daftar || '';
 
+        // Check if has portal account
+        const hasAkaun = portalAccounts.find(acc => acc.id_ahli === id);
+        const nameBadge = hasAkaun 
+            ? `<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-500/10 text-green-400 border border-green-500/20" title="${hasAkaun.email}"><i class="fas fa-check-circle mr-1"></i>Berdaftar</span>`
+            : '';
+
         // Belt color coding logic
         let beltBg = 'bg-white/10 text-white'; // Hitam Mulus / Awan Putih defaults
         const bLow = bengkung.toLowerCase();
@@ -107,13 +123,20 @@ function renderTable(dataArray) {
         else if (bLow.includes('kuning')) beltBg = 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
         else if (bLow.includes('chula sakti')) beltBg = 'bg-black text-gold border-gold/50';
 
+        const telBadge = m.no_tel 
+            ? `<a href="https://wa.me/6${m.no_tel.replace(/[^0-9]/g, '')}" target="_blank" class="text-green-400 hover:text-green-300 transition-colors flex items-center gap-1" title="WhatsApp Ahli">
+                 <i class="fab fa-whatsapp"></i> ${m.no_tel}
+               </a>`
+            : '<span class="text-gray-500">-</span>';
+
         const tr = document.createElement('tr');
         tr.className = "hover:bg-white/5 transition-colors";
         tr.innerHTML = `
             <td class="py-4 px-6 text-gold font-medium">#${id}</td>
-            <td class="py-4 px-6 font-medium text-white">${name}</td>
+            <td class="py-4 px-6 font-medium text-white flex items-center">${name} ${nameBadge}</td>
             <td class="py-4 px-6 text-gray-400">${ic}</td>
             <td class="py-4 px-6 text-gray-400">${pssgm}</td>
+            <td class="py-4 px-6">${telBadge}</td>
             <td class="py-4 px-6 text-center">
                 <span class="px-3 py-1 rounded-full text-xs font-semibold border ${beltBg}">${bengkung}</span>
             </td>
@@ -153,6 +176,7 @@ function setupFilters() {
             return matchesQuery && matchesBelt && matchesLoc;
         });
 
+        window.filteredMembers = filtered;
         renderTable(filtered);
     };
 
@@ -170,8 +194,8 @@ async function openAddModal() {
     
     document.getElementById('modal-title-text').innerText = 'Tambah Ahli';
     const idInput = document.getElementById('memberId');
-    idInput.readOnly = false; // allow editing PK
-    idInput.classList.remove('opacity-50');
+    idInput.readOnly = true; // force auto-generate pk
+    idInput.classList.add('opacity-50', 'cursor-not-allowed');
     idInput.value = "Menjana ID...";
 
     window.ui.showModal('member-form-modal');
@@ -278,9 +302,9 @@ function setupFormListener() {
             const payloadAhli = {
                 id_ahli: document.getElementById('memberId').value.trim().toUpperCase(),
                 nama: document.getElementById('memberName').value.trim(),
-                ic: document.getElementById('memberIC').value.trim(),
-                no_pssgm: document.getElementById('memberPSSGM').value.trim(),
-                no_tel: document.getElementById('memberTel').value.trim(),
+                ic: document.getElementById('memberIC').value.trim() || null,
+                no_pssgm: document.getElementById('memberPSSGM').value.trim() || null,
+                no_tel: document.getElementById('memberTel').value.trim() || null,
                 bengkung: document.getElementById('memberBelt').value,
                 gelanggang: document.getElementById('memberLocation').value.trim()
             };
@@ -408,4 +432,38 @@ window.downloadCSVTemplate = function() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+};
+
+// Populate Portal Accounts Modal
+window.populateAkaunModal = function() {
+    const tbody = document.getElementById('portal-accounts-tbody');
+    const tot = document.getElementById('portal-accounts-total');
+    
+    if (!portalAccounts || portalAccounts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-gray-500">Tiada rekod akaun.</td></tr>`;
+        tot.innerText = '0';
+        return;
+    }
+
+    tot.innerText = portalAccounts.length.toString();
+    tbody.innerHTML = '';
+    
+    // Sort array by id_ahli
+    const sorted = [...portalAccounts].sort((a,b) => (a.id_ahli || '').localeCompare(b.id_ahli || ''));
+
+    sorted.forEach(acc => {
+        // Find matching name in allMembers list if possible
+        const memberMatch = allMembers.find(m => m.id_ahli === acc.id_ahli);
+        const nameHint = memberMatch ? `<br><span class="text-[10px] text-gray-500">${memberMatch.nama}</span>` : '';
+        const dt = acc.tarikh_daftar ? new Date(acc.tarikh_daftar).toLocaleString('ms-MY', {dateStyle:'short', timeStyle:'short'}) : '-';
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-white/5 transition-colors";
+        tr.innerHTML = `
+            <td class="py-3 pr-4 font-medium text-gold">${acc.id_ahli || 'N/A'}${nameHint}</td>
+            <td class="py-3 pr-4 text-white">${acc.email || '-'}</td>
+            <td class="py-3 text-right text-gray-400 text-[11px]">${dt}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 };

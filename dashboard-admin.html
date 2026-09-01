@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ms">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -170,6 +170,7 @@
     </style>
 
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="css/transitions.css">
 </head>
 
 <body class="font-sans antialiased text-gray-200 bg-charcoal min-h-screen flex selection:bg-gold selection:text-charcoal relative">
@@ -195,8 +196,7 @@
 
         <!-- Sidebar Navigation -->
         <nav class="flex-1 px-4 py-6 justify-between flex flex-col">
-            <ul class="space-y-2">
-                <li>
+                                                            <ul class="space-y-2">                <li>
                     <a href="dashboard-admin.html" class="flex items-center px-4 py-3 rounded-lg bg-gold/10 text-gold border border-gold/20 shadow-[0_0_10px_rgba(212,175,55,0.1)] transition-all">
                         <i class="fas fa-th-large w-6"></i>
                         <span class="font-medium tracking-wide">Ringkasan</span>
@@ -224,6 +224,18 @@
                     <a href="admin-notis.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
                         <i class="fas fa-bullhorn w-6 group-hover:text-gold transition-colors"></i>
                         <span class="font-medium tracking-wide">Hebahan (Notis)</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-suara.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-comments w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Suara Pesilat</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admin-surat.html" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all group">
+                        <i class="fas fa-envelope-open-text w-6 group-hover:text-gold transition-colors"></i>
+                        <span class="font-medium tracking-wide">Surat Rasmi (AI)</span>
                     </a>
                 </li>
                 <li>
@@ -359,6 +371,21 @@
                         </div>
                         <div class="w-12 h-12 rounded-full bg-orange-900/20 border border-orange-500/30 flex items-center justify-center text-orange-400 shadow-inner group-hover:bg-orange-500/30 group-hover:border-orange-500 transition-all duration-500">
                             <i class="fas fa-user-shield text-xl group-hover:animate-spin"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stat Card 7 (Akaun Portal) -->
+                <div class="glass-panel stat-shimmer rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_0_20px_rgba(79,70,229,0.05)] hover:shadow-[0_0_25px_rgba(79,70,229,0.2)] border-indigo-500/20 cursor-pointer" onclick="window.location.href='admin-ahli.html'">
+                    <div class="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 rounded-full bg-indigo-500/5 blur-2xl group-hover:bg-indigo-500/15 transition-colors"></div>
+                    <div class="flex items-start justify-between relative z-10">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium tracking-wide mb-1 transition-colors group-hover:text-indigo-400">Akaun Portal Berdaftar</p>
+                            <h3 id="stat-akaun-portal" class="text-4xl font-bold text-white font-serif tracking-widest stat-number text-indigo-100 group-hover:scale-105 origin-left transition-transform duration-300">0</h3>
+                            <p class="text-[10px] text-indigo-400/60 mt-1">Klik untuk semak senarai</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-indigo-900/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-inner group-hover:bg-indigo-500/30 group-hover:border-indigo-500 transition-all duration-300">
+                            <i class="fas fa-id-card-alt text-xl group-hover:scale-110 transition-all duration-300"></i>
                         </div>
                     </div>
                 </div>
@@ -564,7 +591,7 @@
     </div>
 
     <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
     <!-- Project Scripts -->
     <script src="js/config.js"></script>
@@ -711,5 +738,6 @@
         });
     });
     </script>
+    <script src="js/transitions.js"></script>
 </body>
 </html>
