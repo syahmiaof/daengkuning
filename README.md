@@ -1,32 +1,39 @@
-# Daeng Kuning (CMS) - Akademi Persilatan 🐯
+<div align="center">
+  <h1>Akademi Persilatan Daeng Kuning</h1>
+  <p><strong>A digital home for an academy, its members and its silat heritage.</strong></p>
+  <p><a href="https://daengkuning.my">Live website</a> · <a href="https://syahmiaof.my/projects">Portfolio context</a></p>
+</div>
 
-Selamat datang ke repositori rasmi bagi Sistem Pengurusan Berpusat (CMS) Akademi Persilatan Daeng Kuning. Laman web ini bertujuan mendigitalisasikan pengurusan keseluruhan bagi pendaftaran ahli, penjejakan yuran pelatih, siaran makluman rasmi, serta galeri dan muzium persilatan.
+![Daeng Kuning website](https://raw.githubusercontent.com/syahmiaof/syahmiaof/main/public/images/daeng-kuning.webp)
 
-## 📖 Pautan Dokumentasi Rasmi
+## Overview
 
-Maklumat teknikal, perjalanan pengurusan projek, hingga ke struktur binaan pangkalan data telah disusun rapi di ruang dokumen. 
+The public website brings Akademi Persilatan Daeng Kuning online through a focused identity, academy information, membership context and heritage presentation.
 
-Sila klik pautan bab bersiri di bawah untuk merujuk kepada dokumen di dalam folder `docs/`:
+## My role
 
-- [Bab 01: Pengenalan Projek (Objektif & Visi)](docs/01_PENGENALAN_PROJEK.md)
-- [Bab 02: Pengurusan Projek & Fasa Pembangunan](docs/02_PENGURUSAN_PROJEK.md)
-- [Bab 03: Reka Bentuk Sistem & UI/UX](docs/03_REKA_BENTUK_SISTEM.md)
-- [Bab 04: Pangkalan Data & ERD (Seni Bina)](docs/04_PANGKALAN_DATA_ERD.md)
-- [Bab 05: Uji Lari Keselamatan Sistem (Sec Specs)](docs/05_UJI_LARI_KESELAMATAN.md)
-- [Bab 06: Fasa Pembangunan Teknikal & Pengekodan](docs/06_FASA_PEMBANGUNAN_TEKNIKAL.md)
-- [Bab 07: Integrasi Modul Eksternal (AI Chatbot Gemini)](docs/07_INTEGRASI_AI_CHATBOT.md)
-- [Bab 08: Anggaran Kos Komersial & Operasi Server](docs/08_ANGGARAN_KOS_KOMERSIAL.md)
-- [Bab 09: Skalabiliti Masa Hadapan & E-Payment (Future Roadmap)](docs/09_CIRI_CIRI_MASA_HADAPAN.md)
-- [Bab 10: Manual Pengguna Berpandu](docs/10_MANUAL_PENGGUNA.md)
-- [Bab 11: Senibina Teknologi, Alat & Susun Atur (Tech Stack)](docs/11_TECH_STACK_TOOLS.md)
+I translated the academy's needs into the website structure, interface and deployment. My work covers frontend implementation, visual presentation, domains, hosting and the feedback cycle around the delivered site.
 
----
+## Current scope
 
-## 🚀 Pelancaran Langsung (Live Demo)
-Aplikasi Pangkalan Web ini telah dinaik turun ke storan persekitaran Vercel dan aktif untuk pelawat awam dan pengguna persatuan:
-🔗 **URL Pelancaran Asas:** [https://silatdaengkuning.vercel.app](https://silatdaengkuning.vercel.app)
+- Public academy website.
+- Responsive interface.
+- Academy and heritage information.
+- Contact and membership pathways.
+- Live custom domain deployment.
 
----
+## Documentation
 
-### Hak Cipta Terpelihara.
-*Dibangunkan secara bersepadu bagi mendidik anak bangsa tentang warisan tanpa mengabaikan penumpuan kemajuan digital IR 4.0.* 
+Detailed project notes remain available under the repository's docs directory, including project planning, interface direction, data architecture, security considerations, development phases and future modules. Those documents describe both implemented work and roadmap material.
+
+## Stack
+
+HTML, CSS and JavaScript, deployed as a public web experience.
+
+## Status
+
+Active website. Broader portal, membership, commerce or automation ideas should be treated as roadmap items unless they appear in the current live implementation.
+
+## Builder
+
+[Muhammad Syahmi](https://syahmiaof.my) — founder, coach, operator and web developer for Akademi Persilatan Daeng Kuning.
